@@ -47,6 +47,16 @@ namespace SOMLibrary
         }
         #endregion
 
+
+       /// <summary>
+       /// Initializes the SOM with random weights
+       /// </summary>
+        public void InitializeMap()
+        {
+
+        }
+
+
         public override void RetrieveDataset()
         {
             throw new NotImplementedException();
