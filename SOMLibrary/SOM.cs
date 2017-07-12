@@ -12,7 +12,7 @@ namespace SOMLibrary
         #region Properties
         public double LearningRate { get; set; }
 
-        public Node[,] Map { get; set; }
+        public Node[][] Map { get; set; }
 
         public int Width { get; set; }
 

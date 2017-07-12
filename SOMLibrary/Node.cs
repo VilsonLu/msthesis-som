@@ -25,7 +25,6 @@ namespace SOMLibrary
             Coordinate = new Coordinate(x, y);
         }
 
-
         /// <summary>
         /// Calculates the Euclidean distance between the weight vector and input vector
         /// </summary>

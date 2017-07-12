@@ -2,6 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using SOMLibrary;
+using SOMLibrary.Interface;
+using SOMLibrary.Implementation;
+using SOMLibrary.DataModel;
 
 namespace MSThesisTest
 {
@@ -39,6 +42,36 @@ namespace MSThesisTest
             // Assert
             double expected = 5.0;
             Assert.AreEqual(expected, radius);
+        }
+
+        [TestMethod]
+        public void CSVReader_Read_GetHeaders()
+        {
+            // Arrange
+            string filename = @"Dataset\Iris.csv";
+            IReader reader = new CSVReader(filename);
+
+            // Act
+            Dataset dataset = reader.Read();
+
+            // Assert
+            int expected = 6;
+            Assert.AreEqual(expected, dataset.Features.Length);
+        }
+
+        [TestMethod]
+        public void CSVReader_Read_GetInstances()
+        {
+            // Arrange
+            string filename = @"Dataset\Iris.csv";
+            IReader reader = new CSVReader(filename);
+
+            // Act
+            Dataset dataset = reader.Read();
+
+            // Assert
+            int expected = 150;
+            Assert.AreEqual(expected, dataset.Instances.Length);
         }
     }
 
