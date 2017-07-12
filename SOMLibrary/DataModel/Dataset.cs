@@ -27,5 +27,17 @@ namespace SOMLibrary.DataModel
 
             selectedFeature.IsLabel = true;
         }
+
+        public void SetKey(string feature)
+        {
+            var selectedFeature = Features.First(x => x.FeatureName == feature);
+
+            if (selectedFeature == null)
+            {
+                throw new Exception("Feature does not exists");
+            }
+
+            selectedFeature.IsKey = true;
+        }
     }
 }

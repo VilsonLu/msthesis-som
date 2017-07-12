@@ -11,8 +11,6 @@ namespace SOMLibrary
     {
         public Dataset Dataset { get; set; }
 
-        public abstract void RetrieveDataset();
-
         public abstract void Train();
 
     }

@@ -15,8 +15,8 @@ namespace MSThesisTest
         public void Node_GetDistance_EuclideanDistance()
         {
             // Arrange
-            var weights = new List<double> { 0.1, 0.4, 0.5 };
-            var inputVectors = new List<double> { 1, 0, 0 };
+            var weights = new double[] { 0.1, 0.4, 0.5 };
+            var inputVectors = new double[] { 1, 0, 0 };
 
             Node node = new Node(weights, 1, 1);
 
@@ -25,7 +25,7 @@ namespace MSThesisTest
 
             // Assert
             double expectedResult = 1.1045361;
-            Assert.AreEqual(expectedResult, Math.Round(distance,7));
+            Assert.AreEqual(expectedResult, Math.Round(distance, 7));
         }
 
         [TestMethod]
@@ -72,6 +72,51 @@ namespace MSThesisTest
             // Assert
             int expected = 150;
             Assert.AreEqual(expected, dataset.Instances.Length);
+        }
+
+
+        [TestMethod]
+        public void SOM_IgnoreColumns_GetIsLabelColumn_WhenIsLabelTrue()
+        {
+            // Arrange
+            string filename = @"Dataset\Iris.csv";
+            IReader reader = new CSVReader(filename);
+            SOM som = new SOM();
+
+            som.GetData(reader);
+
+            // Act
+            Dataset dataset = som.Dataset;
+            dataset.SetLabel("Species");
+
+            List<int> ignoreColumns = som.IgnoreColumns();
+
+            // Assert
+            string expected = "Species";
+            string result = dataset.Features[ignoreColumns[0]].FeatureName;
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void SOM_IgnoreColumns_GetIsKeyColumn_WhenIsLabelTrue()
+        {
+            // Arrange
+            string filename = @"Dataset\Iris.csv";
+            IReader reader = new CSVReader(filename);
+            SOM som = new SOM();
+
+            som.GetData(reader);
+
+            // Act
+            Dataset dataset = som.Dataset;
+            dataset.SetKey("Id");
+
+            List<int> ignoreColumns = som.IgnoreColumns();
+
+            // Assert
+            string expected = "Id";
+            string result = dataset.Features[ignoreColumns[0]].FeatureName;
+            Assert.AreEqual(expected, result);
         }
     }
 

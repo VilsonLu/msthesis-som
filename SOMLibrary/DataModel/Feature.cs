@@ -7,5 +7,7 @@
         public string FeatureName { get; set; }
 
         public bool IsLabel { get; set; }
+
+        public bool IsKey { get; set; }
     }
 }
