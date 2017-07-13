@@ -89,7 +89,7 @@ namespace MSThesisTest
             Dataset dataset = som.Dataset;
             dataset.SetLabel("Species");
 
-            List<int> ignoreColumns = som.IgnoreColumns();
+            List<int> ignoreColumns = dataset.GetIgnoreColumns();
 
             // Assert
             string expected = "Species";
@@ -111,12 +111,61 @@ namespace MSThesisTest
             Dataset dataset = som.Dataset;
             dataset.SetKey("Id");
 
-            List<int> ignoreColumns = som.IgnoreColumns();
+            List<int> ignoreColumns = dataset.GetIgnoreColumns();
 
             // Assert
             string expected = "Id";
             string result = dataset.Features[ignoreColumns[0]].FeatureName;
             Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void Dataset_GetInstance_WithLabelsAndKeys()
+        {
+            // Arrange
+            string filename = @"Dataset\Iris.csv";
+            IReader reader = new CSVReader(filename);
+            SOM som = new SOM();
+
+            som.GetData(reader);
+
+            Dataset dataset = som.Dataset;
+            dataset.SetKey("Id");
+            dataset.SetLabel("Species");
+
+            // Act
+            double[] result = dataset.GetInstance<double>(0);
+
+
+            // Assert
+            int expectedCount = 4;
+            double x1 = 5.1;
+            double x2 = 3.5;
+            double x3 = 1.4;
+            double x4 = 0.2;
+            Assert.AreEqual(expectedCount, result.Length);
+            Assert.AreEqual(x1, result[0]);
+            Assert.AreEqual(x2, result[1]);
+            Assert.AreEqual(x3, result[2]);
+            Assert.AreEqual(x4, result[3]);
+        }
+
+        [TestMethod]
+        public void Test_Method()
+        {
+            // Arrange
+            string filename = @"Dataset\Iris.csv";
+            IReader reader = new CSVReader(filename);
+            SOM som = new SOM(10,10, 0.5);
+
+            som.GetData(reader);
+
+            Dataset dataset = som.Dataset;
+            dataset.SetKey("Id");
+            dataset.SetLabel("Species");
+
+            // Act
+            som.Train();
         }
     }
 

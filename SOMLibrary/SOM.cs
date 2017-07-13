@@ -29,6 +29,8 @@ namespace SOMLibrary
             }
         }
 
+        public int Epoch { get; set; }
+
         #endregion
 
         #region Constructor
@@ -38,6 +40,7 @@ namespace SOMLibrary
             Width = 0;
             Height = 0;
             LearningRate = 0;
+            Epoch = 1;
             Map = new Node[Width, Height];
         }
 
@@ -46,6 +49,7 @@ namespace SOMLibrary
             Width = x;
             Height = y;
             LearningRate = 0.5;
+            Epoch = 1;
             Map = new Node[x, y];
         }
 
@@ -54,6 +58,7 @@ namespace SOMLibrary
             Width = x;
             Height = y;
             LearningRate = learningRate;
+            Epoch = 1;
             Map = new Node[x, y];
         }
         #endregion
@@ -70,7 +75,7 @@ namespace SOMLibrary
         /// </summary>
         public void InitializeMap()
         {
-            int numOfIgnoreColumns = IgnoreColumns().Count;
+            int numOfIgnoreColumns = base.Dataset.GetIgnoreColumns().Count;
             int featureCounts = base.Dataset.Features.Length;
 
             int weightCount = featureCounts - numOfIgnoreColumns;
@@ -101,19 +106,65 @@ namespace SOMLibrary
 
         public override void Train()
         {
-            throw new NotImplementedException();
+            // Initializes the nodes with random value
+            InitializeMap();
+
+            int instanceCount = base.Dataset.Instances.Length;
+            var instances = base.Dataset.Instances;
+            int t = 0; // iteration
+            for(int i = 0; i < Epoch; i++)
+            {
+                for(int d = 0; d < instanceCount; d++)
+                {
+                    // Get data from dataset
+                    var instance = base.Dataset.GetInstance<double>(d);
+
+                    // Find the BMU
+                    Node node = FindBMU(instance);
+
+                    // Update the best node
+                    UpdateBMU(node, instance);
+
+                    // Update the neighbor
+                    UpdateNeighborhood(node);
+
+                    t++;
+                }
+            }
         }
 
-
-        /// <summary>
-        /// Get list of columns not to be used for training
-        /// Example: Id, Labels
-        /// </summary>
-        /// <returns></returns>
-        public List<int> IgnoreColumns()
+        private Node FindBMU(double[] instance)
         {
-            var ignoreColumns = base.Dataset.Features.Where(x => x.IsKey || x.IsLabel).Select(x => x.OrderNo);
-            return ignoreColumns.ToList();
+            double bestDistance = double.MaxValue;
+            Node bestNode = null;
+
+            for(int row=0; row < Height; row++)
+            {
+                for(int col=0; col < Width; col++)
+                {
+                    Node currentNode = Map[row, col];
+                    double currentDistance = currentNode.GetDistance(instance);
+
+                    if(currentDistance < bestDistance)
+                    {
+                        bestDistance = currentDistance;
+                        bestNode = currentNode;
+                    }
+
+                }
+            }
+
+            return bestNode;
         }
+        private void UpdateBMU(Node node, double[] instance)
+        {
+            // TODO: Implement the correct behavior for updating BMU
+            node.Weights = instance;
+        }
+        private void UpdateNeighborhood(Node bmu)
+        {
+
+        }
+
     }
 }
