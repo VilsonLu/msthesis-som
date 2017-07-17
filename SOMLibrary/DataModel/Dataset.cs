@@ -44,11 +44,11 @@ namespace SOMLibrary.DataModel
 
         public T[] GetInstance<T>(int i)
         {
-            int featureCounts = Features.Length;
+            int instanceCounts = Instances.Length;
 
-            if (i > featureCounts)
+            if (i > instanceCounts)
             {
-                throw new Exception("Selected feature does not exists");
+                throw new Exception("Selected instance does not exists");
             }
 
             var ignoredColumn = GetIgnoreColumns();

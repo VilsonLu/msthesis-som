@@ -13,7 +13,7 @@ namespace SOMLibrary
 
         #region Properties
 
-        public double LearningRate { get; set; }
+        public double ConstantLearningRate { get; set; }
 
         public Node[,] Map { get; set; }
 
@@ -21,6 +21,11 @@ namespace SOMLibrary
 
         public int Height { get; set; }
 
+
+        /// <summary>
+        /// Map Radius (sigma)
+        /// Formula: Max(Width, Height) / 2
+        /// </summary>
         public double MapRadius
         {
             get
@@ -31,6 +36,8 @@ namespace SOMLibrary
 
         public int Epoch { get; set; }
 
+        public int TotalIteration { get; set; }
+
         #endregion
 
         #region Constructor
@@ -39,7 +46,7 @@ namespace SOMLibrary
         {
             Width = 0;
             Height = 0;
-            LearningRate = 0;
+            ConstantLearningRate = 0;
             Epoch = 1;
             Map = new Node[Width, Height];
         }
@@ -48,7 +55,7 @@ namespace SOMLibrary
         {
             Width = x;
             Height = y;
-            LearningRate = 0.5;
+            ConstantLearningRate = 0.5;
             Epoch = 1;
             Map = new Node[x, y];
         }
@@ -57,7 +64,7 @@ namespace SOMLibrary
         {
             Width = x;
             Height = y;
-            LearningRate = learningRate;
+            ConstantLearningRate = learningRate;
             Epoch = 1;
             Map = new Node[x, y];
         }
@@ -66,6 +73,7 @@ namespace SOMLibrary
         public void GetData(IReader reader)
         {
             base.Dataset = reader.Read();
+            TotalIteration = base.Dataset.Instances.Length * Epoch;
         }
 
 
@@ -88,7 +96,7 @@ namespace SOMLibrary
                     var vectors = new double[weightCount];
                     for (int count = 0; count < weightCount; count++)
                     {
-                        
+
                         vectors[count] = rand.NextDouble();
                     }
 
@@ -97,13 +105,18 @@ namespace SOMLibrary
                     Map[row, col] = node;
                 }
             }
-
-
-
-
         }
 
-
+        /// <summary>
+        /// Train the SOM by adjusting the weights of the nodes.
+        /// 
+        /// Steps:
+        /// 1. Initialize the SOM with random weights
+        /// 2. Get an instance from the dataset
+        /// 3. Find the best matching unit. (Find the node with the least distance)
+        /// 4. Update the neighborhood that are within the neighborhood radius
+        /// 
+        /// </summary>
         public override void Train()
         {
             // Initializes the nodes with random value
@@ -111,41 +124,39 @@ namespace SOMLibrary
 
             int instanceCount = base.Dataset.Instances.Length;
             var instances = base.Dataset.Instances;
-            int t = 0; // iteration
-            for(int i = 0; i < Epoch; i++)
+            int t = 1; // iteration
+            for (int i = 0; i < Epoch; i++)
             {
-                for(int d = 0; d < instanceCount; d++)
+                for (int d = 0; d < instanceCount; d++)
                 {
                     // Get data from dataset
                     var instance = base.Dataset.GetInstance<double>(d);
 
-                    // Find the BMU
-                    Node node = FindBMU(instance);
+                    // Find the BMU (Best Matching Unit)
+                    Node winningNode = FindBMU(instance);
 
-                    // Update the best node
-                    UpdateBMU(node, instance);
-
-                    // Update the neighbor
-                    UpdateNeighborhood(node);
+                    // Adjust the weights of the BMU and neighbor
+                    UpdateNeighborhood(winningNode, instance, t);
 
                     t++;
                 }
             }
         }
 
+        #region SOM Functions
         private Node FindBMU(double[] instance)
         {
             double bestDistance = double.MaxValue;
             Node bestNode = null;
 
-            for(int row=0; row < Height; row++)
+            for (int row = 0; row < Height; row++)
             {
-                for(int col=0; col < Width; col++)
+                for (int col = 0; col < Width; col++)
                 {
                     Node currentNode = Map[row, col];
                     double currentDistance = currentNode.GetDistance(instance);
 
-                    if(currentDistance < bestDistance)
+                    if (currentDistance < bestDistance)
                     {
                         bestDistance = currentDistance;
                         bestNode = currentNode;
@@ -156,15 +167,96 @@ namespace SOMLibrary
 
             return bestNode;
         }
-        private void UpdateBMU(Node node, double[] instance)
-        {
-            // TODO: Implement the correct behavior for updating BMU
-            node.Weights = instance;
-        }
-        private void UpdateNeighborhood(Node bmu)
-        {
 
+        private void UpdateNeighborhood(Node winningNode, double[] instance, int iteration)
+        {
+            for (int row = 0; row < Height; row++)
+            {
+                for(int col = 0; col < Width; col++)
+                {
+                    var currentNode = Map[row, col];
+                    var distanceToWinningNode = winningNode.GetGridDistance(currentNode);
+
+                    if(distanceToWinningNode < Math.Pow(NeighborhoodRadius(iteration), 2))
+                    {
+                        currentNode.Weights = AdjustWeights(winningNode, currentNode, instance, iteration);
+                    }
+                }
+            }
         }
 
+        /// <summary>
+        /// Learning Rate Decay Function
+        /// Formula: L(t+1) = LearningRate * exp(- iteration / total iterations)
+        /// </summary>
+        /// <param name="iteration"></param>
+        /// <returns></returns>
+        public double LearningRateDecay(int iteration)
+        {
+            double learningRate = ConstantLearningRate * Math.Exp(-iteration / TotalIteration);
+            return learningRate;
+        }
+
+        /// <summary>
+        /// Time Constant (lambda)
+        /// Formula: TotalIterations / log(map_radius)
+        /// </summary>
+        /// <returns></returns>
+        public double TimeConstant()
+        {
+            double timeConstant = TotalIteration / Math.Log(MapRadius);
+            return timeConstant;
+        }
+
+        /// <summary>
+        /// Neighborhood Radius: The neighborhood shrinks as time passes by
+        /// Formula: MapRadius * exp(-iteration/timeConstant)
+        /// </summary>
+        /// <returns></returns>
+        public double NeighborhoodRadius(int iteration)
+        {
+            double neighboodRadius = MapRadius * Math.Exp(-iteration / TimeConstant());
+            return neighboodRadius;
+        }
+
+        /// <summary>
+        /// Formula for adjusting the weights of the node. 
+        /// Weights are adjusted based on the distance of the node to the winning node
+        /// Formula W(t+1) = W(t) + Influence(t) * LearningRate(t) * (V(t) - W(t))
+        /// </summary>
+        /// <param name="winningNode"></param>
+        /// <param name="currentNode"></param>
+        /// <param name="instance"></param>
+        /// <param name="iteration"></param>
+        /// <returns></returns>
+        public double[] AdjustWeights(Node winningNode, Node currentNode, double[] instance, int iteration)
+        {
+            var currentWeight = currentNode.Weights;
+
+            for (int i = 0; i < currentWeight.Length; i++)
+            {
+                currentWeight[i] = currentWeight[i] + Influence(winningNode, currentNode, iteration) * LearningRateDecay(iteration) * (instance[i] - currentWeight[i]);
+            }
+
+            return currentWeight;
+        }
+
+        /// <summary>
+        /// Influence of the node based on distance
+        /// Formula I(t) = Exp(-distance^2/ (2*NeighborhoodRadius^2))
+        /// </summary>
+        /// <param name="winningNode"></param>
+        /// <param name="currentNode"></param>
+        /// <param name="iteration"></param>
+        /// <returns></returns>
+        public double Influence(Node winningNode, Node currentNode, int iteration)
+        {
+            double distance = winningNode.GetGridDistance(currentNode);
+            double radius = 2 * Math.Pow(NeighborhoodRadius(iteration), 2);
+            double influence = Math.Exp(-Math.Pow(distance, 2) / radius);
+            return influence;
+        }
+
+        #endregion
     }
 }

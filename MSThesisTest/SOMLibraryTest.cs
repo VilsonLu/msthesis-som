@@ -166,6 +166,7 @@ namespace MSThesisTest
 
             // Act
             som.Train();
+            bool test = true;
         }
     }
 
