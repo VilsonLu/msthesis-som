@@ -175,9 +175,9 @@ namespace SOMLibrary
                 for(int col = 0; col < Width; col++)
                 {
                     var currentNode = Map[row, col];
-                    var distanceToWinningNode = winningNode.GetGridDistance(currentNode);
-
-                    if(distanceToWinningNode < Math.Pow(NeighborhoodRadius(iteration), 2))
+                    var distanceToWinningNode = Math.Pow(winningNode.GetGridDistance(currentNode), 2);
+                    double neighborhoodRadius = Math.Pow(NeighborhoodRadius(iteration), 2);
+                    if (distanceToWinningNode < neighborhoodRadius)
                     {
                         currentNode.Weights = AdjustWeights(winningNode, currentNode, instance, iteration);
                     }
@@ -235,7 +235,9 @@ namespace SOMLibrary
 
             for (int i = 0; i < currentWeight.Length; i++)
             {
-                currentWeight[i] = currentWeight[i] + Influence(winningNode, currentNode, iteration) * LearningRateDecay(iteration) * (instance[i] - currentWeight[i]);
+                double influence = Influence(winningNode, currentNode, iteration);
+                double learningRate = LearningRateDecay(iteration);
+                currentWeight[i] = currentWeight[i] +  influence * learningRate * (instance[i]/10 - currentWeight[i]);
             }
 
             return currentWeight;
