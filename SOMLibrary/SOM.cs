@@ -68,6 +68,16 @@ namespace SOMLibrary
             Epoch = 1;
             Map = new Node[x, y];
         }
+
+        public SOM(int x, int y, double learningRate, int epoch)
+        {
+            Width = x;
+            Height = y;
+            ConstantLearningRate = learningRate;
+            Epoch = epoch;
+            Map = new Node[x, y];
+        }
+
         #endregion
 
         public void GetData(IReader reader)

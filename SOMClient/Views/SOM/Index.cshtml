@@ -1,0 +1,55 @@
+﻿@model SOMLibrary.SOM
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<html>
+    <head>
+        <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+        <script src="~/Scripts/bootstrap.min.js"></script>
+        <script src="~/Scripts/d3/d3.min.js"></script>
+        <script src="~/Scripts/SOMScript.js"></script>
+    </head>
+    <body>
+        <h1>SOM Visualization</h1>
+
+        <div id="chart">
+
+        </div>
+
+
+        <script>
+            initMap(@Html.Raw(Json.Encode(Model.Map)));
+
+            var svg = d3.select('#chart').append('svg').attr('width', 600).attr('height', 600),
+                margin = 30,
+                width = n * sen,
+                height = n * sen
+                ;
+
+            var rgb_nodes = svg.append('g').attr('class', 'nodes all');
+
+
+            function rgb(array) {
+                return 'rgb(' + array.map(function (r) { return Math.round(r); }).join(',') + ')';
+            }
+
+            rgb_nodes
+                .selectAll('rect')
+                .data(nodes)
+                .enter().append('rect')
+                .attr('x', function (node) { return node.Coordinate.X * sen; })
+                .attr('y', function (node) { return node.Coordinate.Y * sen; })
+                .attr('width', sen)
+                .attr('height', sen)
+                .attr('text', 'x')
+                .style('fill', function (node) { return rgb([node.Weights[0] * 0, node.Weights[1] * 256, node.Weights[2] * 256]); })
+                .on('mouseover', mover)
+                .on('mouseout', mout)
+        </script>
+
+    </body>
+    
+</html>

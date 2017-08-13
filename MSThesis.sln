@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SOMLibrary", "SOMLibrary\SO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSThesisTest", "MSThesisTest\MSThesisTest.csproj", "{606DF9A7-F86C-46A5-BBCC-F1C9AC778CB5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SOMClient", "SOMClient\SOMClient.csproj", "{608C48F4-1751-46E6-9E83-A4F436398AB9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{606DF9A7-F86C-46A5-BBCC-F1C9AC778CB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{606DF9A7-F86C-46A5-BBCC-F1C9AC778CB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{606DF9A7-F86C-46A5-BBCC-F1C9AC778CB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{608C48F4-1751-46E6-9E83-A4F436398AB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{608C48F4-1751-46E6-9E83-A4F436398AB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{608C48F4-1751-46E6-9E83-A4F436398AB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{608C48F4-1751-46E6-9E83-A4F436398AB9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
