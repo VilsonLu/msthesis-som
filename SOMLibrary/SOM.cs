@@ -1,4 +1,5 @@
 ﻿using SOMLibrary.DataModel;
+using SOMLibrary.Implementation.NodeLabeller;
 using SOMLibrary.Interface;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,9 @@ namespace SOMLibrary
 
         public int Height { get; set; }
 
+        private ILabel _labeller;
+
+
 
         /// <summary>
         /// Map Radius (sigma)
@@ -37,6 +41,22 @@ namespace SOMLibrary
         public int Epoch { get; set; }
 
         public int TotalIteration { get; set; }
+
+        private string _featureLabel;
+        public string FeatureLabel
+        {
+            set
+            {
+                _featureLabel = value;
+            }
+        }
+
+        private int _k = 5;
+        public int K
+        {
+            get { return _k; }
+            set { _k = value; }
+        }
 
         #endregion
 
@@ -60,22 +80,15 @@ namespace SOMLibrary
             Map = new Node[x, y];
         }
 
-        public SOM(int x, int y, double learningRate)
+        public SOM(int x, int y, double learningRate) : this(x, y)
         {
-            Width = x;
-            Height = y;
             ConstantLearningRate = learningRate;
             Epoch = 1;
-            Map = new Node[x, y];
         }
 
-        public SOM(int x, int y, double learningRate, int epoch)
+        public SOM(int x, int y, double learningRate, int epoch) : this(x, y, learningRate)
         {
-            Width = x;
-            Height = y;
-            ConstantLearningRate = learningRate;
             Epoch = epoch;
-            Map = new Node[x, y];
         }
 
         #endregion
@@ -85,6 +98,8 @@ namespace SOMLibrary
             base.Dataset = reader.Read();
             TotalIteration = base.Dataset.Instances.Length * Epoch;
         }
+
+
 
 
 
@@ -153,6 +168,26 @@ namespace SOMLibrary
             }
         }
 
+        public void LabelNodes()
+        {
+            if (string.IsNullOrEmpty(_featureLabel))
+            {
+                return;
+            }
+
+            _labeller = new KNNLabeller(base.Dataset, K, _featureLabel);
+            for (int row = 0; row < Height; row++)
+            {
+                for (int col = 0; col < Width; col++)
+                {
+
+                    Node node = Map[row, col];
+
+                    Map[row, col].Label = _labeller.GetLabel(node);
+                }
+            }
+        }
+
         #region SOM Functions
         private Node FindBMU(double[] instance)
         {
@@ -178,11 +213,11 @@ namespace SOMLibrary
             return bestNode;
         }
 
-        private void UpdateNeighborhood(Node winningNode, double[] instance, int iteration)
+        protected void UpdateNeighborhood(Node winningNode, double[] instance, int iteration)
         {
             for (int row = 0; row < Height; row++)
             {
-                for(int col = 0; col < Width; col++)
+                for (int col = 0; col < Width; col++)
                 {
                     var currentNode = Map[row, col];
                     var distanceToWinningNode = Math.Pow(winningNode.GetGridDistance(currentNode), 2);
@@ -201,7 +236,7 @@ namespace SOMLibrary
         /// </summary>
         /// <param name="iteration"></param>
         /// <returns></returns>
-        public double LearningRateDecay(int iteration)
+        protected double LearningRateDecay(int iteration)
         {
             double learningRate = ConstantLearningRate * Math.Exp(-iteration / TotalIteration);
             return learningRate;
@@ -212,7 +247,7 @@ namespace SOMLibrary
         /// Formula: TotalIterations / log(map_radius)
         /// </summary>
         /// <returns></returns>
-        public double TimeConstant()
+        protected double TimeConstant()
         {
             double timeConstant = TotalIteration / Math.Log(MapRadius);
             return timeConstant;
@@ -223,7 +258,7 @@ namespace SOMLibrary
         /// Formula: MapRadius * exp(-iteration/timeConstant)
         /// </summary>
         /// <returns></returns>
-        public double NeighborhoodRadius(int iteration)
+        protected double NeighborhoodRadius(int iteration)
         {
             double neighboodRadius = MapRadius * Math.Exp(-iteration / TimeConstant());
             return neighboodRadius;
@@ -239,15 +274,17 @@ namespace SOMLibrary
         /// <param name="instance"></param>
         /// <param name="iteration"></param>
         /// <returns></returns>
-        public double[] AdjustWeights(Node winningNode, Node currentNode, double[] instance, int iteration)
+        protected double[] AdjustWeights(Node winningNode, Node currentNode, double[] instance, int iteration)
         {
             var currentWeight = currentNode.Weights;
+            var inputWeight = winningNode.Weights;
 
             for (int i = 0; i < currentWeight.Length; i++)
             {
                 double influence = Influence(winningNode, currentNode, iteration);
                 double learningRate = LearningRateDecay(iteration);
-                currentWeight[i] = currentWeight[i] +  influence * learningRate * (instance[i]/10 - currentWeight[i]);
+                double newWeight = currentWeight[i] + influence * learningRate * (instance[i] - currentWeight[i]);
+                currentWeight[i] = newWeight;
             }
 
             return currentWeight;
@@ -261,7 +298,7 @@ namespace SOMLibrary
         /// <param name="currentNode"></param>
         /// <param name="iteration"></param>
         /// <returns></returns>
-        public double Influence(Node winningNode, Node currentNode, int iteration)
+        protected double Influence(Node winningNode, Node currentNode, int iteration)
         {
             double distance = winningNode.GetGridDistance(currentNode);
             double radius = 2 * Math.Pow(NeighborhoodRadius(iteration), 2);

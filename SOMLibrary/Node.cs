@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SOMLibrary.Implementation.DistanceMeasure;
+using SOMLibrary.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,11 +14,17 @@ namespace SOMLibrary
 
         public Coordinate Coordinate { get; set; }
 
+        private IDistanceMeasure _distanceMeasure { get; set; }
+
+        public string Label { get; set; }
+
 
         public Node(double[] weights, int x, int y)
         {
             Weights = weights;
             Coordinate = new Coordinate(x, y);
+
+            _distanceMeasure = new EuclideanDistance();
         }
 
         /// <summary>
@@ -26,15 +34,8 @@ namespace SOMLibrary
         /// <returns>double - Euclidean distance</returns>
         public double GetDistance(double[] inputVectors)
         {
-            double sum = 0;
 
-            for(int i = 0; i < Weights.Length; i++)
-            {
-                sum += Math.Pow(inputVectors[i] - Weights[i], 2);
-            }
-
-            return Math.Sqrt(sum);
-
+            return _distanceMeasure.GetDistance(Weights, inputVectors);
         }
 
         public double GetGridDistance(Node node)
@@ -43,5 +44,6 @@ namespace SOMLibrary
             double y = Math.Pow(Coordinate.Y - node.Coordinate.Y, 2);
             return Math.Sqrt(x + y);
         }
+
     }
 }

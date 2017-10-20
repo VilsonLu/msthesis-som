@@ -16,22 +16,25 @@ namespace SOMClient.Controllers
 
         public SOMController()
         {
-            _model = new SOM(20, 20, 0.8, 10);
+            _model = new SOM(20, 20, 0.8, 50);
         }
 
         // GET: SOM
         public ActionResult Index()
         {
 
-            string filepath = @"c:\Users\vilso\documents\visual studio 2017\Projects\MSThesis\SOMClient\Dataset\Iris.csv";
+            string filepath = @"C:\Users\Vilson\Documents\Visual Studio 2017\Projects\MSThesis\SOMClient\Dataset\Animal_Dataset.csv";
             _reader = new CSVReader(filepath);
 
             _model.GetData(_reader);
-            _model.Dataset.SetKey("Id");
-            _model.Dataset.SetLabel("Species");
+            _model.Dataset.SetLabel("Class");
+            _model.Dataset.SetLabel("Name");
 
+            _model.FeatureLabel = "Class";
+         
             _model.InitializeMap();
-            _model.Train();
+             _model.Train();
+            _model.LabelNodes();
 
             return View(_model);
         }

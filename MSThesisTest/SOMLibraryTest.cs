@@ -154,11 +154,12 @@ namespace MSThesisTest
         public void Test_Method()
         {
             // Arrange
-            string filename = @"Dataset\Iris.csv";
+            string filename = @"C:\Users\Vilson\Documents\Visual Studio 2017\Projects\MSThesis\SOMClient\Dataset\Iris.csv";
             IReader reader = new CSVReader(filename);
             SOM som = new SOM(10,10, 0.5);
 
             som.GetData(reader);
+            som.FeatureLabel = "Species";
 
             Dataset dataset = som.Dataset;
             dataset.SetKey("Id");
@@ -166,6 +167,7 @@ namespace MSThesisTest
 
             // Act
             som.Train();
+            som.LabelNodes();
             bool test = true;
         }
     }

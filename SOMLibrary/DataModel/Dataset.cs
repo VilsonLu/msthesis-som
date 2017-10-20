@@ -29,6 +29,10 @@ namespace SOMLibrary.DataModel
             selectedFeature.IsLabel = true;
         }
 
+        /// <summary>
+        /// Set the feature to an ID
+        /// </summary>
+        /// <param name="feature"></param>
         public void SetKey(string feature)
         {
             var selectedFeature = Features.First(x => x.FeatureName == feature);
@@ -41,7 +45,12 @@ namespace SOMLibrary.DataModel
             selectedFeature.IsKey = true;
         }
 
-
+        /// <summary>
+        /// Get the specific instance in the dataset while ignoring the labels and keys
+        /// </summary>
+        /// <typeparam name="T">data type</typeparam>
+        /// <param name="i">index</param>
+        /// <returns></returns>
         public T[] GetInstance<T>(int i)
         {
             int instanceCounts = Instances.Length;
@@ -68,6 +77,20 @@ namespace SOMLibrary.DataModel
             return values.ToArray();
         }
 
+        /// <summary>
+        /// Get the label of an instance
+        /// </summary>
+        /// <param name="i">index</param>
+        /// <param name="feature">feature name to get the label</param>
+        /// <returns></returns>
+        public string GetInstanceLabel(int i, string feature)
+        {
+            // TODO: validate the feature first
+
+            int index = Features.Where(x => x.FeatureName == feature && x.IsLabel).Select(x => x.OrderNo).FirstOrDefault();
+
+            return Instances[i].Values[index].ToString();
+        }
 
         /// <summary>
         /// Get list of columns not to be used for training
@@ -78,6 +101,18 @@ namespace SOMLibrary.DataModel
         {
             var ignoreColumns = Features.Where(x => x.IsKey || x.IsLabel).Select(x => x.OrderNo);
             return ignoreColumns.ToList();
+        }
+
+        /// <summary>
+        /// Returns the number of instances
+        /// </summary>
+        /// <returns></returns>
+        public int Count
+        {
+            get
+            {
+                return Instances.Length;
+            } 
         }
     }
 }
