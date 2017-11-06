@@ -23,7 +23,7 @@ namespace SOMClient.Controllers
         public ActionResult Index()
         {
 
-            string filepath = @"C:\Users\Vilson\Documents\Visual Studio 2017\Projects\MSThesis\SOMClient\Dataset\Animal_Dataset.csv";
+            string filepath = Server.MapPath("~/Dataset/Animal_Dataset.csv");
             _reader = new CSVReader(filepath);
 
             _model.GetData(_reader);
