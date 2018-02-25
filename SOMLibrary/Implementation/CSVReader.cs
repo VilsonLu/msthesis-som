@@ -65,7 +65,7 @@ namespace SOMLibrary.Implementation
             List<Instance> instances = new List<Instance>();
             int fieldCount = csv.FieldCount;
 
-            int rowNumber = 1;
+            int rowNumber = 0;
 
 
             while (csv.ReadNextRecord())
@@ -83,6 +83,7 @@ namespace SOMLibrary.Implementation
                 };
 
                 instances.Add(instance);
+                rowNumber++;
             }
 
             return instances.ToArray();

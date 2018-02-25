@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SOMLibrary.DataModel;
 
 namespace SOMLibrary
 {
@@ -38,7 +39,7 @@ namespace SOMLibrary
             throw new NotImplementedException();
         }
 
-        protected override Node FindBMU(double[] instance)
+        protected override Node FindBestMatchingUnit(Instance instance)
         {
             throw new NotImplementedException();
         }
@@ -47,12 +48,31 @@ namespace SOMLibrary
 
         public void AddRegion(string label, Region region)
         {
-            throw new NotImplementedException();
+            if (!IsValidRegion(region))
+            {
+                throw new Exception("The regions to be added is not a valid region");
+            }
+
+            if (Regions.ContainsKey(label))
+            {
+                Regions[label] = region;
+            }
+
+            Regions.Add(label, region);
         }
 
-        public bool ValidateRegion(Region region)
+        public bool IsValidRegion(Region region)
         {
-            throw new NotImplementedException();
+            bool flag = true;
+
+            var regions = Regions.Values.ToList();
+
+            foreach (var item in regions)
+            {
+                flag = flag && !item.IsOverlappedRegion(region);
+            }
+
+            return flag;
         }
 
         #endregion

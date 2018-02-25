@@ -155,17 +155,17 @@ namespace MSThesisTest
         public void Region_IsOverlappingRegion_OverlappingRectangle_ReturnTrue()
         {
             // Arrange
-            Coordinate p1 = new Coordinate(1, 5);
-            Coordinate p2 = new Coordinate(4, 5);
-            Coordinate p3 = new Coordinate(1, 2);
-            Coordinate p4 = new Coordinate(4, 2);
-            Region region1 = new Region(p1, p2, p3, p4);
+            var p1 = new Coordinate(1, 5);
+            var p2 = new Coordinate(4, 5);
+            var p3 = new Coordinate(1, 2);
+            var p4 = new Coordinate(4, 2);
+            var region1 = new Region(p1, p2, p3, p4);
 
-            Coordinate r1 = new Coordinate(3, 7);
-            Coordinate r2 = new Coordinate(6, 7);
-            Coordinate r3 = new Coordinate(3, 4);
-            Coordinate r4 = new Coordinate(6, 4);
-            Region region2 = new Region(r1, r2, r3, r4);
+            var r1 = new Coordinate(3, 7);
+            var r2 = new Coordinate(6, 7);
+            var r3 = new Coordinate(3, 4);
+            var r4 = new Coordinate(6, 4);
+            var region2 = new Region(r1, r2, r3, r4);
 
             // Act
             bool result = region1.IsOverlappedRegion(region2);
@@ -180,17 +180,17 @@ namespace MSThesisTest
         public void Region_IsOverlappedRegion_NotOverlappingRectangle_ReturnFalse()
         {
             // Arrange
-            Coordinate p1 = new Coordinate(1, 5);
-            Coordinate p2 = new Coordinate(4, 5);
-            Coordinate p3 = new Coordinate(1, 2);
-            Coordinate p4 = new Coordinate(4, 2);
-            Region region1 = new Region(p1, p2, p3, p4);
+            var p1 = new Coordinate(1, 5);
+            var p2 = new Coordinate(4, 5);
+            var p3 = new Coordinate(1, 2);
+            var p4 = new Coordinate(4, 2);
+            var region1 = new Region(p1, p2, p3, p4);
 
-            Coordinate r1 = new Coordinate(7, 3);
-            Coordinate r2 = new Coordinate(9, 3);
-            Coordinate r3 = new Coordinate(7, 1);
-            Coordinate r4 = new Coordinate(9, 4);
-            Region region2 = new Region(r1, r2, r3, r4);
+            var r1 = new Coordinate(7, 3);
+            var r2 = new Coordinate(9, 3);
+            var r3 = new Coordinate(7, 1);
+            var r4 = new Coordinate(9, 4);
+            var region2 = new Region(r1, r2, r3, r4);
 
             // Act
             bool result = region1.IsOverlappedRegion(region2);
@@ -205,13 +205,13 @@ namespace MSThesisTest
         public void Region_IsWithinRegion_PointIsInRectangle_ReturnTrue()
         {
             // Arrange
-            Coordinate p1 = new Coordinate(1, 5);
-            Coordinate p2 = new Coordinate(4, 5);
-            Coordinate p3 = new Coordinate(1, 2);
-            Coordinate p4 = new Coordinate(4, 2);
-            Region region = new Region(p1, p2, p3, p4);
+            var p1 = new Coordinate(1, 5);
+            var p2 = new Coordinate(4, 5);
+            var p3 = new Coordinate(1, 2);
+            var p4 = new Coordinate(4, 2);
+            var region = new Region(p1, p2, p3, p4);
 
-            Coordinate point = new Coordinate(2, 3);
+            var point = new Coordinate(2, 3);
 
             // Act
             bool result = region.IsWithinRegion(point);
@@ -225,13 +225,13 @@ namespace MSThesisTest
         public void Region_IsWithinRegion_PointIsInBoundary_ReturnTrue()
         {
             // Arrange
-            Coordinate p1 = new Coordinate(1, 5);
-            Coordinate p2 = new Coordinate(4, 5);
-            Coordinate p3 = new Coordinate(1, 2);
-            Coordinate p4 = new Coordinate(4, 2);
-            Region region = new Region(p1, p2, p3, p4);
+            var p1 = new Coordinate(1, 5);
+            var p2 = new Coordinate(4, 5);
+            var p3 = new Coordinate(1, 2);
+            var p4 = new Coordinate(4, 2);
+            var region = new Region(p1, p2, p3, p4);
 
-            Coordinate point = new Coordinate(1, 4);
+            var point = new Coordinate(1, 4);
 
             // Act
             bool result = region.IsWithinRegion(point);
@@ -245,13 +245,13 @@ namespace MSThesisTest
         public void Region_IsWithinRegion_PointIsOutsideRegion_ReturnFalse()
         {
             // Arrange
-            Coordinate p1 = new Coordinate(1, 5);
-            Coordinate p2 = new Coordinate(4, 5);
-            Coordinate p3 = new Coordinate(1, 2);
-            Coordinate p4 = new Coordinate(4, 2);
-            Region region = new Region(p1, p2, p3, p4);
+            var p1 = new Coordinate(1, 5);
+            var p2 = new Coordinate(4, 5);
+            var p3 = new Coordinate(1, 2);
+            var p4 = new Coordinate(4, 2);
+            var region = new Region(p1, p2, p3, p4);
 
-            Coordinate point = new Coordinate(4, 1);
+            var point = new Coordinate(4, 1);
 
             // Act
             bool result = region.IsWithinRegion(point);
@@ -260,6 +260,43 @@ namespace MSThesisTest
             bool expectedResult = false;
             Assert.AreEqual(expectedResult, result);
         }
+
+        [TestMethod]
+        public void Region_Length_CalculateLength()
+        {
+            // Arrange
+            var p1 = new Coordinate(1, 5);
+            var p2 = new Coordinate(4, 5);
+            var p3 = new Coordinate(1, 2);
+            var p4 = new Coordinate(4, 2);
+            var region = new Region(p1, p2, p3, p4);
+
+            // Act
+            int result = region.Length;
+
+            // Assert
+            var expectedResult = 3;
+            Assert.AreEqual(expectedResult, result);
+        }
+
+        [TestMethod]
+        public void Region_Width_CalculateWidth()
+        {
+            // Arrange
+            var p1 = new Coordinate(1, 5);
+            var p2 = new Coordinate(4, 5);
+            var p3 = new Coordinate(1, 2);
+            var p4 = new Coordinate(4, 2);
+            var region = new Region(p1, p2, p3, p4);
+
+            // Act
+            int result = region.Width;
+
+            // Assert
+            var expectedResult = 3;
+            Assert.AreEqual(expectedResult, result);
+        }
+
 
 
         public void Test_Method()

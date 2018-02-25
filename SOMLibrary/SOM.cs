@@ -150,11 +150,11 @@ namespace SOMLibrary
             {
                 for (int d = 0; d < instanceCount; d++)
                 {
-                    // Get data from dataset
-                    var instance = base.Dataset.GetInstance<double>(d);
+                    // Get data from datase
+                    var instance = instances[d];
 
                     // Find the BMU (Best Matching Unit)
-                    Node winningNode = FindBMU(instance);
+                    Node winningNode = FindBestMatchingUnit(instance);
 
                     // Adjust the weights of the BMU and neighbor
                     UpdateNeighborhood(winningNode, instance, t);
@@ -183,10 +183,12 @@ namespace SOMLibrary
         }
 
         #region SOM Functions
-        protected virtual Node FindBMU(double[] instance)
+        protected virtual Node FindBestMatchingUnit(Instance rowInstance)
         {
             double bestDistance = double.MaxValue;
             Node bestNode = null;
+
+            var instance = base.Dataset.GetInstance<double>(rowInstance.OrderNo);
 
             for (int row = 0; row < Height; row++)
             {
@@ -207,8 +209,10 @@ namespace SOMLibrary
             return bestNode;
         }
 
-        protected void UpdateNeighborhood(Node winningNode, double[] instance, int iteration)
+        protected void UpdateNeighborhood(Node winningNode, Instance rowInstance, int iteration)
         {
+            var instance = base.Dataset.GetInstance<double>(rowInstance.OrderNo);
+
             for (int row = 0; row < Height; row++)
             {
                 for (int col = 0; col < Width; col++)

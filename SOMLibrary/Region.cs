@@ -13,6 +13,16 @@ namespace SOMLibrary
         public Coordinate BottomLeft { get; set; }
         public Coordinate BottomRight { get; set; }
 
+        public int Length
+        {
+            get { return TopLeft.Y - BottomLeft.Y; }
+        }
+
+        public int Width
+        {
+            get { return TopRight.X - TopLeft.X; }
+        }
+
         public Region(Coordinate topLeft, Coordinate topRight, Coordinate bottomLeft, Coordinate bottomRight)
         {
             this.BottomLeft = bottomLeft;
