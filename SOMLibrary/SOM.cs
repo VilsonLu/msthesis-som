@@ -99,10 +99,6 @@ namespace SOMLibrary
             TotalIteration = base.Dataset.Instances.Length * Epoch;
         }
 
-
-
-
-
         /// <summary>
         /// Initializes the SOM with random weights
         /// </summary>
@@ -180,16 +176,14 @@ namespace SOMLibrary
             {
                 for (int col = 0; col < Width; col++)
                 {
-
                     Node node = Map[row, col];
-
                     Map[row, col].Label = _labeller.GetLabel(node);
                 }
             }
         }
 
         #region SOM Functions
-        private Node FindBMU(double[] instance)
+        protected virtual Node FindBMU(double[] instance)
         {
             double bestDistance = double.MaxValue;
             Node bestNode = null;

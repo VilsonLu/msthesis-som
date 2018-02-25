@@ -150,13 +150,124 @@ namespace MSThesisTest
             Assert.AreEqual(x4, result[3]);
         }
 
+
         [TestMethod]
+        public void Region_IsOverlappingRegion_OverlappingRectangle_ReturnTrue()
+        {
+            // Arrange
+            Coordinate p1 = new Coordinate(1, 5);
+            Coordinate p2 = new Coordinate(4, 5);
+            Coordinate p3 = new Coordinate(1, 2);
+            Coordinate p4 = new Coordinate(4, 2);
+            Region region1 = new Region(p1, p2, p3, p4);
+
+            Coordinate r1 = new Coordinate(3, 7);
+            Coordinate r2 = new Coordinate(6, 7);
+            Coordinate r3 = new Coordinate(3, 4);
+            Coordinate r4 = new Coordinate(6, 4);
+            Region region2 = new Region(r1, r2, r3, r4);
+
+            // Act
+            bool result = region1.IsOverlappedRegion(region2);
+
+            // Assert
+            bool expectedResult = true;
+            Assert.AreEqual(expectedResult, result);
+
+        }
+
+        [TestMethod]
+        public void Region_IsOverlappedRegion_NotOverlappingRectangle_ReturnFalse()
+        {
+            // Arrange
+            Coordinate p1 = new Coordinate(1, 5);
+            Coordinate p2 = new Coordinate(4, 5);
+            Coordinate p3 = new Coordinate(1, 2);
+            Coordinate p4 = new Coordinate(4, 2);
+            Region region1 = new Region(p1, p2, p3, p4);
+
+            Coordinate r1 = new Coordinate(7, 3);
+            Coordinate r2 = new Coordinate(9, 3);
+            Coordinate r3 = new Coordinate(7, 1);
+            Coordinate r4 = new Coordinate(9, 4);
+            Region region2 = new Region(r1, r2, r3, r4);
+
+            // Act
+            bool result = region1.IsOverlappedRegion(region2);
+
+            // Assert
+            bool expectedResult = false;
+            Assert.AreEqual(expectedResult, result);
+
+        }
+
+        [TestMethod]
+        public void Region_IsWithinRegion_PointIsInRectangle_ReturnTrue()
+        {
+            // Arrange
+            Coordinate p1 = new Coordinate(1, 5);
+            Coordinate p2 = new Coordinate(4, 5);
+            Coordinate p3 = new Coordinate(1, 2);
+            Coordinate p4 = new Coordinate(4, 2);
+            Region region = new Region(p1, p2, p3, p4);
+
+            Coordinate point = new Coordinate(2, 3);
+
+            // Act
+            bool result = region.IsWithinRegion(point);
+
+            // Assert
+            bool expectedResult = true;
+            Assert.AreEqual(expectedResult, result);
+        }
+
+        [TestMethod]
+        public void Region_IsWithinRegion_PointIsInBoundary_ReturnTrue()
+        {
+            // Arrange
+            Coordinate p1 = new Coordinate(1, 5);
+            Coordinate p2 = new Coordinate(4, 5);
+            Coordinate p3 = new Coordinate(1, 2);
+            Coordinate p4 = new Coordinate(4, 2);
+            Region region = new Region(p1, p2, p3, p4);
+
+            Coordinate point = new Coordinate(1, 4);
+
+            // Act
+            bool result = region.IsWithinRegion(point);
+
+            // Assert
+            bool expectedResult = true;
+            Assert.AreEqual(expectedResult, result);
+        }
+
+        [TestMethod]
+        public void Region_IsWithinRegion_PointIsOutsideRegion_ReturnFalse()
+        {
+            // Arrange
+            Coordinate p1 = new Coordinate(1, 5);
+            Coordinate p2 = new Coordinate(4, 5);
+            Coordinate p3 = new Coordinate(1, 2);
+            Coordinate p4 = new Coordinate(4, 2);
+            Region region = new Region(p1, p2, p3, p4);
+
+            Coordinate point = new Coordinate(4, 1);
+
+            // Act
+            bool result = region.IsWithinRegion(point);
+
+            // Assert
+            bool expectedResult = false;
+            Assert.AreEqual(expectedResult, result);
+        }
+
+
         public void Test_Method()
         {
             // Arrange
             string filename = @"C:\Users\Vilson\Documents\Visual Studio 2017\Projects\MSThesis\SOMClient\Dataset\Iris.csv";
             IReader reader = new CSVReader(filename);
-            SOM som = new SOM(10,10, 0.5);
+            SOM som = new SOM(10, 10, 0.5);
 
             som.GetData(reader);
             som.FeatureLabel = "Species";
