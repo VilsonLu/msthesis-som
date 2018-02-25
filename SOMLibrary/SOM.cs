@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace SOMLibrary
 {
+    /// <summary>
+    /// Self-Organizing Map
+    /// </summary>
     public class SOM : Model
     {
 
@@ -45,10 +48,8 @@ namespace SOMLibrary
         private string _featureLabel;
         public string FeatureLabel
         {
-            set
-            {
-                _featureLabel = value;
-            }
+            get { return _featureLabel; }
+            set { _featureLabel = value; }
         }
 
         private int _k = 5;
@@ -166,12 +167,12 @@ namespace SOMLibrary
 
         public void LabelNodes()
         {
-            if (string.IsNullOrEmpty(_featureLabel))
+            if (string.IsNullOrEmpty(this.FeatureLabel))
             {
                 return;
             }
 
-            _labeller = new KNNLabeller(base.Dataset, K, _featureLabel);
+            _labeller = new KNNLabeller(base.Dataset, K, this.FeatureLabel);
             for (int row = 0; row < Height; row++)
             {
                 for (int col = 0; col < Width; col++)

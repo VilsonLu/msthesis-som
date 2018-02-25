@@ -7,7 +7,9 @@ using SOMLibrary.DataModel;
 
 namespace SOMLibrary
 {
-    // Structured SOM
+    /// <summary>
+    /// Structured SOM
+    /// </summary>
     public class SSOM : SOM
     {
 
@@ -27,21 +29,63 @@ namespace SOMLibrary
             Regions = new Dictionary<string, Region>();
         }
 
-        public SSOM(int x, int y) : base(x, y) { }
-
-        public SSOM(int x, int y, double learningRate) : base(x, y, learningRate) { }
-
-        public SSOM(int x, int y, double learningRate, int epoch) : base(x, y, learningRate, epoch) { }
-
-
-        public override void Train()
+        public SSOM(int x, int y) : base(x, y)
         {
-            throw new NotImplementedException();
+            Regions = new Dictionary<string, Region>();
         }
 
-        protected override Node FindBestMatchingUnit(Instance instance)
+        public SSOM(int x, int y, double learningRate) : base(x, y, learningRate)
         {
-            throw new NotImplementedException();
+            Regions = new Dictionary<string, Region>();
+        }
+
+        public SSOM(int x, int y, double learningRate, int epoch) : base(x, y, learningRate, epoch)
+        {
+            Regions = new Dictionary<string, Region>();
+        }
+
+
+        protected override Node FindBestMatchingUnit(Instance rowInstance)
+        {
+            double bestDistance = double.MaxValue;
+            Node bestNode = null;
+
+            var instance = base.Dataset.GetInstance<double>(rowInstance.OrderNo);
+            var label = base.Dataset.GetInstanceLabel(rowInstance.OrderNo, this.FeatureLabel);
+
+            int startRow = 0;
+            int startCol = 0;
+
+            int currentWidth = Width;
+            int currentHeight = Height;
+
+            // Check if the label has a region
+            Regions.TryGetValue(label, out Region region);
+            if (region != null)
+            {
+                startRow = region.TopLeft.X;
+                startCol = region.TopLeft.Y;
+                currentWidth = region.Height + startRow;
+                currentHeight = region.Width + startCol;
+            }
+
+            for (int row = startRow; row < currentHeight; row++)
+            {
+                for (int col = startCol; col < currentWidth; col++)
+                {
+                    Node currentNode = Map[row, col];
+                    double currentDistance = currentNode.GetDistance(instance);
+
+                    if (currentDistance < bestDistance)
+                    {
+                        bestDistance = currentDistance;
+                        bestNode = currentNode;
+                    }
+
+                }
+            }
+
+            return bestNode;
         }
 
         #region SSOM Helper Functions
@@ -52,6 +96,8 @@ namespace SOMLibrary
             {
                 throw new Exception("The regions to be added is not a valid region");
             }
+
+            // TODO: Add a validation to check if the region will be out of bound
 
             if (Regions.ContainsKey(label))
             {

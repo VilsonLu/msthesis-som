@@ -272,7 +272,7 @@ namespace MSThesisTest
             var region = new Region(p1, p2, p3, p4);
 
             // Act
-            int result = region.Length;
+            int result = region.Height;
 
             // Assert
             var expectedResult = 3;
