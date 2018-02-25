@@ -43,9 +43,9 @@ namespace SOMClient.Controllers
             _model.AddRegion("Mammals", mammalRegion);
 
             var i1 = new Coordinate(15, 15);
-            var i2 = new Coordinate(15, 19);
-            var i3 = new Coordinate(19, 15);
-            var i4 = new Coordinate(19, 19);
+            var i2 = new Coordinate(15, 20);
+            var i3 = new Coordinate(20, 15);
+            var i4 = new Coordinate(20, 20);
 
 
             var insectRegion = new Region(i1, i2, i3, i4);

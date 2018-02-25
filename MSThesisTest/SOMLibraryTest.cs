@@ -262,20 +262,21 @@ namespace MSThesisTest
         }
 
         [TestMethod]
-        public void Region_Length_CalculateLength()
+        public void Region_Height_CalculateHeight()
         {
             // Arrange
-            var p1 = new Coordinate(1, 5);
-            var p2 = new Coordinate(4, 5);
-            var p3 = new Coordinate(1, 2);
-            var p4 = new Coordinate(4, 2);
+            var p1 = new Coordinate(15, 15);
+            var p2 = new Coordinate(15, 20);
+            var p3 = new Coordinate(20, 15);
+            var p4 = new Coordinate(20, 20);
             var region = new Region(p1, p2, p3, p4);
+
 
             // Act
             int result = region.Height;
 
             // Assert
-            var expectedResult = 3;
+            var expectedResult = 5;
             Assert.AreEqual(expectedResult, result);
         }
 
@@ -283,17 +284,17 @@ namespace MSThesisTest
         public void Region_Width_CalculateWidth()
         {
             // Arrange
-            var p1 = new Coordinate(1, 5);
-            var p2 = new Coordinate(4, 5);
-            var p3 = new Coordinate(1, 2);
-            var p4 = new Coordinate(4, 2);
+            var p1 = new Coordinate(15, 15);
+            var p2 = new Coordinate(15, 20);
+            var p3 = new Coordinate(20, 15);
+            var p4 = new Coordinate(20, 20);
             var region = new Region(p1, p2, p3, p4);
 
             // Act
             int result = region.Width;
 
             // Assert
-            var expectedResult = 3;
+            var expectedResult = 5;
             Assert.AreEqual(expectedResult, result);
         }
 
