@@ -10,7 +10,7 @@ Technology:
 1. C# 
 2. ASP.NET MVC
 
-But, I am still welcome to use any other tools.
+But, I am still open to use any other tools.
 
 Progress:
 - Implemented SOM
