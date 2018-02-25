@@ -82,7 +82,6 @@ namespace WfdbCsharpWrapper.Test
         public void GetSignalsCountInvalidHeaderTest()
         {
             Signal.GetSignalsCount("data/invalid");
-            Assert.Throws()
         }
 
         [Test]
