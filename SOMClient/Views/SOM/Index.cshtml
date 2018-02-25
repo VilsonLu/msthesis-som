@@ -1,0 +1,111 @@
+﻿@model SOMLibrary.SOM
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<html>
+<head>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/d3/d3.min.js"></script>
+    <script src="~/Scripts/SOMScript.js"></script>
+</head>
+<body>
+    <h1>SOM Visualization</h1>
+
+    <div id="chart">
+
+    </div>
+
+
+    <script>
+            initMap(@Html.Raw(Json.Encode(Model.Map)));
+
+            var svg = d3.select('#chart').append('svg').attr('width', 600).attr('height', 600),
+                margin = 30,
+                width = n * sen,
+                height = n * sen
+                ;
+
+            var labelColor = {
+                violet: [120, 78, 129],
+                indigo: [64, 67, 153],
+                blue: [72, 139, 194],
+                green: [107, 178, 140],
+                olive: [159, 190, 87],
+                yellow: [210, 179, 63],
+                orange: [231, 126, 49],
+                red: [218, 33, 32],
+                cyan: [81,205,213]
+            }
+
+
+            var tooltip = d3.select("body")
+                .append("div")
+                .style("position", "absolute")
+                .style("z-index", "10")
+                .style("visibility", "hidden")
+
+            var rgb_nodes = svg.append('g').attr('class', 'nodes all');
+
+
+            function rgb(array) {
+                return 'rgb(' + array.map(function (r) { return Math.round(r); }).join(',') + ')';
+            }
+
+            function setColor(color) {
+                var color = labelColor[color];
+                return 'rgb(${color})'
+            }
+
+            rgb_nodes
+                .selectAll('rect')
+                .data(nodes)
+                .enter().append('rect')
+                .attr('x', function (node) { return node.Coordinate.X * sen; })
+                .attr('y', function (node) { return node.Coordinate.Y * sen; })
+                .attr('width', sen)
+                .attr('height', sen)
+                .attr('text', function (node) { return node.Label })
+                .style('fill', function (node) {
+
+                    if (node.Label == 'Amphibians') {
+                        return rgb(labelColor['green'])
+                    } else if (node.Label == 'Birds') {
+                        return rgb(labelColor['cyan'])
+                    } else if (node.Label == 'Cnidaria') {
+                        return rgb(labelColor['blue'])
+                    } else if (node.Label == 'Crustacean') {
+                        return rgb(labelColor['indigo'])
+                    } else if (node.Label == 'Fish') {
+                        return rgb(labelColor['violet'])
+                    } else if (node.Label == 'Insects') {
+                        return rgb(labelColor['orange'])
+                    } else if (node.Label == 'Mammals') {
+                        return rgb(labelColor['red'])
+                    } else if (node.Label == 'Mollusca') {
+                        return rgb(labelColor['olive'])
+                    } else if (node.Label == 'Reptiles') {
+                        return rgb(labelColor['yellow'])
+                    }
+
+                   
+
+                })
+                .on('mouseover', function (node) {
+                    mover();
+                    return tooltip.style("visibility", "visible")
+                        .text(node.Label);
+                })
+                .on("mousemove", function () { return tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");})
+                .on('mouseout', function (node) {
+                    mout();
+                    return tooltip.style("visibility", "hidden");
+                })
+    </script>
+
+</body>
+
+</html>
