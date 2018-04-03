@@ -13,6 +13,8 @@ namespace SOMLibrary
         public Coordinate BottomLeft { get; set; }
         public Coordinate BottomRight { get; set; }
 
+        public string Label { get; set; }
+
    
         public int Height
         {
@@ -24,7 +26,7 @@ namespace SOMLibrary
             get { return Math.Abs(TopRight.Y - TopLeft.Y); }
         }
 
-        public Region(Coordinate topLeft, Coordinate topRight, Coordinate bottomLeft, Coordinate bottomRight)
+        public Region(Coordinate topLeft, Coordinate topRight, Coordinate bottomLeft, Coordinate bottomRight, string label)
         {
             this.BottomLeft = bottomLeft;
             this.BottomRight = bottomRight;

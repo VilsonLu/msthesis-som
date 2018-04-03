@@ -159,13 +159,13 @@ namespace MSThesisTest
             var p2 = new Coordinate(4, 5);
             var p3 = new Coordinate(1, 2);
             var p4 = new Coordinate(4, 2);
-            var region1 = new Region(p1, p2, p3, p4);
+            var region1 = new Region(p1, p2, p3, p4, "");
 
             var r1 = new Coordinate(3, 7);
             var r2 = new Coordinate(6, 7);
             var r3 = new Coordinate(3, 4);
             var r4 = new Coordinate(6, 4);
-            var region2 = new Region(r1, r2, r3, r4);
+            var region2 = new Region(r1, r2, r3, r4, "");
 
             // Act
             bool result = region1.IsOverlappedRegion(region2);
@@ -184,13 +184,13 @@ namespace MSThesisTest
             var p2 = new Coordinate(4, 5);
             var p3 = new Coordinate(1, 2);
             var p4 = new Coordinate(4, 2);
-            var region1 = new Region(p1, p2, p3, p4);
+            var region1 = new Region(p1, p2, p3, p4, "");
 
             var r1 = new Coordinate(7, 3);
             var r2 = new Coordinate(9, 3);
             var r3 = new Coordinate(7, 1);
             var r4 = new Coordinate(9, 4);
-            var region2 = new Region(r1, r2, r3, r4);
+            var region2 = new Region(r1, r2, r3, r4, "");
 
             // Act
             bool result = region1.IsOverlappedRegion(region2);
@@ -209,7 +209,7 @@ namespace MSThesisTest
             var p2 = new Coordinate(4, 5);
             var p3 = new Coordinate(1, 2);
             var p4 = new Coordinate(4, 2);
-            var region = new Region(p1, p2, p3, p4);
+            var region = new Region(p1, p2, p3, p4, "");
 
             var point = new Coordinate(2, 3);
 
@@ -229,7 +229,7 @@ namespace MSThesisTest
             var p2 = new Coordinate(4, 5);
             var p3 = new Coordinate(1, 2);
             var p4 = new Coordinate(4, 2);
-            var region = new Region(p1, p2, p3, p4);
+            var region = new Region(p1, p2, p3, p4, "");
 
             var point = new Coordinate(1, 4);
 
@@ -249,7 +249,7 @@ namespace MSThesisTest
             var p2 = new Coordinate(4, 5);
             var p3 = new Coordinate(1, 2);
             var p4 = new Coordinate(4, 2);
-            var region = new Region(p1, p2, p3, p4);
+            var region = new Region(p1, p2, p3, p4, "");
 
             var point = new Coordinate(4, 1);
 
@@ -269,7 +269,7 @@ namespace MSThesisTest
             var p2 = new Coordinate(15, 20);
             var p3 = new Coordinate(20, 15);
             var p4 = new Coordinate(20, 20);
-            var region = new Region(p1, p2, p3, p4);
+            var region = new Region(p1, p2, p3, p4, "");
 
 
             // Act
@@ -288,7 +288,7 @@ namespace MSThesisTest
             var p2 = new Coordinate(15, 20);
             var p3 = new Coordinate(20, 15);
             var p4 = new Coordinate(20, 20);
-            var region = new Region(p1, p2, p3, p4);
+            var region = new Region(p1, p2, p3, p4, "");
 
             // Act
             int result = region.Width;

@@ -25,9 +25,20 @@ namespace SOMLibrary
 
         public int Height { get; set; }
 
-        private ILabel _labeller;
+        public int Epoch { get; set; }
+
+        public int TotalIteration { get; set; }
+
+        public string FeatureLabel { get; set; }
+
+        public int K { get; set; } = 5;
 
 
+        
+
+        #endregion
+
+        #region Calculated
 
         /// <summary>
         /// Map Radius (sigma)
@@ -37,29 +48,13 @@ namespace SOMLibrary
         {
             get
             {
-                return Math.Max(Width, Height) / 2;
+                return Math.Max(Width, Height) / 2.0;
             }
         }
 
-        public int Epoch { get; set; }
-
-        public int TotalIteration { get; set; }
-
-        private string _featureLabel;
-        public string FeatureLabel
-        {
-            get { return _featureLabel; }
-            set { _featureLabel = value; }
-        }
-
-        private int _k = 5;
-        public int K
-        {
-            get { return _k; }
-            set { _k = value; }
-        }
-
         #endregion
+
+        private ILabel _labeller;
 
         #region Constructor
 
@@ -165,6 +160,9 @@ namespace SOMLibrary
             }
         }
 
+        /// <summary>
+        /// Give label to each node in the map
+        /// </summary>
         public void LabelNodes()
         {
             if (string.IsNullOrEmpty(this.FeatureLabel))
@@ -184,7 +182,7 @@ namespace SOMLibrary
         }
 
         #region SOM Functions
-        protected virtual Node FindBestMatchingUnit(Instance rowInstance)
+        public virtual Node FindBestMatchingUnit(Instance rowInstance)
         {
             double bestDistance = double.MaxValue;
             Node bestNode = null;

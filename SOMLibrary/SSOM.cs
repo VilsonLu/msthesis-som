@@ -15,7 +15,7 @@ namespace SOMLibrary
 
 
         #region Properties
-        public Dictionary<string, Region> Regions { get; set; }
+        public List<Region> Regions { get; set; }
 
         #endregion
 
@@ -26,22 +26,22 @@ namespace SOMLibrary
             ConstantLearningRate = 0;
             Epoch = 1;
             Map = new Node[Width, Height];
-            Regions = new Dictionary<string, Region>();
+            Regions = new List<Region>();
         }
 
         public SSOM(int x, int y) : base(x, y)
         {
-            Regions = new Dictionary<string, Region>();
+            Regions = new List<Region>();
         }
 
         public SSOM(int x, int y, double learningRate) : base(x, y, learningRate)
         {
-            Regions = new Dictionary<string, Region>();
+            Regions = new List<Region>();
         }
 
         public SSOM(int x, int y, double learningRate, int epoch) : base(x, y, learningRate, epoch)
         {
-            Regions = new Dictionary<string, Region>();
+            Regions = new List<Region>();
         }
 
 
@@ -60,7 +60,7 @@ namespace SOMLibrary
             int currentHeight = Height;
 
             // Check if the label has a region
-            Regions.TryGetValue(label, out Region region);
+            var region = Regions.FirstOrDefault(x => x.Label == label);
             if (region != null)
             {
                 startRow = region.TopLeft.X;
@@ -98,20 +98,21 @@ namespace SOMLibrary
             }
 
             // TODO: Add a validation to check if the region will be out of bound
-
-            if (Regions.ContainsKey(label))
+            
+            if (Regions.Any(x => x.Label == label))
             {
-                Regions[label] = region;
+                var index = Regions.FindIndex(x => x.Label == label);
+                Regions[index] = region;
             }
 
-            Regions.Add(label, region);
+            Regions.Add(region);
         }
 
         public bool IsValidRegion(Region region)
         {
             bool flag = true;
 
-            var regions = Regions.Values.ToList();
+            var regions = Regions.ToList();
 
             foreach (var item in regions)
             {

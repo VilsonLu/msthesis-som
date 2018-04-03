@@ -12,7 +12,7 @@ namespace SOMLibrary.Implementation
 {
     public class CSVReader : IReader
     {
-        private string _filePath;
+        private readonly string _filePath;
 
         public CSVReader(string filepath)
         {
@@ -21,8 +21,8 @@ namespace SOMLibrary.Implementation
 
         public Dataset Read()
         {
-            Dataset dataset = new Dataset();
-            using (CsvReader csv = new CsvReader(new StreamReader(_filePath), true))
+            var dataset = new Dataset();
+            using (var csv = new CsvReader(new StreamReader(_filePath), true))
             {
                 dataset.Features = GetHeaders(csv.GetFieldHeaders());
                 dataset.Instances = GetInstances(csv);
@@ -39,7 +39,7 @@ namespace SOMLibrary.Implementation
         private Feature[] GetHeaders(string[] fieldHeaders)
         {
             var headers = new Feature[fieldHeaders.Length];
-            for (int i = 0; i < fieldHeaders.Length; i++)
+            for (var i = 0; i < fieldHeaders.Length; i++)
             {
                 var feature = new Feature()
                 {
