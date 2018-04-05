@@ -45,7 +45,7 @@ namespace SOMLibrary
         }
 
 
-        protected override Node FindBestMatchingUnit(Instance rowInstance)
+        public override Node FindBestMatchingUnit(Instance rowInstance)
         {
             double bestDistance = double.MaxValue;
             Node bestNode = null;
