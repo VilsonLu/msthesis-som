@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ML.TrajectoryAnalysis.Implementation;
+﻿using ML.TrajectoryAnalysis.Implementation;
 using SOMLibrary;
 using SOMLibrary.DataModel;
 using SOMLibrary.Interface;
+using System.Collections.Generic;
 
 namespace ML.TrajectoryAnalysis
 {

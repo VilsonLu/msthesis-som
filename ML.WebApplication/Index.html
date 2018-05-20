@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>SOM Visualization</title>
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="Content/Site.css" rel="stylesheet" />
+</head>
+<body ng-app="mlApp">
+    <div class="jumbotron text-center">
+        <h1>My First Bootstrap Page</h1>
+        <p>Resize this responsive page to see the effect!</p>
+    </div>
+    <div class="container" ng-controller="configController">
+        <div class="row">
+            <div class="configPanel col-md-4">
+                <h3>Configuration Panel</h3>
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-12" for="epoch">Epoch:</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control form-control-sm" id="epoch" min="0" ng-model="Configuration.Epoch">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-12" for="learningrate">Learning Rate:</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control form-control-sm" id="learningrate" step="0.1" max="1" min="0" ng-model="Configuration.LearningRate">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-12" for="somX">SOM Size X:</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control form-control-sm" id="somX" min="0" ng-model="Configuration.Width">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-12" for="somX">SOM Size Y:</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control form-control-sm" id="somY" min="0" ng-model="Configuration.Height">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-12" for="dataset">Dataset:</label>
+                        <div class="col-sm-10">
+                            <input type="file" class="form-control form-control-sm" id="dataset" min="0" ng-model="Configuration.FilePath">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-default" ng-click="TrainModel()">Submit</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="visualizationPanel col-md-8">
+                <h2>SOM Visualization</h2>
+                
+            </div>
+        </div>
+
+    </div>
+
+    <script src="Scripts/jquery-3.0.0.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+    <script src="Scripts/angular.min.js"></script>
+    <script src="Scripts/d3/d3.js"></script>
+    <script src="Scripts/main.js"></script>
+</body>
+</html>
