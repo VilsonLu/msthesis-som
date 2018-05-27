@@ -145,6 +145,7 @@
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\d3\d3.js" />
     <Content Include="Scripts\d3\d3.min.js" />
+    <Content Include="Scripts\utility.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

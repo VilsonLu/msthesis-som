@@ -106,9 +106,9 @@ namespace SOMLibrary
             int weightCount = featureCounts - numOfIgnoreColumns;
             Random rand = new Random();
 
-            for (int row = 0; row < Height; row++)
+            for (int row = 0; row < Width; row++)
             {
-                for (int col = 0; col < Width; col++)
+                for (int col = 0; col < Height; col++)
                 {
                     var vectors = new double[weightCount];
                     for (int count = 0; count < weightCount; count++)
@@ -171,9 +171,9 @@ namespace SOMLibrary
             }
 
             _labeller = new KNNLabeller(base.Dataset, K, this.FeatureLabel);
-            for (int row = 0; row < Height; row++)
+            for (int row = 0; row < Width; row++)
             {
-                for (int col = 0; col < Width; col++)
+                for (int col = 0; col < Height; col++)
                 {
                     Node node = Map[row, col];
                     Map[row, col].Label = _labeller.GetLabel(node);
@@ -189,9 +189,9 @@ namespace SOMLibrary
 
             var instance = base.Dataset.GetInstance<double>(rowInstance.OrderNo);
 
-            for (int row = 0; row < Height; row++)
+            for (int row = 0; row < Width; row++)
             {
-                for (int col = 0; col < Width; col++)
+                for (int col = 0; col < Height; col++)
                 {
                     Node currentNode = Map[row, col];
                     double currentDistance = currentNode.GetDistance(instance);
@@ -212,9 +212,9 @@ namespace SOMLibrary
         {
             var instance = base.Dataset.GetInstance<double>(rowInstance.OrderNo);
 
-            for (int row = 0; row < Height; row++)
+            for (int row = 0; row < Width; row++)
             {
-                for (int col = 0; col < Width; col++)
+                for (int col = 0; col < Height; col++)
                 {
                     var currentNode = Map[row, col];
                     var distanceToWinningNode = Math.Pow(winningNode.GetGridDistance(currentNode), 2);

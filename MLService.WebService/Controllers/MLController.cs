@@ -15,10 +15,15 @@ namespace MLService.WebService.Controllers
     {
 
         [HttpPost]
-        public TrainSOMResponse GetTrainSOM(TrainSOMRequest request)
+        public HttpResponseMessage GetTrainSOM(TrainSOMRequest request)
         {
-           SOM model = new SOM(request.Width, request.Height, request.LearningRate, request.Epoch);
-           IReader reader = new CSVReader(System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Iris.csv"));
+            
+            SOM model = new SOM(request.Width, request.Height, request.LearningRate, request.Epoch);
+
+            request.Labels = new List<string>(){"Id", "Species"};
+            request.FeatureLabel = "Species";
+
+            IReader reader = new CSVReader(System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Iris.csv"));
 
            model.GetData(reader);
 
@@ -37,13 +42,16 @@ namespace MLService.WebService.Controllers
                 Model = model
             };
 
-            return response;
+            var message = Request.CreateResponse(HttpStatusCode.Accepted, response);
+
+            return message;
 
         }
 
         [HttpGet]
         public TrainSSOMResponse GetTrainSSOM(TrainSSOMRequest request)
         {
+            
             SSOM model = new SSOM(request.Width, request.Height, request.LearningRate, request.Epoch);
             IReader reader = new CSVReader(System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Iris.csv"));
 
@@ -63,6 +71,8 @@ namespace MLService.WebService.Controllers
             {
                 Model = model
             };
+
+
 
             return response;
 

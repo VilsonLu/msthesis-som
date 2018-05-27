@@ -59,9 +59,10 @@
                 </form>
 
             </div>
-            <div class="visualizationPanel col-md-8">
+            <div class="visualizationPanel col-md-8" ng-controller="visualizationController">
                 <h2>SOM Visualization</h2>
-                
+                <div id="chart"></div>
+
             </div>
         </div>
 
@@ -71,6 +72,7 @@
     <script src="Scripts/bootstrap.min.js"></script>
     <script src="Scripts/angular.min.js"></script>
     <script src="Scripts/d3/d3.js"></script>
+    <script src="Scripts/utility.js"></script>
     <script src="Scripts/main.js"></script>
 </body>
 </html>
