@@ -53,6 +53,10 @@ function flatten(arr) {
     }, []);
 }
 
+function readCsvLine(line) {
+    return line.split(",");
+}
+
 var tooltip = d3.select("body")
     .append("div")
     .style("position", "absolute")

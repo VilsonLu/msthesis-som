@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using MLService.DataModels;
+using MLService.WebService.Interface;
 using SOMLibrary;
 using SOMLibrary.Implementation;
 using SOMLibrary.Interface;
@@ -14,18 +15,31 @@ namespace MLService.WebService.Controllers
     public class MLController : ApiController
     {
 
+        private IValidate<TrainSOMRequest> _somValidate;
+
+        public MLController()
+        {
+            _somValidate = new SOMRequestValidator();
+        }
+
         [HttpPost]
         public HttpResponseMessage GetTrainSOM(TrainSOMRequest request)
         {
-            
+
+            if (_somValidate.Validate(request))
+            {
+                var error = Request.CreateResponse(HttpStatusCode.BadRequest, "Missing requests");
+                return error;
+            }
+
             SOM model = new SOM(request.Width, request.Height, request.LearningRate, request.Epoch);
 
-            request.Labels = new List<string>(){"Id", "Species"};
-            request.FeatureLabel = "Species";
+            request.Labels = request.Labels;
+            request.FeatureLabel = request.FeatureLabel;
 
-            IReader reader = new CSVReader(System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Iris.csv"));
+            IReader reader = new CSVReader(System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Animal_Dataset.csv"));
 
-           model.GetData(reader);
+            model.GetData(reader);
 
             foreach (var item in request.Labels)
             {

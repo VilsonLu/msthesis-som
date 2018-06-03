@@ -8,7 +8,9 @@ app.controller("configController",
             LearningRate: 0.5,
             Width: 0,
             Height: 0,
-            FilePath: ""
+            FilePath: "",
+            Labels: "",
+            FeatureLabel: ""
         };
 
         $scope.Map = {};
@@ -21,6 +23,8 @@ app.controller("configController",
                 LearningRate: data.LearningRate,
                 Width: data.Width,
                 Height: data.Height,
+                Labels: readCsvLine(data.Labels),
+                FeatureLabel: data.FeatureLabel,
                 FilePath: ""
             };
 
