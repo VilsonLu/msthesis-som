@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using MLService.DataModels;
 using MLService.WebService.Interface;
+using Newtonsoft.Json.Linq;
 using SOMLibrary;
 using SOMLibrary.Implementation;
 using SOMLibrary.Interface;
@@ -15,50 +18,76 @@ namespace MLService.WebService.Controllers
     public class MLController : ApiController
     {
 
-        private IValidate<TrainSOMRequest> _somValidate;
+        private IValidate<TrainSOMRequest> _validator;
 
         public MLController()
         {
-            _somValidate = new SOMRequestValidator();
+            _validator = new SOMRequestValidator();
         }
 
         [HttpPost]
-        public HttpResponseMessage GetTrainSOM(TrainSOMRequest request)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetTrainSOM()
         {
 
-            if (_somValidate.Validate(request))
+            if (!Request.Content.IsMimeMultipartContent())
             {
-                var error = Request.CreateResponse(HttpStatusCode.BadRequest, "Missing requests");
-                return error;
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
             }
 
-            SOM model = new SOM(request.Width, request.Height, request.LearningRate, request.Epoch);
+            var root = HttpContext.Current.Server.MapPath("~/App_Data/Uploadfiles");
+            Directory.CreateDirectory(root);
+            var provider = new MultipartFormDataStreamProvider(root);
+            var result = await Request.Content.ReadAsMultipartAsync(provider);
 
-            request.Labels = request.Labels;
-            request.FeatureLabel = request.FeatureLabel;
+            var jsonModel = result.FormData["model"];
+            if (jsonModel == null)
+            {
+                throw new HttpResponseException(HttpStatusCode.BadRequest);
+            }
 
-            IReader reader = new CSVReader(System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Animal_Dataset.csv"));
+            JObject parsedModel = JObject.Parse(jsonModel);
+
+            var epoch = (int) parsedModel["Epoch"];
+            var learningRate = (double) parsedModel["LearningRate"];
+            var height = (int)parsedModel["Height"];
+            var width = (int)parsedModel["Width"];
+
+
+            var csvFile = result.FileData[0];
+
+            SOM model = new SOM(width, height, learningRate, epoch);
+
+            var featureLabel = (string) parsedModel["FeatureLabel"];
+            var labels = ((string) parsedModel["Labels"]).Split(',').ToList();
+
+ 
+            IReader reader = new CSVReader(csvFile.LocalFileName);
 
             model.GetData(reader);
 
-            foreach (var item in request.Labels)
+            foreach (var item in labels)
             {
                 model.Dataset.SetLabel(item);
             }
 
-            model.FeatureLabel = request.FeatureLabel;
+            model.FeatureLabel = featureLabel;
             model.InitializeMap();
             model.Train();
             model.LabelNodes();
+
+            FileInfo fileInfo = new FileInfo(csvFile.LocalFileName);
+            fileInfo.Delete();
 
             TrainSOMResponse response = new TrainSOMResponse()
             {
                 Model = model
             };
 
-            var message = Request.CreateResponse(HttpStatusCode.Accepted, response);
+            var message = Request.CreateResponse(HttpStatusCode.OK, response);
 
             return message;
+
+            //return Request.CreateResponse(HttpStatusCode.OK, "success!");
 
         }
 
@@ -86,10 +115,8 @@ namespace MLService.WebService.Controllers
                 Model = model
             };
 
-
-
             return response;
-
         }
+
     }
 }
