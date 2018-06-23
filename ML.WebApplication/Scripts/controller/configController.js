@@ -1,7 +1,6 @@
 ﻿app.controller("configController",
     function ($scope, $http) {
 
-
         $scope.Configuration = {
             Epoch: 3,
             LearningRate: 0.5,
@@ -16,6 +15,7 @@
 
         $scope.Map = {};
 
+        $scope.ShowLoader = true;
 
         $scope.$on("selectedFile", function (event, args) {
             $scope.$apply(function () {
@@ -28,6 +28,8 @@
 
             var data = $scope.Configuration;
 
+            $scope.$broadcast("onShowLoader", { message: true });
+       
 
             $http({
                 method: "POST",

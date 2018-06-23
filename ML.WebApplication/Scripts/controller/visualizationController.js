@@ -2,7 +2,7 @@
     function ($scope) {
 
         $scope.Data = {};
-
+        $scope.ShowLoader = false;
         var nodes = [];
         var n = 20;
         var sen = 20;
@@ -64,10 +64,16 @@
         $scope.$on("onTrainedModel",
             function (event, args) {
                 $scope.Data = args.message;
+                $scope.ShowLoader = false;
                 visualizeSOM();
                 console.log("Data in second controller");
             });
 
+        $scope.$on("onShowLoader",
+            function (event, args) {
+                d3.select("svg").remove();
+                $scope.ShowLoader = args.message;
+            });
 
 
     });

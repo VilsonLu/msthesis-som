@@ -87,8 +87,6 @@ namespace MLService.WebService.Controllers
 
             return message;
 
-            //return Request.CreateResponse(HttpStatusCode.OK, "success!");
-
         }
 
         [HttpGet]
