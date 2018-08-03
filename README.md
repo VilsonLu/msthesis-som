@@ -9,6 +9,9 @@ So, this is where I keep my proof-of-concepts, implementations and etc. for my t
 Technology:
 1. C# 
 2. ASP.NET MVC
+3. AngularJS
+4. D3.js
+5. Possibly (Node.Js)
 
 But, I am still open to use any other tools.
 
