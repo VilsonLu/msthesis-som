@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ML.Common;
 using SOMLibrary;
 using SOMLibrary.Implementation.Clusterer;
 using SOMLibrary.Interface;
@@ -17,7 +18,7 @@ namespace Sandbox
 
             string filepath = @"C:\Users\Vilson\Documents\Github\MSThesis\Sandbox\Dataset\Iris.csv";
 
-            SOM _model = new SOM(10, 10, 0.3, 40);
+            SOM _model = new SOM(10, 20, 0.3, 40);
             IReader _reader = new CSVReader(filepath);
             IClusterer _kmeans = new KMeansClustering();
 
@@ -31,7 +32,15 @@ namespace Sandbox
             _model.Train();
             // _model.LabelNodes();
 
-            _kmeans.Cluster(GetFlattenedMap(_model), 3);
+            var flattenedMap = NodeHelper.FlattenMap(_model.Map);
+            var clusteredNodes = _kmeans.Cluster(flattenedMap, 3);
+
+            foreach (var node in clusteredNodes)
+            {
+                Console.WriteLine("X: {0} Y: {1} Cluster: {2}", node.Coordinate.X, node.Coordinate.Y, node.ClusterGroup);
+            }
+
+            Console.ReadLine();
         }
 
         private static List<Node> GetFlattenedMap(SOM mSom)

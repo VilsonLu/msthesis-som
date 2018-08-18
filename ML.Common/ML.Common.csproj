@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{746ECE1E-AA39-4FB8-94BB-CCFEEF61A00E}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>Sandbox</RootNamespace>
-    <AssemblyName>Sandbox</AssemblyName>
+    <ProjectGuid>{F53F705F-EB2C-4D46-935E-53269537D8D4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ML.Common</RootNamespace>
+    <AssemblyName>ML.Common</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -42,27 +40,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="NodeHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="Dataset\Iris.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ML.Common\ML.Common.csproj">
-      <Project>{f53f705f-eb2c-4d46-935e-53269537d8d4}</Project>
-      <Name>ML.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ML.TrajectoryAnalysis\ML.TrajectoryAnalysis.csproj">
-      <Project>{7a80fe4e-8697-4bf3-bdc9-5a5333c0d372}</Project>
-      <Name>ML.TrajectoryAnalysis</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ML.WebApplication\ML.WebApplication.csproj">
-      <Project>{ef8e60fa-bf27-4e23-95e1-645530e0e648}</Project>
-      <Name>ML.WebApplication</Name>
+    <ProjectReference Include="..\MLService.DataModels\MLService.DataModels.csproj">
+      <Project>{1d877faf-11f0-4943-ae62-5004d151d956}</Project>
+      <Name>MLService.DataModels</Name>
     </ProjectReference>
     <ProjectReference Include="..\SOMLibrary\SOMLibrary.csproj">
       <Project>{9212ce68-da13-4755-a61f-caf25e8b83e9}</Project>

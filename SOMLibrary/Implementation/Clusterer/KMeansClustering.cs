@@ -13,6 +13,8 @@ namespace SOMLibrary.Implementation.Clusterer
         private readonly IRandom rand;
         private readonly IDistanceMeasure distanceMeasure;
 
+        private List<int> usedNumber;
+
         public KMeansClustering()
         {
             rand = new RandomNumberGenerator();
@@ -94,6 +96,7 @@ namespace SOMLibrary.Implementation.Clusterer
         private List<Node> GetCentroids(List<Node> nodes, int k)
         {
             var centroids = new List<Node>();
+            usedNumber = new List<int>();
 
             for (int i = 0; i < k; i++)
             {    
@@ -124,15 +127,26 @@ namespace SOMLibrary.Implementation.Clusterer
             return minNode;
         }
 
+
+
         private Node GetRandomNodes(IList<Node> nodes)
         {
             var randomNumber = rand.GetRandomInteger(0, nodes.Count);
+
+            while (usedNumber.Contains(randomNumber))
+            {
+                randomNumber = rand.GetRandomInteger(0, nodes.Count);
+            }
+            
+
             var randomNode = nodes[randomNumber];
 
             var node = new Node(randomNode.Weights, randomNode.Coordinate.X, randomNode.Coordinate.Y)
             {
                 ClusterGroup = randomNumber
             };
+
+            usedNumber.Add(randomNumber);
 
             return node;
         }

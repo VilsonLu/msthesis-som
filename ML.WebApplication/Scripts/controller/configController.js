@@ -8,7 +8,8 @@
             Height: 0,
             FilePath: "",
             Labels: "",
-            FeatureLabel: ""
+            FeatureLabel: "",
+            KMeans: 2
         };
 
         $scope.Files = [];

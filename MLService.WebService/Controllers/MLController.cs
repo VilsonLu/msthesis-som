@@ -6,11 +6,13 @@ using System.Net;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
+using ML.Common;
 using MLService.DataModels;
 using MLService.WebService.Interface;
 using Newtonsoft.Json.Linq;
 using SOMLibrary;
 using SOMLibrary.Implementation;
+using SOMLibrary.Implementation.Clusterer;
 using SOMLibrary.Interface;
 
 namespace MLService.WebService.Controllers
@@ -51,6 +53,7 @@ namespace MLService.WebService.Controllers
             var learningRate = (double) parsedModel["LearningRate"];
             var height = (int)parsedModel["Height"];
             var width = (int)parsedModel["Width"];
+            var kmeans = (int) parsedModel["KMeans"];
 
 
             var csvFile = result.FileData[0];
@@ -74,6 +77,16 @@ namespace MLService.WebService.Controllers
             model.InitializeMap();
             model.Train();
             model.LabelNodes();
+
+            IClusterer cluster = new KMeansClustering();
+
+            var flattenedMap = NodeHelper.FlattenMap(model.Map);
+            var clusteredNodes = cluster.Cluster(flattenedMap, kmeans);
+
+            foreach (var node in clusteredNodes)
+            {
+                model.Map[node.Coordinate.X, node.Coordinate.Y].ClusterGroup = node.ClusterGroup;
+            }
 
             FileInfo fileInfo = new FileInfo(csvFile.LocalFileName);
             fileInfo.Delete();

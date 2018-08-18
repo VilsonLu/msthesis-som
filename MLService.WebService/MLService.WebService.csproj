@@ -272,6 +272,10 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ML.Common\ML.Common.csproj">
+      <Project>{f53f705f-eb2c-4d46-935e-53269537d8d4}</Project>
+      <Name>ML.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ML.TrajectoryAnalysis\ML.TrajectoryAnalysis.csproj">
       <Project>{7a80fe4e-8697-4bf3-bdc9-5a5333c0d372}</Project>
       <Name>ML.TrajectoryAnalysis</Name>
