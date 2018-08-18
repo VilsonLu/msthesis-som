@@ -15,6 +15,9 @@ namespace SOMLibrary.Implementation.Clusterer
 
         private List<int> usedNumber;
 
+        private IEnumerable<Node> _centroids;
+        public IEnumerable<Node> Centroids { get; }
+
         public KMeansClustering()
         {
             rand = new RandomNumberGenerator();
@@ -49,6 +52,8 @@ namespace SOMLibrary.Implementation.Clusterer
 
             } while (hasChanged);
 
+            // Get the finalize centroids
+            _centroids = centroids;
 
             return nodes;
         }

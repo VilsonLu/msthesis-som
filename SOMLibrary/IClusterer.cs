@@ -8,6 +8,7 @@ namespace SOMLibrary
 {
     public interface IClusterer
     {
+        IEnumerable<Node> Centroids { get; }
         IEnumerable<Node> Cluster(List<Node> Nodes, int k);
     }
 }
