@@ -5,6 +5,10 @@ using SOMLibrary;
 using SOMLibrary.Interface;
 using SOMLibrary.Implementation;
 using SOMLibrary.DataModel;
+using FluentAssertions;
+using ML.TrajectoryAnalysis.Implementation;
+using ML.TrajectoryAnalysis;
+using ML.Common.Implementation;
 
 namespace MSThesisTest
 {
@@ -298,26 +302,61 @@ namespace MSThesisTest
             Assert.AreEqual(expectedResult, result);
         }
 
+        [TestMethod]
+        public void Instance_ToString_GetTheConcatenatedValue()
+        {
+            Instance instance = new Instance();
+            instance.OrderNo = 1;
+
+            object[] values = { 0.5, 0.7, 0.8, 0.9 };
+
+            instance.Values = values;
+
+            var actualResult = instance.ToString();
+
+            var expectedResult = "0.5 0.7 0.8 0.9";
+
+            actualResult.Should().BeEquivalentTo(expectedResult);
+        }
 
 
+        [TestMethod]
         public void Test_Method()
         {
-            // Arrange
-            string filename = @"C:\Users\Vilson\Documents\Visual Studio 2017\Projects\MSThesis\SOMClient\Dataset\Iris.csv";
-            IReader reader = new CSVReader(filename);
-            SOM som = new SOM(10, 10, 0.5);
 
-            som.GetData(reader);
-            som.FeatureLabel = "Species";
+            List<Trajectory> trajectoriesA = new List<Trajectory>();
+            List<Trajectory> trajectoriesB = new List<Trajectory>();
 
-            Dataset dataset = som.Dataset;
-            dataset.SetKey("Id");
-            dataset.SetLabel("Species");
 
-            // Act
-            som.Train();
-            som.LabelNodes();
-            bool test = true;
+            CompressionDissimilarityMeasure cdm = new CompressionDissimilarityMeasure(new FileHelper());
+            Instance instance = new Instance();
+            instance.OrderNo = 1;
+
+            object[] values = { 0.5, 0.7, 0.8, 0.9 };
+
+            instance.Values = values;
+            trajectoriesA.Add(new Trajectory()
+            {
+                Instance = instance
+            });
+
+            instance = new Instance();
+            instance.OrderNo = 1;
+
+            object[] values2 = { 0.1, 0.7, 0.2, 0.9 };
+
+            instance.Values = values2;
+            trajectoriesB.Add(new Trajectory()
+            {
+                Instance = instance
+            });
+
+            double score = cdm.MeasureSimilarity(trajectoriesA, trajectoriesB);
+
+
+
+         
+
         }
     }
 

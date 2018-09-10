@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ML.TrajectoryAnalysis</RootNamespace>
     <AssemblyName>ML.TrajectoryAnalysis</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=1.0.0.999, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.1.0.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,16 +44,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Implementation\CompressionDismilarityMeasure.cs" />
     <Compile Include="Implementation\ITrajectoryMapper.cs" />
+    <Compile Include="ISimilarityMeasure.cs" />
     <Compile Include="Trajectory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TrajectoryMapper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ML.Common\ML.Common.csproj">
+      <Project>{f53f705f-eb2c-4d46-935e-53269537d8d4}</Project>
+      <Name>ML.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SOMLibrary\SOMLibrary.csproj">
       <Project>{9212ce68-da13-4755-a61f-caf25e8b83e9}</Project>
       <Name>SOMLibrary</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Workspace\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

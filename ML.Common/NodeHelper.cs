@@ -1,14 +1,13 @@
-﻿using SOMLibrary;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ML.Common
 {
-    public class NodeHelper
+    public class ArrayHelper<T>
     {
 
-        public static List<Node> FlattenMap(Node[,] map)
+        public static List<T> FlattenMap(T[,] map)
         {
-            var flattenedNodes = new List<Node>();
+            var flattenedNodes = new List<T>();
 
             var width = map.GetLength(0);
             var height = map.GetLength(1);

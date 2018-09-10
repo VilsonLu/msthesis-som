@@ -71,11 +71,5 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ThirdParty\WfdbCsharpWrapper\Source\WfdbCsharpWrapper.Library\WfdbCsharpWrapper.Library.csproj">
-      <Project>{c8f0114d-a28e-48d7-9013-3fd6b3c8aedd}</Project>
-      <Name>WfdbCsharpWrapper.Library</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

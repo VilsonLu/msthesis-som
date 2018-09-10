@@ -80,7 +80,7 @@ namespace MLService.WebService.Controllers
 
             IClusterer cluster = new KMeansClustering();
 
-            var flattenedMap = NodeHelper.FlattenMap(model.Map);
+            var flattenedMap = ArrayHelper<Node>.FlattenMap(model.Map);
             var clusteredNodes = cluster.Cluster(flattenedMap, kmeans);
 
             foreach (var node in clusteredNodes)

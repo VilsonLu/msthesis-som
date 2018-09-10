@@ -32,7 +32,7 @@ namespace Sandbox
             _model.Train();
             // _model.LabelNodes();
 
-            var flattenedMap = NodeHelper.FlattenMap(_model.Map);
+            var flattenedMap = ArrayHelper<Node>.FlattenMap(_model.Map);
             var clusteredNodes = _kmeans.Cluster(flattenedMap, 3);
 
             foreach (var node in clusteredNodes)
