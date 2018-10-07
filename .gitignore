@@ -260,3 +260,5 @@ paket-files/
 __pycache__/
 *.pyc
 /MLService.WebService/App_Data/Uploadfiles
+
+ML\.TrajectoryAnalysis/Workspace/
