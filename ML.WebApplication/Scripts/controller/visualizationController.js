@@ -5,7 +5,7 @@
         $scope.ShowLoader = false;
         var nodes = [];
         var n = 20;
-        var sen = 20;
+        var sen = 50;
 
 
         function getLabels(nodes) {
@@ -23,9 +23,11 @@
             d3.select("svg").remove();
             var svg = d3.select("#chart").append("svg").attr("width", 600).attr("height", 600),
                 margin = 30,
-                width = n * sen,
-                height = n * sen
+                width = $scope.Data.width * sen,
+                height = $scope.Data.height * sen
                 ;
+
+
 
             var rgb_nodes = svg.append("g").attr("class", "nodes all");
 
@@ -38,8 +40,8 @@
                 .selectAll("rect")
                 .data(nodes)
                 .enter().append("rect")
-                .attr("x", function (node) { return node.Coordinate.X * sen; })
-                .attr("y", function (node) { return node.Coordinate.Y * sen; })
+                .attr("y", function (node) { return node.Coordinate.X * sen; })
+                .attr("x", function (node) { return node.Coordinate.Y * sen; })
                 .attr("width", sen)
                 .attr("height", sen)
                 .attr("text", function (node) { return node.Label })
@@ -62,6 +64,32 @@
                     mout();
                     return tooltip.style("visibility", "hidden");
                 });
+
+            var lineData = [{ "x": 1, "y": 1 }
+                , { "x": 2, "y": 2 }
+                , { "x": 3, "y": 3 }
+                , { "x": 4, "y": 4 }
+                , { "x": 5, "y": 5 }
+                , { "x": 6, "y": 6 }
+                , { "x": 7, "y": 7 }
+                , { "x": 8, "y": 8 }
+                , { "x": 9, "y": 9 }
+                , { "x": 0, "y": 0 }
+
+                , { "x": 1, "y": 2 }];
+
+            var coordinateMapper = function (d) {
+                return d * sen + 0.5 * sen
+            }
+
+            svg.selectAll("circle")
+                .data(lineData).enter()
+                .append("circle")
+                .attr("cy", function (d) { return coordinateMapper(d["x"]); })
+                .attr("cx", function (d) { return coordinateMapper(d["y"]); })
+                .attr("r", "6px")
+                .attr("fill", "red")
+
         };
 
         var visualizeCluster = function() {
