@@ -21,10 +21,12 @@
         var visualizeSOM = function () {
 
             d3.select("svg").remove();
-            var svg = d3.select("#chart").append("svg").attr("width", 600).attr("height", 600),
-                margin = 30,
-                width = $scope.Data.width * sen,
-                height = $scope.Data.height * sen
+
+            var w = $scope.Data.Width * sen;
+            var h = $scope.Data.Height * sen;
+            var svg = d3.select("#chart").append("svg").attr("width", w).attr("height", h),
+                width = w,
+                height = h
                 ;
 
 
@@ -94,10 +96,11 @@
 
         var visualizeCluster = function() {
             d3.select("svg").remove();
-            var svg = d3.select("#chart").append("svg").attr("width", 600).attr("height", 600),
-                margin = 30,
-                width = n * sen,
-                height = n * sen;
+            var w = $scope.Data.Width * sen;
+            var h = $scope.Data.Height * sen;
+            var svg = d3.select("#chart").append("svg").attr("width", w).attr("height", h),
+                width = w,
+                height = h;
 
             var rgb_nodes = svg.append("g").attr("class", "nodes all");
 
