@@ -1,10 +1,20 @@
-﻿*{
-    margin: 0;
+﻿html, body {
+    height: 100%;
     padding: 0;
+    margin: 0;
 }
 
-.label-info {
-    background-color: #5bc0de;
+h1, h2{
+    margin: 0;
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+    color: #558b2f;
+}
+
+a {
+    margin-left: 0.5%;
 }
 
 .loader {
@@ -14,6 +24,29 @@
     width: 120px;
     height: 120px;
     animation: spin 2s linear infinite;
+}
+
+.main {
+    background-color: #26c6da;
+}
+
+.nav-wrapper {
+    background-color: #8bc34a
+}
+
+.input-field label {
+    pointer-events: auto;
+}
+
+#chart {
+    padding: 0;
+    margin: 0;
+    display:inline-block;
+}
+
+svg {
+    padding: 0;
+    margin: 0;
 }
 
 @keyframes spin {
