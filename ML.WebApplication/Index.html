@@ -23,7 +23,7 @@
 
                 <form ng-submit="TrainModel()" class="form-horizontal">
                     <div>
-                        <label class="control-label" for="epoch">Epoch:</label>
+                        <label class="control-label" for="epoch">Epoch</label>
                         <div>
                             <input type="number" class="form-control form-control-sm" id="epoch" min="0" ng-model="Configuration.Epoch">
                         </div>
@@ -37,28 +37,28 @@
                     </div>
 
                     <div>
-                        <label class="control-label" for="somX">SOM Size X:</label>
+                        <label class="control-label" for="somX">SOM Size X</label>
                         <div>
                             <input type="number" class="form-control form-control-sm" id="somX" min="0" ng-model="Configuration.Width">
                         </div>
                     </div>
 
                     <div>
-                        <label class="control-label" for="somY">SOM Size Y:</label>
+                        <label class="control-label" for="somY">SOM Size Y</label>
                         <div>
                             <input type="number" class="form-control form-control-sm" id="somY" min="0" ng-model="Configuration.Height">
                         </div>
                     </div>
 
                     <div>
-                        <label class="control-label" for="kmeans">Number of Clusters:</label>
+                        <label class="control-label" for="kmeans">Number of Clusters</label>
                         <div>
                             <input type="number" class="form-control form-control-sm" id="kmeans" min="0" ng-model="Configuration.KMeans">
                         </div>
                     </div>
 
                     <div>
-                        <label class="control-label" for="labels">Labels:</label>
+                        <label class="control-label" for="labels">Labels</label>
 
                         <div class="col-sm-10">
                             <input type="text" class="form-control form-control-sm" id="labels" data-role="tagsinput" ng-model="Configuration.Labels">
@@ -66,7 +66,7 @@
                     </div>
 
                     <div>
-                        <label class="control-label" for="featureLabel">Feature Label:</label>
+                        <label class="control-label" for="featureLabel">Target Label</label>
                         <div>
                             <input type="text" class="form-control form-control-sm" id="featureLabel" ng-model="Configuration.FeatureLabel">
                         </div>
@@ -87,7 +87,7 @@
 
                     <div>
                         <div>
-                            <button type="submit" class="btn btn-default col s12">Submit</button>
+                            <button type="submit" class="btn btn-default col s12">Train</button>
                         </div>
                     </div>
                 </form>
