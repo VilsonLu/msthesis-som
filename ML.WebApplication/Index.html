@@ -10,7 +10,7 @@
 <body ng-app="mlApp">
     <nav>
         <div class="nav-wrapper">
-            <a href="#" class="left brand-logo">Self-Organizing Map</a>
+            <a href="#" class="left brand-logo">SOM.io</a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="sass.html">About</a></li>
             </ul>
@@ -19,57 +19,67 @@
     <div ng-controller="configController">
         <div class="row">
             <div class="col s12 m4 l3">
-                <h4>Configuration Panel</h4>
+
+                <div class="row">
+                    <h4>Configuration</h4>
+                </div>
+
 
                 <form ng-submit="TrainModel()" class="col s12">
                     <div class="row">
                         <div class="input-field col s12">
                             <label for="epoch">Epoch</label>
-                            <input type="number" class="form-control form-control-sm" id="epoch" min="0" ng-model="Configuration.Epoch">
+                            <input type="number" id="epoch" min="0" ng-model="Configuration.Epoch">
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="input-field col s12">
                             <label for="learningrate">Learning Rate:</label>
-                            <input type="number" class="form-control form-control-sm" id="learningrate" step="0.1" max="1" min="0" ng-model="Configuration.LearningRate">
+                            <input type="number" id="learningrate" step="0.1" max="1" min="0" ng-model="Configuration.LearningRate">
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="input-field col s12">
                             <label for="somX">SOM Size X</label>
-                            <input type="number" class="form-control form-control-sm" id="somX" min="0" ng-model="Configuration.Width">
+                            <input type="number" id="somX" min="0" ng-model="Configuration.Width">
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="input-field col s12">
                             <label for="somY">SOM Size Y</label>
-                            <input type="number" class="form-control form-control-sm" id="somY" min="0" ng-model="Configuration.Height">
+                            <input type="number" id="somY" min="0" ng-model="Configuration.Height">
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="input-field col s12">
                             <label for="kmeans">Number of Clusters</label>
-                            <input type="number" class="form-control form-control-sm" id="kmeans" min="0" ng-model="Configuration.KMeans">
+                            <input type="number" id="kmeans" min="0" ng-model="Configuration.KMeans">
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="input-field col s12">
                             <label for="labels">Labels</label>
-                            <input type="text" class="form-control form-control-sm" id="labels" data-role="tagsinput" ng-model="Configuration.Labels">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="input-field col s12">
-                            <label for="featureLabel">Target Label</label>
-                            <input type="text" class="form-control form-control-sm" id="featureLabel" ng-model="Configuration.FeatureLabel">
+                            <input type="text" id="labels" data-role="tagsinput" ng-model="Configuration.Labels">
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="featureLabel">Target Label</label>
+                            <input type="text" id="featureLabel" ng-model="Configuration.FeatureLabel">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <a class="waves-effect waves-light btn modal-trigger col s12" id="regions" href="#modal1">Add Region</a>
+                        </div>
+                    </div>
 
                     <div class="row">
                         <div class="input-field col s12">
@@ -86,7 +96,6 @@
                     </div>
 
                     <div class="row">
-
                         <div class="input-field col s12">
                             <div>
                                 <button type="submit" class="btn btn-default col s12">Train</button>
@@ -95,10 +104,21 @@
                     </div>
                 </form>
 
+                <!-- Modal Structure -->
+                <div id="modal1" class="modal">
+                    <div class="modal-content">
+                        <h4>Modal Header</h4>
+                        <p>A bunch of text</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+                    </div>
+                </div>
             </div>
 
+
             <div class="col s12 m8 l9" ng-controller="visualizationController">
-                <h4>SOM Visualization</h4>
+                <h4>Visualization</h4>
                 <div class="progress" ng-show="ShowLoader">
                     <div class="indeterminate"></div>
                 </div>
@@ -106,7 +126,7 @@
                 <div>
                     <div id="chart">
                     </div>
-                    <div >
+                    <div>
                         <input type="checkbox" id="check" ng-model="isShowCluster" ng-change="showCluster()">
                         <label for="check">Show K-Means Clusters</label>
                     </div>
@@ -117,20 +137,20 @@
             </div>
 
         </div>
+    </div>
 
+    <script src="Scripts/jquery-3.0.0.min.js"></script>
+    <script src="Scripts/angular.min.js"></script>
+    <script src="Scripts/materialize/materialize.min.js"></script>
+    <script src="Scripts/bootstrap-tagsinput.min.js"></script>
+    <script src="Scripts/ng-file-upload-shim.min.js"></script>
+    <script src="Scripts/ng-file-upload.min.js"></script>
+    <script src="Scripts/d3/d3.js"></script>
+    <script src="Scripts/utility.js"></script>
 
-        <script src="Scripts/jquery-3.0.0.min.js"></script>
-        <script src="Scripts/angular.min.js"></script>
-        <script src="Scripts/materialize/materialize.min.js"></script>
-        <script src="Scripts/bootstrap-tagsinput.min.js"></script>
-        <script src="Scripts/ng-file-upload-shim.min.js"></script>
-        <script src="Scripts/ng-file-upload.min.js"></script>
-        <script src="Scripts/d3/d3.js"></script>
-        <script src="Scripts/utility.js"></script>
-
-        <script src="Scripts/controller/main.js"></script>
-        <script src="Scripts/controller/directives.js"></script>
-        <script src="Scripts/controller/configController.js"></script>
-        <script src="Scripts/controller/visualizationController.js"></script>
+    <script src="Scripts/controller/main.js"></script>
+    <script src="Scripts/controller/directives.js"></script>
+    <script src="Scripts/controller/configController.js"></script>
+    <script src="Scripts/controller/visualizationController.js"></script>
 </body>
 </html>

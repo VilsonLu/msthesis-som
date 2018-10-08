@@ -10,7 +10,6 @@ h1, h2{
 
 
 h1, h2, h3, h4, h5, h6 {
-    color: #558b2f;
 }
 
 a {
@@ -31,7 +30,7 @@ a {
 }
 
 .nav-wrapper {
-    background-color: #8bc34a
+    background-color: #004d40;
 }
 
 .input-field label {

@@ -1,6 +1,7 @@
 ﻿app.controller("configController",
     function ($scope, $http) {
 
+        // Properties
         $scope.Configuration = {
             Epoch: 3,
             LearningRate: 0.5,
@@ -18,13 +19,8 @@
 
         $scope.ShowLoader = true;
 
-        $scope.$on("selectedFile", function (event, args) {
-            $scope.$apply(function () {
-                //add the file object to the scope's files collection  
-                $scope.Files.push(args.file);
-            });
-        });  
 
+        // Methods
         $scope.TrainModel = function () {
 
             var data = $scope.Configuration;
@@ -52,6 +48,17 @@
                 $scope.$broadcast("onTrainedModel", { message: $scope.Map });
             });
 
+            $scope.showModal = function () {
+    
+            }
+
+            // Events
+            $scope.$on("selectedFile", function (event, args) {
+                $scope.$apply(function () {
+                    //add the file object to the scope's files collection  
+                    $scope.Files.push(args.file);
+                });
+            });  
 
             //var post = $http.post("http://localhost:49621/api/ML/GetTrainSOM", requestParams);
 

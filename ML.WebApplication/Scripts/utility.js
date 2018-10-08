@@ -62,3 +62,8 @@ var tooltip = d3.select("body")
     .style("position", "absolute")
     .style("z-index", "10")
     .style("visibility", "hidden");
+
+
+$('#regions').click(function () {
+    $('#modal1').openModal();
+});
