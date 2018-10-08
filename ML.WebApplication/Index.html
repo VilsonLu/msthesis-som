@@ -21,73 +21,76 @@
             <div class="col s12 m4 l3">
                 <h4>Configuration Panel</h4>
 
-                <form ng-submit="TrainModel()" class="form-horizontal">
-                    <div>
-                        <label class="control-label" for="epoch">Epoch</label>
-                        <div>
+                <form ng-submit="TrainModel()" class="col s12">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="epoch">Epoch</label>
                             <input type="number" class="form-control form-control-sm" id="epoch" min="0" ng-model="Configuration.Epoch">
                         </div>
                     </div>
 
-                    <div>
-                        <label class="control-label" for="learningrate">Learning Rate:</label>
-                        <div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="learningrate">Learning Rate:</label>
                             <input type="number" class="form-control form-control-sm" id="learningrate" step="0.1" max="1" min="0" ng-model="Configuration.LearningRate">
                         </div>
                     </div>
 
-                    <div>
-                        <label class="control-label" for="somX">SOM Size X</label>
-                        <div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="somX">SOM Size X</label>
                             <input type="number" class="form-control form-control-sm" id="somX" min="0" ng-model="Configuration.Width">
                         </div>
                     </div>
 
-                    <div>
-                        <label class="control-label" for="somY">SOM Size Y</label>
-                        <div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="somY">SOM Size Y</label>
                             <input type="number" class="form-control form-control-sm" id="somY" min="0" ng-model="Configuration.Height">
                         </div>
                     </div>
 
-                    <div>
-                        <label class="control-label" for="kmeans">Number of Clusters</label>
-                        <div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="kmeans">Number of Clusters</label>
                             <input type="number" class="form-control form-control-sm" id="kmeans" min="0" ng-model="Configuration.KMeans">
                         </div>
                     </div>
 
-                    <div>
-                        <label class="control-label" for="labels">Labels</label>
-
-                        <div class="col-sm-10">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="labels">Labels</label>
                             <input type="text" class="form-control form-control-sm" id="labels" data-role="tagsinput" ng-model="Configuration.Labels">
                         </div>
                     </div>
-
-                    <div>
-                        <label class="control-label" for="featureLabel">Target Label</label>
-                        <div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="featureLabel">Target Label</label>
                             <input type="text" class="form-control form-control-sm" id="featureLabel" ng-model="Configuration.FeatureLabel">
                         </div>
                     </div>
 
 
-                    <div>
-                        <div class="file-field input-field">
-                            <div class="btn">
-                                <span>File</span>
-                                <input type="file" id="dataset" upload-files>
-                            </div>
-                            <div class="file-path-wrapper">
-                                <input class="file-path validate" type="text">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <div class="file-field input-field">
+                                <div class="btn">
+                                    <span>File</span>
+                                    <input type="file" id="dataset" upload-files>
+                                </div>
+                                <div class="file-path-wrapper">
+                                    <input class="file-path validate" type="text">
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div>
-                        <div>
-                            <button type="submit" class="btn btn-default col s12">Train</button>
+                    <div class="row">
+
+                        <div class="input-field col s12">
+                            <div>
+                                <button type="submit" class="btn btn-default col s12">Train</button>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -103,31 +106,31 @@
                 <div>
                     <div id="chart">
                     </div>
-                    <div>
+                    <div >
                         <input type="checkbox" id="check" ng-model="isShowCluster" ng-change="showCluster()">
                         <label for="check">Show K-Means Clusters</label>
                     </div>
                 </div>
-               
 
-                
+
+
             </div>
 
-    </div>
+        </div>
 
 
-    <script src="Scripts/jquery-3.0.0.min.js"></script>
-    <script src="Scripts/angular.min.js"></script>
-    <script src="Scripts/materialize/materialize.min.js"></script>
-    <script src="Scripts/bootstrap-tagsinput.min.js"></script>
-    <script src="Scripts/ng-file-upload-shim.min.js"></script>
-    <script src="Scripts/ng-file-upload.min.js"></script>
-    <script src="Scripts/d3/d3.js"></script>
-    <script src="Scripts/utility.js"></script>
+        <script src="Scripts/jquery-3.0.0.min.js"></script>
+        <script src="Scripts/angular.min.js"></script>
+        <script src="Scripts/materialize/materialize.min.js"></script>
+        <script src="Scripts/bootstrap-tagsinput.min.js"></script>
+        <script src="Scripts/ng-file-upload-shim.min.js"></script>
+        <script src="Scripts/ng-file-upload.min.js"></script>
+        <script src="Scripts/d3/d3.js"></script>
+        <script src="Scripts/utility.js"></script>
 
-    <script src="Scripts/controller/main.js"></script>
-    <script src="Scripts/controller/directives.js"></script>
-    <script src="Scripts/controller/configController.js"></script>
-    <script src="Scripts/controller/visualizationController.js"></script>
+        <script src="Scripts/controller/main.js"></script>
+        <script src="Scripts/controller/directives.js"></script>
+        <script src="Scripts/controller/configController.js"></script>
+        <script src="Scripts/controller/visualizationController.js"></script>
 </body>
 </html>
