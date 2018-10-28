@@ -31,6 +31,9 @@ namespace SOMLibrary
 
         public string FeatureLabel { get; set; }
 
+        /// <summary>
+        /// Number of neighbors for K-NN
+        /// </summary>
         public int K { get; set; } = 5;
 
 

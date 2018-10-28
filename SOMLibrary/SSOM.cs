@@ -73,6 +73,11 @@ namespace SOMLibrary
             {
                 for (int col = startCol; col < currentWidth; col++)
                 {
+                    if(IsInAnyRegion(row, col))
+                    {
+                        continue;
+                    }
+
                     Node currentNode = Map[row, col];
                     double currentDistance = currentNode.GetDistance(instance);
 
@@ -106,6 +111,19 @@ namespace SOMLibrary
             }
 
             Regions.Add(region);
+        }
+
+        /// <summary>
+        /// Checks if the given node is in any region or not
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        private bool IsInAnyRegion(int x, int y)
+        {
+            var coordinate = new Coordinate(x, y);
+            var isInAnyRegion = Regions.Any(r => r.IsWithinRegion(coordinate));
+            return isInAnyRegion;
         }
 
         public bool IsValidRegion(Region region)
