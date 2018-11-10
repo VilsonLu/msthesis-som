@@ -10,18 +10,17 @@
             FilePath: "",
             Labels: "",
             FeatureLabel: "",
-            KMeans: 2
+            KMeans: 2,
+            Regions: []
         };
 
         $scope.Files = [];
 
         $scope.Map = {};
 
-        $scope.ShowLoader = true;
-
 
         // Methods
-        $scope.TrainModel = function () {
+        $scope.TrainModel = function() {
 
             var data = $scope.Configuration;
 
@@ -43,10 +42,17 @@
                 },
                 data: { model: $scope.Configuration, files: $scope.Files }
 
-            }).then(function(response) {
-                $scope.Map = response.data.Model;
-                $scope.$broadcast("onTrainedModel", { message: $scope.Map });
-            });
+            }).then(
+                function (response) {
+                    $scope.Map = response.data.Model;
+                    $scope.$broadcast("onTrainedModel", { message: $scope.Map });
+                    $scope.$broadcast("onShowError", { message: false });
+                },
+                function (error) {
+                    $scope.$broadcast("onShowLoader", { message: false });
+                    $scope.$broadcast("onShowError", { message: true });
+
+                });
 
             $scope.showModal = function () {
     
@@ -67,5 +73,4 @@
             //    console.log("success call");
             //});
         };
-
     });
