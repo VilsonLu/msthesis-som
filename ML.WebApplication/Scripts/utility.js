@@ -67,3 +67,7 @@ var tooltip = d3.select("body")
 $('#regions').click(function () {
     $('#modal1').openModal();
 });
+
+$('#addRegionButton').click(function () {
+    $('#modal1').closeModal();
+});

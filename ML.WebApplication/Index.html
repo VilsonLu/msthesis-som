@@ -18,7 +18,7 @@
     </nav>
     <div ng-controller="configController">
         <div class="row">
-            <div class="col s12 m4 l3">
+            <div class="col s12 m5 l3">
 
                 <div class="row">
                     <h4>Configuration</h4>
@@ -82,6 +82,24 @@
                     </div>
 
                     <div class="row">
+                        <table class="highlight striped">
+                            <thead>
+                                <tr>
+                                    <th>Label</th>
+                                    <th>Regions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="r in Configuration.Regions">
+                                    <td>{{ r.Label }}</td>
+                                    <td>({{r.TopLeft.X}}, {{r.TopLeft.Y}}), ({{r.TopRight.X}}, {{r.TopRight.Y}}), ({{r.BottomLeft.X}}, {{r.BottomLeft.Y}}), ({{r.BottomRight.X}}, {{r.BottomRight.Y}})</td>
+                                </tr>
+                            </tbody>
+                            
+                        </table>
+                    </div>
+
+                    <div class="row">
                         <div class="input-field col s12">
                             <div class="file-field input-field">
                                 <div class="btn">
@@ -115,13 +133,13 @@
                                     <div class="col s6">
                                         <div class="input-field">
                                             <label for="x0">X</label>
-                                            <input type="number" id="x0" min="0">
+                                            <input type="number" id="x0" min="0" ng-model="Region.TopLeft.X">
                                         </div>
                                     </div>
                                     <div class="col s6">
                                         <div class="input-field">
                                             <label for="y0">Y</label>
-                                            <input type="number" id="y0" min="0">
+                                            <input type="number" id="y0" min="0" ng-model="Region.TopLeft.Y">
                                         </div>
                                     </div>
                                 </div>
@@ -131,13 +149,13 @@
                                     <div class="col s6">
                                         <div class="input-field">
                                             <label for="x1">X</label>
-                                            <input type="number" id="x1" min="0">
+                                            <input type="number" id="x1" min="0" ng-model="Region.TopRight.X" >
                                         </div>
                                     </div>
                                     <div class="col s6">
                                         <div class="input-field">
                                             <label for="y1">Y</label>
-                                            <input type="number" id="y1" min="0">
+                                            <input type="number" id="y1" min="0" ng-model="Region.TopRight.Y">
                                         </div>
                                     </div>
                                 </div>
@@ -147,13 +165,13 @@
                                     <div class="col s6">
                                         <div class="input-field">
                                             <label for="x2">X</label>
-                                            <input type="number" id="x2" min="0">
+                                            <input type="number" id="x2" min="0" ng-model="Region.BottomLeft.X">
                                         </div>
                                     </div>
                                     <div class="col s6">
                                         <div class="input-field">
                                             <label for="y2">Y</label>
-                                            <input type="number" id="y2" min="0">
+                                            <input type="number" id="y2" min="0" ng-model="Region.BottomLeft.Y">
                                         </div>
                                     </div>
                                 </div>
@@ -163,13 +181,13 @@
                                     <div class="col s6">
                                         <div class="input-field">
                                             <label for="x0">X</label>
-                                            <input type="number" id="x0" min="0">
+                                            <input type="number" id="x0" min="0" ng-model="Region.BottomRight.X">
                                         </div>
                                     </div>
                                     <div class="col s6">
                                         <div class="input-field">
                                             <label for="y3">Y</label>
-                                            <input type="number" id="y3" min="0">
+                                            <input type="number" id="y3" min="0" ng-model="Region.BottomRight.Y">
                                         </div>
                                     </div>
                                 </div>
@@ -178,14 +196,14 @@
                                     <div class="col s12">
                                         <div class="input-field">
                                             <label for="rLabel">Label</label>
-                                            <input type="text" id="rLabel" min="0">
+                                            <input type="text" id="rLabel" min="0" ng-model="Region.Label">
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="col s12">
                                     <div class="input-field col s12">
-                                        <a class="waves-effect waves-light btn modal-trigger col s12" id="regions" href="#modal1">Add Region</a>
+                                       <button id="addRegionButton" type="button" class="btn btn-default col s12" ng-click="AddRegion()">Add Region</button>
                                     </div>
                                 </div>
 
@@ -197,7 +215,7 @@
             </div>
 
 
-            <div class="col s12 m8 l9" ng-controller="visualizationController">
+            <div class="col s12 m7 l9" ng-controller="visualizationController">
                 <h4>Visualization</h4>
                 <div class="progress" ng-show="ShowLoader">
                     <div class="indeterminate"></div>
