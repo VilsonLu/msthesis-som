@@ -211,7 +211,7 @@ namespace SOMLibrary
             return bestNode;
         }
 
-        protected void UpdateNeighborhood(Node winningNode, Instance rowInstance, int iteration)
+        protected virtual void UpdateNeighborhood(Node winningNode, Instance rowInstance, int iteration)
         {
             var instance = base.Dataset.GetInstance<double>(rowInstance.OrderNo);
 

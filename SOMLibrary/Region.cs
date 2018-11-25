@@ -18,12 +18,12 @@ namespace SOMLibrary
    
         public int Height
         {
-            get { return Math.Abs(TopLeft.X - BottomLeft.X); }
+            get { return Math.Abs(TopLeft.Y - BottomLeft.Y); }
         }
 
         public int Width
         {
-            get { return Math.Abs(TopRight.Y - TopLeft.Y); }
+            get { return Math.Abs(TopRight.X - TopLeft.X); }
         }
 
         public Region(Coordinate topLeft, Coordinate topRight, Coordinate bottomLeft, Coordinate bottomRight, string label)
@@ -32,6 +32,7 @@ namespace SOMLibrary
             this.BottomRight = bottomRight;
             this.TopLeft = topLeft;
             this.TopRight = topRight;
+            this.Label = label;
         }
 
         /// <summary>

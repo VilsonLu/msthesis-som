@@ -25,7 +25,7 @@
 
             var w = $scope.Data.Width * sen;
             var h = $scope.Data.Height * sen;
-            var svg = d3.select("#chart").append("svg").attr("width", w).attr("height", h),
+            var svg = d3.select("#chart").append("svg").attr("width", h).attr("height", w),
                 width = w,
                 height = h
                 ;

@@ -56,8 +56,8 @@ namespace SOMLibrary
             int startRow = 0;
             int startCol = 0;
 
-            int currentWidth = Width;
-            int currentHeight = Height;
+            int currentWidth = Height;
+            int currentHeight = Width;
 
             // Check if the label has a region
             var region = Regions.FirstOrDefault(x => x.Label == label);
@@ -73,11 +73,6 @@ namespace SOMLibrary
             {
                 for (int col = startCol; col < currentWidth; col++)
                 {
-                    if(IsInAnyRegion(row, col))
-                    {
-                        continue;
-                    }
-
                     Node currentNode = Map[row, col];
                     double currentDistance = currentNode.GetDistance(instance);
 
@@ -92,6 +87,7 @@ namespace SOMLibrary
 
             return bestNode;
         }
+
 
         #region SSOM Helper Functions
 
