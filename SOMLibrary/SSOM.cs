@@ -56,8 +56,8 @@ namespace SOMLibrary
             int startRow = 0;
             int startCol = 0;
 
-            int currentWidth = Height;
-            int currentHeight = Width;
+            int currentWidth = Width;
+            int currentHeight = Height;
 
             // Check if the label has a region
             var region = Regions.FirstOrDefault(x => x.Label == label);
@@ -65,13 +65,13 @@ namespace SOMLibrary
             {
                 startRow = region.TopLeft.X;
                 startCol = region.TopLeft.Y;
-                currentWidth = region.Height + startRow;
-                currentHeight = region.Width + startCol;
+                currentWidth = region.Width + startRow;
+                currentHeight = region.Height + startCol;
             }
 
-            for (int row = startRow; row < currentHeight; row++)
+            for (int row = startRow; row < currentWidth; row++)
             {
-                for (int col = startCol; col < currentWidth; col++)
+                for (int col = startCol; col < currentHeight; col++)
                 {
                     Node currentNode = Map[row, col];
                     double currentDistance = currentNode.GetDistance(instance);

@@ -48,9 +48,15 @@ function setColor(label) {
 }
 
 function flatten(arr) {
-    return arr.reduce(function (flat, toFlatten) {
-        return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
-    }, []);
+    var flattenNodes = [];
+
+    for (i = 0; i < arr.length; i++) {
+        for (j = 0; j < arr[i].length; j++) {
+            flattenNodes.push(arr[i][j]);
+        }
+    }
+
+    return flattenNodes;
 }
 
 function readCsvLine(line) {
@@ -62,7 +68,6 @@ var tooltip = d3.select("body")
     .style("position", "absolute")
     .style("z-index", "10")
     .style("visibility", "hidden");
-
 
 $('#regions').click(function () {
     $('#modal1').openModal();

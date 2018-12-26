@@ -77,7 +77,7 @@
 
                     <div class="row">
                         <div class="input-field col s12">
-                            <a class="waves-effect waves-light btn modal-trigger col s12" id="regions" href="#modal1">Add Region</a>
+                            <a class="waves-effect waves-light btn modal-trigger col s12" id="regions" href="#modal1">Add Regions</a>
                         </div>
                     </div>
 
@@ -95,8 +95,14 @@
                                     <td>({{r.TopLeft.X}}, {{r.TopLeft.Y}}), ({{r.TopRight.X}}, {{r.TopRight.Y}}), ({{r.BottomLeft.X}}, {{r.BottomLeft.Y}}), ({{r.BottomRight.X}}, {{r.BottomRight.Y}})</td>
                                 </tr>
                             </tbody>
-                            
+
                         </table>
+                    </div>
+
+                    <div class="col s12">
+                        <div class="input-field col s12">
+                            <button id="clearRegionButton" type="button" class="btn btn-default col s12" ng-click="RemoveRegions()">Remove Region</button>
+                        </div>
                     </div>
 
                     <div class="row">

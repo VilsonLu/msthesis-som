@@ -82,6 +82,12 @@
             resetRegion();
         }
 
+        $scope.RemoveRegions = function () {
+            $scope.Configuration.Regions = [];
+            resetRegion();
+        }
+
+
         // Events
         $scope.$on("selectedFile", function (event, args) {
             $scope.$apply(function () {
@@ -94,7 +100,7 @@
             $scope.Region.Label = "";
             $scope.Region.TopLeft.X = 0;
             $scope.Region.TopLeft.Y = 0;
-            $scope.Region.TopLeft.X = 0;
+            $scope.Region.TopRight.X = 0;
             $scope.Region.TopRight.Y = 0;
             $scope.Region.BottomLeft.X = 0;
             $scope.Region.BottomLeft.Y = 0;

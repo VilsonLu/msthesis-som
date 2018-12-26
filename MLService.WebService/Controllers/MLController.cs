@@ -6,9 +6,11 @@ using System.Net;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
+using System.Web.Script.Serialization;
 using ML.Common;
 using MLService.DataModels;
 using MLService.WebService.Interface;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SOMLibrary;
 using SOMLibrary.Implementation;
@@ -34,7 +36,6 @@ namespace MLService.WebService.Controllers
             try
             {
 
-
                 if (!Request.Content.IsMimeMultipartContent())
                 {
                     throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
@@ -58,11 +59,13 @@ namespace MLService.WebService.Controllers
                 var height = (int)parsedModel["Height"];
                 var width = (int)parsedModel["Width"];
                 var kmeans = (int)parsedModel["KMeans"];
+                var regions = JsonConvert.DeserializeObject<List<Region>>(parsedModel["Regions"].ToString());
 
-
+ 
                 var csvFile = result.FileData[0];
 
-                SOM model = new SOM(width, height, learningRate, epoch);
+                SSOM model = new SSOM(width, height, learningRate, epoch);
+                model.Regions = regions;
 
                 var featureLabel = (string)parsedModel["FeatureLabel"];
                 var labels = ((string)parsedModel["Labels"]).Split(',').ToList();
@@ -97,6 +100,7 @@ namespace MLService.WebService.Controllers
 
                 TrainSOMResponse response = new TrainSOMResponse()
                 {
+                    MapId = Guid.NewGuid(),
                     Model = model
                 };
 
