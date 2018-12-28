@@ -1,4 +1,5 @@
-﻿using SOMLibrary.DataModel;
+﻿using Newtonsoft.Json;
+using SOMLibrary.DataModel;
 using SOMLibrary.Implementation.NodeLabeller;
 using SOMLibrary.Interface;
 using System;
@@ -16,6 +17,8 @@ namespace SOMLibrary
     {
 
         #region Properties
+        [JsonProperty("MapId")]
+        public Guid MapId { get; set; }
 
         public double ConstantLearningRate { get; set; }
 
@@ -35,9 +38,6 @@ namespace SOMLibrary
         /// Number of neighbors for K-NN
         /// </summary>
         public int K { get; set; } = 5;
-
-
-        
 
         #endregion
 
@@ -106,6 +106,8 @@ namespace SOMLibrary
             int numOfIgnoreColumns = base.Dataset.GetIgnoreColumns().Count;
             int featureCounts = base.Dataset.Features.Length;
 
+            this.MapId = Guid.NewGuid();
+
             int weightCount = featureCounts - numOfIgnoreColumns;
             Random rand = new Random();
 
@@ -119,7 +121,6 @@ namespace SOMLibrary
 
                         vectors[count] = rand.NextDouble();
                     }
-
 
                     Node node = new Node(vectors, row, col);
                     Map[row, col] = node;
@@ -308,6 +309,6 @@ namespace SOMLibrary
 
         #endregion
 
-     
+
     }
 }

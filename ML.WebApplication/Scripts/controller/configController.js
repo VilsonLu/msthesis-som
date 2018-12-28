@@ -73,7 +73,6 @@
                     $scope.$broadcast("onShowError", { message: true });
 
                 });
-
         };
 
         $scope.AddRegion = function () {
@@ -87,6 +86,11 @@
             resetRegion();
         }
 
+        $scope.ExportModel = function () {
+            $scope.Map.Dataset = null;
+            var blob = new Blob([JSON.stringify($scope.Map, undefined, 2)], { type: 'text/plain;charset=utf-8' });
+            window.saveAs(blob, `Map_${$scope.Map.MapId}.json`);
+        }
 
         // Events
         $scope.$on("selectedFile", function (event, args) {

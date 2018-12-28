@@ -82,7 +82,7 @@
                     </div>
 
                     <div class="row">
-                        <table class="highlight striped">
+                        <table class="highlight striped col-s12">
                             <thead>
                                 <tr>
                                     <th>Label</th>
@@ -99,7 +99,7 @@
                         </table>
                     </div>
 
-                    <div class="col s12">
+                    <div class="row">
                         <div class="input-field col s12">
                             <button id="clearRegionButton" type="button" class="btn btn-default col s12" ng-click="RemoveRegions()">Remove Region</button>
                         </div>
@@ -124,6 +124,12 @@
                             <div>
                                 <button type="submit" class="btn btn-default col s12">Train</button>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <button id="exportModel" type="button" class="btn btn-default col s12" ng-click="ExportModel()">Export Model</button>
                         </div>
                     </div>
                 </form>
@@ -155,7 +161,7 @@
                                     <div class="col s6">
                                         <div class="input-field">
                                             <label for="x1">X</label>
-                                            <input type="number" id="x1" min="0" ng-model="Region.TopRight.X" >
+                                            <input type="number" id="x1" min="0" ng-model="Region.TopRight.X">
                                         </div>
                                     </div>
                                     <div class="col s6">
@@ -209,7 +215,7 @@
 
                                 <div class="col s12">
                                     <div class="input-field col s12">
-                                       <button id="addRegionButton" type="button" class="btn btn-default col s12" ng-click="AddRegion()">Add Region</button>
+                                        <button id="addRegionButton" type="button" class="btn btn-default col s12" ng-click="AddRegion()">Add Region</button>
                                     </div>
                                 </div>
 
@@ -228,7 +234,7 @@
                 </div>
 
                 <div class="card-panel red lighten-3" ng-show="ShowError">
-                   <p>Encountered error. Please try again later.</p>
+                    <p>Encountered error. Please try again later.</p>
                 </div>
 
                 <div>
@@ -250,6 +256,7 @@
     <script src="Scripts/jquery-3.0.0.min.js"></script>
     <script src="Scripts/angular.min.js"></script>
     <script src="Scripts/materialize/materialize.min.js"></script>
+    <script src="Scripts/FileSaver.min.js"></script>
     <script src="Scripts/bootstrap-tagsinput.min.js"></script>
     <script src="Scripts/ng-file-upload-shim.min.js"></script>
     <script src="Scripts/ng-file-upload.min.js"></script>
