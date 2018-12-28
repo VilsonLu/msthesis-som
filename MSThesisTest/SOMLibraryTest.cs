@@ -270,8 +270,8 @@ namespace MSThesisTest
         {
             // Arrange
             var p1 = new Coordinate(15, 15);
-            var p2 = new Coordinate(15, 20);
-            var p3 = new Coordinate(20, 15);
+            var p2 = new Coordinate(20, 15);
+            var p3 = new Coordinate(15, 20);
             var p4 = new Coordinate(20, 20);
             var region = new Region(p1, p2, p3, p4, "");
 
@@ -289,8 +289,8 @@ namespace MSThesisTest
         {
             // Arrange
             var p1 = new Coordinate(15, 15);
-            var p2 = new Coordinate(15, 20);
-            var p3 = new Coordinate(20, 15);
+            var p2 = new Coordinate(20, 15);
+            var p3 = new Coordinate(15, 20);
             var p4 = new Coordinate(20, 20);
             var region = new Region(p1, p2, p3, p4, "");
 
