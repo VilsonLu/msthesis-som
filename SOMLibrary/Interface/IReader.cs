@@ -9,6 +9,9 @@ namespace SOMLibrary.Interface
 {
     public interface IReader
     {
+        string FileName { get; }
+
         Dataset Read();
+        
     }
 }

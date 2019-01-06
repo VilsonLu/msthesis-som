@@ -352,11 +352,6 @@ namespace MSThesisTest
             });
 
             double score = cdm.MeasureSimilarity(trajectoriesA, trajectoriesB);
-
-
-
-         
-
         }
     }
 

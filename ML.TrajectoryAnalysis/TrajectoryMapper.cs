@@ -9,9 +9,24 @@ namespace ML.TrajectoryAnalysis
     public class TrajectoryMapper : ITrajectoryMapper
     {
         private readonly SOM _som;
+
         private Dataset _dataset;
 
         public List<Trajectory> Trajectories { get; set; }
+
+        private string _fileName;
+        public string FileName
+        {
+            get
+            {
+                return _fileName;
+            }
+
+            private set
+            {
+                _fileName = value;
+            }
+        }
 
         public TrajectoryMapper(SOM som)
         {
@@ -26,6 +41,7 @@ namespace ML.TrajectoryAnalysis
         public void GetData(IReader reader)
         {
             _dataset = reader.Read();
+            FileName = reader.FileName;
         }
 
         /// <summary>

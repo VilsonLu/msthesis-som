@@ -13,6 +13,14 @@ namespace SOMLibrary.Implementation
     public class CSVReader : IReader
     {
         private readonly string _filePath;
+        
+        public string FileName
+        {
+            get
+            {
+                return Path.GetFileName(_filePath);
+            }
+        }
 
         public CSVReader(string filepath)
         {

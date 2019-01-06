@@ -55,7 +55,7 @@ namespace ML.Common.Implementation
         {
             using (ICSharpCode.SharpZipLib.Zip.ZipOutputStream zipStream = new ICSharpCode.SharpZipLib.Zip.ZipOutputStream(File.Create(destinationPath)))
             {
-                zipStream.SetLevel(1);
+                zipStream.SetLevel(9);
 
                 byte[] buffer = new byte[4096];
                 ICSharpCode.SharpZipLib.Zip.ZipEntry entry = new ICSharpCode.SharpZipLib.Zip.ZipEntry(System.IO.Path.GetFileName(sourcePath));
