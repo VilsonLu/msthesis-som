@@ -50,8 +50,11 @@ function setColor(label) {
 function flatten(arr) {
     var flattenNodes = [];
 
-    for (i = 0; i < arr.length; i++) {
-        for (j = 0; j < arr[i].length; j++) {
+    const row = arr.length;
+    const col = arr[0].length;
+
+    for (i = 0; i < col; i++) {
+        for (j = 0; j < row; j++) {
             flattenNodes.push(arr[i][j]);
         }
     }

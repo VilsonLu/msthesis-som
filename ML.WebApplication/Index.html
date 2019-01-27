@@ -18,14 +18,13 @@
     </nav>
     <div ng-controller="configController">
         <div class="row">
-            <div class="col s12 m5 l3">
+            <div class="col s12 m12 l8">
 
                 <div class="row">
                     <h4>Configuration</h4>
                 </div>
-
-
-                <form ng-submit="TrainModel()" class="col s12">
+                <!-- Main configuration-->
+                <form ng-submit="TrainModel()" class="col s12 m6">
                     <div class="row">
                         <div class="input-field col s12">
                             <label for="epoch">Epoch</label>
@@ -134,6 +133,33 @@
                     </div>
                 </form>
 
+                <!-- Trajectory configuration-->
+                <div class="row col s12 m6">
+                    <form ng-submit="PlotTrajectory()">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <div class="file-field input-field">
+                                    <div class="btn">
+                                        <span>File</span>
+                                        <input type="file" id="trajectory" upload-files>
+                                    </div>
+                                    <div class="file-path-wrapper">
+                                        <input class="file-path validate" type="text">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <div>
+                                    <button type="submit" class="btn btn-default col s12">Plot Trajectory</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
                 <!-- Modal Structure -->
                 <div id="modal1" class="modal">
                     <div class="modal-content">
@@ -226,8 +252,8 @@
                 </div>
             </div>
 
-
-            <div class="col s12 m7 l9" ng-controller="visualizationController">
+             
+            <div class="col s12 m12 l4" ng-controller="visualizationController">
                 <h4>Visualization</h4>
                 <div class="progress" ng-show="ShowLoader">
                     <div class="indeterminate"></div>

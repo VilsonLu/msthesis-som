@@ -5,6 +5,6 @@ namespace MLService.DataModels
 {
     public class TrajectoryResponse
     {
-        public List<Trajectory> Trajectories { get; set; }
+        public Trajectory[] Trajectories { get; set; }
     }
 }

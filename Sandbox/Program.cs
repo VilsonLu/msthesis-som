@@ -94,9 +94,9 @@ namespace Sandbox
             string testingPath = @"C:\Users\Vilson\Desktop\Datasets\Financial Distress\Test\fd_297.csv";
 
             TrajectoryMapper testMapper = new TrajectoryMapper(_model);
-            IReader unknwownReader = new CSVReader(testingPath);
+            IReader trjaectoryDataReader = new CSVReader(testingPath);
 
-            testMapper.GetData(unknwownReader);
+            testMapper.GetData(trjaectoryDataReader);
             var unknownTrajectory = testMapper.GetTrajectories();
 
             IFileHelper fileHelper = new FileHelper();

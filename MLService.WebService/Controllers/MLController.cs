@@ -5,10 +5,12 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Script.Serialization;
 using ML.Common;
+using ML.TrajectoryAnalysis;
 using MLService.DataModels;
 using MLService.WebService.Interface;
 using Newtonsoft.Json;
@@ -23,6 +25,7 @@ namespace MLService.WebService.Controllers
     public class MLController : ApiController
     {
 
+        private const string FILE_UPLOAD_PATH = "~/App_Data/Uploadfiles";
         private IValidate<TrainSOMRequest> _validator;
 
         public MLController()
@@ -31,7 +34,7 @@ namespace MLService.WebService.Controllers
         }
 
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetTrainSOM()
+        public async Task<HttpResponseMessage> GetTrainSOM()
         {
             try
             {
@@ -41,7 +44,7 @@ namespace MLService.WebService.Controllers
                     throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
                 }
 
-                var root = HttpContext.Current.Server.MapPath("~/App_Data/Uploadfiles");
+                var root = HttpContext.Current.Server.MapPath(FILE_UPLOAD_PATH);
                 Directory.CreateDirectory(root);
                 var provider = new MultipartFormDataStreamProvider(root);
                 var result = await Request.Content.ReadAsMultipartAsync(provider);
@@ -62,7 +65,7 @@ namespace MLService.WebService.Controllers
                 var regions = JsonConvert.DeserializeObject<List<Region>>(parsedModel["Regions"].ToString());
 
  
-                var csvFile = result.FileData[0];
+                var csvFile = result.FileData.First();
 
                 SSOM model = new SSOM(width, height, learningRate, epoch);
                 model.Regions = regions;
@@ -105,6 +108,9 @@ namespace MLService.WebService.Controllers
                 };
 
                 var message = Request.CreateResponse(HttpStatusCode.OK, response);
+
+                File.Delete(result.FileData.First().LocalFileName);
+
                 return message;
 
             } catch(Exception ex)
@@ -112,6 +118,53 @@ namespace MLService.WebService.Controllers
                 var message = Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
                 return message;
             }
+
+        }
+
+        [HttpPost]
+        public async Task<HttpResponseMessage> PlotTrajectory()
+        {
+            try
+            {
+                HttpRequestMessage requestMessage = this.Request;
+
+                if (!requestMessage.Content.IsMimeMultipartContent())
+                {
+                    throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+                }
+
+                TrajectoryRequest request = new TrajectoryRequest();
+                
+                string root = System.Web.HttpContext.Current.Server.MapPath(FILE_UPLOAD_PATH);
+                var provider = new MultipartFormDataStreamProvider(root);
+
+                var result = await Request.Content.ReadAsMultipartAsync(provider);
+
+                var map = result.FormData["map"];
+
+                SOM som = JsonConvert.DeserializeObject<SOM>(map);
+
+                string file = provider.FileData.First().LocalFileName;
+
+                IReader reader = new CSVReader(file);
+
+                TrajectoryMapper trajectoryMapper = new TrajectoryMapper(som);
+                trajectoryMapper.GetData(reader);
+
+                TrajectoryResponse trajectoryResponse = new TrajectoryResponse()
+                {
+                    Trajectories = trajectoryMapper.GetTrajectories().ToArray()
+                };
+
+                File.Delete(result.FileData.First().LocalFileName);
+
+                return Request.CreateResponse(HttpStatusCode.OK, trajectoryResponse);
+
+            } catch(Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+           
 
         }
 

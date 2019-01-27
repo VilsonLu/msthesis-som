@@ -2,11 +2,14 @@
     function ($scope) {
 
         $scope.Data = {};
+        $scope.Trajectory = [];
         $scope.ShowLoader = false;
         $scope.ShowError = false;
         var nodes = [];
         var n = 20;
         var sen = 50;
+
+        var svg = {};
 
 
         function getLabels(nodes) {
@@ -25,12 +28,10 @@
 
             var w = $scope.Data.Width * sen;
             var h = $scope.Data.Height * sen;
-            var svg = d3.select("#chart").append("svg").attr("width", h).attr("height", w),
+            svg = d3.select("#chart").append("svg").attr("width", h).attr("height", w),
                 width = w,
                 height = h
                 ;
-
-
 
             var rgb_nodes = svg.append("g").attr("class", "nodes all");
 
@@ -68,38 +69,30 @@
                     return tooltip.style("visibility", "hidden");
                 });
 
-            //var lineData = [{ "x": 1, "y": 1 }
-            //    , { "x": 2, "y": 2 }
-            //    , { "x": 3, "y": 3 }
-            //    , { "x": 4, "y": 4 }
-            //    , { "x": 5, "y": 5 }
-            //    , { "x": 6, "y": 6 }
-            //    , { "x": 7, "y": 7 }
-            //    , { "x": 8, "y": 8 }
-            //    , { "x": 9, "y": 9 }
-            //    , { "x": 0, "y": 0 }
-
-            //    , { "x": 1, "y": 2 }];
-
-            //var coordinateMapper = function (d) {
-            //    return d * sen + 0.5 * sen
-            //}
-
-            //svg.selectAll("circle")
-            //    .data(lineData).enter()
-            //    .append("circle")
-            //    .attr("cy", function (d) { return coordinateMapper(d["x"]); })
-            //    .attr("cx", function (d) { return coordinateMapper(d["y"]); })
-            //    .attr("r", "6px")
-            //    .attr("fill", "red")
-
         };
+
+        var plotTrajectory = function () {
+
+            var data = $scope.Trajectory.Trajectories;
+            var coordinateMapper = function (d) {
+                return d * sen + 0.5 * sen
+            }
+
+            svg.selectAll("circle")
+                .data(data).enter()
+                .append("circle")
+                .attr("cy", function (d) { return coordinateMapper(d.Node.Coordinate.X); })
+                .attr("cx", function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
+                .attr("r", "6px")
+                .attr("fill", "red")
+
+        }
 
         var visualizeCluster = function() {
             d3.select("svg").remove();
             var w = $scope.Data.Width * sen;
             var h = $scope.Data.Height * sen;
-            var svg = d3.select("#chart").append("svg").attr("width", w).attr("height", h),
+            svg = d3.select("#chart").append("svg").attr("width", w).attr("height", h),
                 width = w,
                 height = h;
 
@@ -150,17 +143,30 @@
             } else {
                 visualizeSOM();
             }
+
+            var count = $scope.Trajectory.Trajectories.length;
+
+            if (count > 0) {
+                plotTrajectory();
+            }
         };
 
 
-        // On Trained Model
+        // Events
         $scope.$on("onTrainedModel",
             function (event, args) {
                 $scope.Data = args.message;
                 $scope.ShowLoader = false;
                 visualizeSOM();
-                console.log("Data in second controller");
+                console.log("Visualizing SOM");
             });
+
+        $scope.$on("onPlotTrajectory",
+            function (event, args) {
+                $scope.Trajectory = args.trajectory;
+                plotTrajectory();
+                console.log("Plotting Trajectory")
+            })
 
         $scope.$on("onShowLoader",
             function (event, args) {

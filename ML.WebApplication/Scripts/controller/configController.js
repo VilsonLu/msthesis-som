@@ -17,6 +17,7 @@
         $scope.Files = [];
 
         $scope.Map = {};
+        $scope.Trajectories = [];
 
         $scope.Region = {
             Label: "",
@@ -38,14 +39,12 @@
             }
         }
 
-
         // Methods
         $scope.TrainModel = function () {
 
             var data = $scope.Configuration;
 
             $scope.$broadcast("onShowLoader", { message: true });
-
 
             $http({
                 method: "POST",
@@ -73,6 +72,8 @@
                     $scope.$broadcast("onShowError", { message: true });
 
                 });
+
+            $scope.Files = [];
         };
 
         $scope.AddRegion = function () {
@@ -92,7 +93,34 @@
             window.saveAs(blob, `Map_${$scope.Map.MapId}.json`);
         }
 
+        $scope.PlotTrajectory = () => {
+
+            var data = new FormData();
+            data.append("map", angular.toJson($scope.Map));
+            data.append("file", $scope.Files[0]);
+
+            $http({
+                method: "POST",
+                url: "http://localhost:49621/api/ML/PlotTrajectory",
+                data: data,
+                headers: { 'Content-Type': undefined }, //this is important
+                transformRequest: angular.identity  //also important
+            }).then(
+                function (response) {
+
+
+                    var length = response.data;
+
+                    $scope.Trajectories = response.data;
+                    $scope.$broadcast("onPlotTrajectory", { trajectory: $scope.Trajectories });
+                },
+                function (error) {
+                    console.log('load failed');
+                });
+        };
+
         // Events
+
         $scope.$on("selectedFile", function (event, args) {
             $scope.$apply(function () {
                 //add the file object to the scope's files collection  

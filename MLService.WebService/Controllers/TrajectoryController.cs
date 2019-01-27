@@ -21,7 +21,7 @@ namespace MLService.WebService.Controllers
 
             return new TrajectoryResponse()
             {
-                Trajectories = trajectories
+                Trajectories = trajectories.ToArray()
             };
 
         }
