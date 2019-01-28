@@ -133,8 +133,33 @@
                     </div>
                 </form>
 
-                <!-- Trajectory configuration-->
+                <!-- Import Model-->
                 <div class="row col s12 m6">
+                    <form ng-submit="ImportModel()">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <div class="file-field input-field">
+                                    <div class="btn">
+                                        <span>File</span>
+                                        <input type="file" id="importModel" upload-files>
+                                    </div>
+                                    <div class="file-path-wrapper">
+                                        <input class="file-path validate" type="text">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <div>
+                                    <button type="submit" class="btn btn-default col s12">Import Model</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Trajectory configuration-->
                     <form ng-submit="PlotTrajectory()">
                         <div class="row">
                             <div class="input-field col s12">

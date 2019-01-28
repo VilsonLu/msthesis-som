@@ -70,10 +70,7 @@
                 function (error) {
                     $scope.$broadcast("onShowLoader", { message: false });
                     $scope.$broadcast("onShowError", { message: true });
-
                 });
-
-            $scope.Files = [];
         };
 
         $scope.AddRegion = function () {
@@ -91,6 +88,23 @@
             $scope.Map.Dataset = null;
             var blob = new Blob([JSON.stringify($scope.Map, undefined, 2)], { type: 'text/plain;charset=utf-8' });
             window.saveAs(blob, `Map_${$scope.Map.MapId}.json`);
+        }
+
+        $scope.ImportModel = function () {
+            var impportFile = $scope.Files[0];
+
+            var fileReader = new FileReader();
+
+            fileReader.addEventListener('loadend', (e) => {
+                $scope.Map = JSON.parse(e.srcElement.result);
+                $scope.Configuration.LearningRate = $scope.Map.ConstantLearningRate;
+                $scope.Configuration.Width = $scope.Map.Width;
+                $scope.Configuration.Height = $scope.Map.Height;
+                $scope.Configuration.Epoch = $scope.Map.Epoch;
+                $scope.$broadcast("onTrainedModel", { message: $scope.Map });
+            });
+
+            fileReader.readAsText(impportFile);
         }
 
         $scope.PlotTrajectory = () => {
@@ -117,6 +131,8 @@
                 function (error) {
                     console.log('load failed');
                 });
+
+            $scope.Files = [];
         };
 
         // Events
