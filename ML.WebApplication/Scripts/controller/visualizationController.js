@@ -38,7 +38,7 @@
             var nodes = flatten($scope.Data.Map);
             var labels = getLabels(nodes);
 
-            assignColorToLabel(labels);
+            //assignColorToLabel(labels);
 
             rgb_nodes
                 .selectAll("rect")
@@ -51,7 +51,9 @@
                 .attr("text", function (node) { return node.Label })
                 .style("fill",
                 function (node) {
-                    return rgb(dictColor[node.Label]);
+                    //var x = "rgb(" + node.Weights[0] + "," + node.Weights[0] + "," + node.Weights[0] + ")";
+                    var x = rgb(node.Weights);
+                    return x;
                 })
                 .on("mouseover",
                 function (node) {
@@ -112,10 +114,9 @@
                 .attr("width", sen)
                 .attr("height", sen)
                 .attr("text", function (node) { return node.Label })
-                .style("fill",
-                    function (node) {
-                        return rgb(dictColor[node.ClusterGroup]);
-                    })
+                .style("fill", (node) => {
+                    return rgb(dictColor[node.ClusterGroup]);
+                })
                 .on("mouseover",
                     function (node) {
                         mover();

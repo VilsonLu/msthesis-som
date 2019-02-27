@@ -71,22 +71,22 @@ namespace MLService.WebService.Controllers
                 model.Regions = regions;
 
                 var featureLabel = (string)parsedModel["FeatureLabel"];
-                var labels = ((string)parsedModel["Labels"]).Split(',').ToList();
+                //var labels = ((string)parsedModel["Labels"]).Split(',').ToList();
 
 
                 IReader reader = new CSVReader(csvFile.LocalFileName);
 
                 model.GetData(reader);
 
-                foreach (var item in labels)
-                {
-                    model.Dataset.SetLabel(item);
-                }
+                //foreach (var item in labels)
+                //{
+                //    model.Dataset.SetLabel(item);
+                //}
 
                 model.FeatureLabel = featureLabel;
                 model.InitializeMap();
                 model.Train();
-                model.LabelNodes();
+                //model.LabelNodes();
 
                 IClusterer cluster = new KMeansClustering();
 
