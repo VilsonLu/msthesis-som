@@ -15,7 +15,7 @@ namespace SOMLibrary
 
 
         #region Properties
-        public Dictionary<string, Region> Regions { get; set; }
+        public List<Region> Regions { get; set; }
 
         #endregion
 
@@ -26,26 +26,26 @@ namespace SOMLibrary
             ConstantLearningRate = 0;
             Epoch = 1;
             Map = new Node[Width, Height];
-            Regions = new Dictionary<string, Region>();
+            Regions = new List<Region>();
         }
 
         public SSOM(int x, int y) : base(x, y)
         {
-            Regions = new Dictionary<string, Region>();
+            Regions = new List<Region>();
         }
 
         public SSOM(int x, int y, double learningRate) : base(x, y, learningRate)
         {
-            Regions = new Dictionary<string, Region>();
+            Regions = new List<Region>();
         }
 
         public SSOM(int x, int y, double learningRate, int epoch) : base(x, y, learningRate, epoch)
         {
-            Regions = new Dictionary<string, Region>();
+            Regions = new List<Region>();
         }
 
 
-        protected override Node FindBestMatchingUnit(Instance rowInstance)
+        public override Node FindBestMatchingUnit(Instance rowInstance)
         {
             double bestDistance = double.MaxValue;
             Node bestNode = null;
@@ -60,18 +60,18 @@ namespace SOMLibrary
             int currentHeight = Height;
 
             // Check if the label has a region
-            Regions.TryGetValue(label, out Region region);
+            var region = Regions.FirstOrDefault(x => x.Label == label);
             if (region != null)
             {
                 startRow = region.TopLeft.X;
                 startCol = region.TopLeft.Y;
-                currentWidth = region.Height + startRow;
-                currentHeight = region.Width + startCol;
+                currentWidth = region.Width + startRow;
+                currentHeight = region.Height + startCol;
             }
 
-            for (int row = startRow; row < currentHeight; row++)
+            for (int row = startRow; row < currentWidth; row++)
             {
-                for (int col = startCol; col < currentWidth; col++)
+                for (int col = startCol; col < currentHeight; col++)
                 {
                     Node currentNode = Map[row, col];
                     double currentDistance = currentNode.GetDistance(instance);
@@ -88,6 +88,7 @@ namespace SOMLibrary
             return bestNode;
         }
 
+
         #region SSOM Helper Functions
 
         public void AddRegion(string label, Region region)
@@ -98,20 +99,34 @@ namespace SOMLibrary
             }
 
             // TODO: Add a validation to check if the region will be out of bound
-
-            if (Regions.ContainsKey(label))
+            
+            if (Regions.Any(x => x.Label == label))
             {
-                Regions[label] = region;
+                var index = Regions.FindIndex(x => x.Label == label);
+                Regions[index] = region;
             }
 
-            Regions.Add(label, region);
+            Regions.Add(region);
+        }
+
+        /// <summary>
+        /// Checks if the given node is in any region or not
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        private bool IsInAnyRegion(int x, int y)
+        {
+            var coordinate = new Coordinate(x, y);
+            var isInAnyRegion = Regions.Any(r => r.IsWithinRegion(coordinate));
+            return isInAnyRegion;
         }
 
         public bool IsValidRegion(Region region)
         {
             bool flag = true;
 
-            var regions = Regions.Values.ToList();
+            var regions = Regions.ToList();
 
             foreach (var item in regions)
             {

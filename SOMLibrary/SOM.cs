@@ -1,4 +1,5 @@
-﻿using SOMLibrary.DataModel;
+﻿using Newtonsoft.Json;
+using SOMLibrary.DataModel;
 using SOMLibrary.Implementation.NodeLabeller;
 using SOMLibrary.Interface;
 using System;
@@ -16,6 +17,8 @@ namespace SOMLibrary
     {
 
         #region Properties
+        [JsonProperty("MapId")]
+        public Guid MapId { get; set; }
 
         public double ConstantLearningRate { get; set; }
 
@@ -25,9 +28,20 @@ namespace SOMLibrary
 
         public int Height { get; set; }
 
-        private ILabel _labeller;
+        public int Epoch { get; set; }
 
+        public int TotalIteration { get; set; }
 
+        public string FeatureLabel { get; set; }
+
+        /// <summary>
+        /// Number of neighbors for K-NN
+        /// </summary>
+        public int K { get; set; } = 5;
+
+        #endregion
+
+        #region Calculated
 
         /// <summary>
         /// Map Radius (sigma)
@@ -37,29 +51,13 @@ namespace SOMLibrary
         {
             get
             {
-                return Math.Max(Width, Height) / 2;
+                return Math.Max(Width, Height) / 2.0;
             }
         }
 
-        public int Epoch { get; set; }
-
-        public int TotalIteration { get; set; }
-
-        private string _featureLabel;
-        public string FeatureLabel
-        {
-            get { return _featureLabel; }
-            set { _featureLabel = value; }
-        }
-
-        private int _k = 5;
-        public int K
-        {
-            get { return _k; }
-            set { _k = value; }
-        }
-
         #endregion
+
+        private ILabel _labeller;
 
         #region Constructor
 
@@ -108,12 +106,14 @@ namespace SOMLibrary
             int numOfIgnoreColumns = base.Dataset.GetIgnoreColumns().Count;
             int featureCounts = base.Dataset.Features.Length;
 
+            this.MapId = Guid.NewGuid();
+
             int weightCount = featureCounts - numOfIgnoreColumns;
             Random rand = new Random();
 
-            for (int row = 0; row < Height; row++)
+            for (int row = 0; row < Width; row++)
             {
-                for (int col = 0; col < Width; col++)
+                for (int col = 0; col < Height; col++)
                 {
                     var vectors = new double[weightCount];
                     for (int count = 0; count < weightCount; count++)
@@ -121,7 +121,6 @@ namespace SOMLibrary
 
                         vectors[count] = rand.NextDouble();
                     }
-
 
                     Node node = new Node(vectors, row, col);
                     Map[row, col] = node;
@@ -165,6 +164,9 @@ namespace SOMLibrary
             }
         }
 
+        /// <summary>
+        /// Give label to each node in the map
+        /// </summary>
         public void LabelNodes()
         {
             if (string.IsNullOrEmpty(this.FeatureLabel))
@@ -173,9 +175,9 @@ namespace SOMLibrary
             }
 
             _labeller = new KNNLabeller(base.Dataset, K, this.FeatureLabel);
-            for (int row = 0; row < Height; row++)
+            for (int row = 0; row < Width; row++)
             {
-                for (int col = 0; col < Width; col++)
+                for (int col = 0; col < Height; col++)
                 {
                     Node node = Map[row, col];
                     Map[row, col].Label = _labeller.GetLabel(node);
@@ -184,16 +186,16 @@ namespace SOMLibrary
         }
 
         #region SOM Functions
-        protected virtual Node FindBestMatchingUnit(Instance rowInstance)
+        public virtual Node FindBestMatchingUnit(Instance rowInstance)
         {
             double bestDistance = double.MaxValue;
             Node bestNode = null;
 
             var instance = base.Dataset.GetInstance<double>(rowInstance.OrderNo);
 
-            for (int row = 0; row < Height; row++)
+            for (int row = 0; row < Width; row++)
             {
-                for (int col = 0; col < Width; col++)
+                for (int col = 0; col < Height; col++)
                 {
                     Node currentNode = Map[row, col];
                     double currentDistance = currentNode.GetDistance(instance);
@@ -210,13 +212,13 @@ namespace SOMLibrary
             return bestNode;
         }
 
-        protected void UpdateNeighborhood(Node winningNode, Instance rowInstance, int iteration)
+        protected virtual void UpdateNeighborhood(Node winningNode, Instance rowInstance, int iteration)
         {
             var instance = base.Dataset.GetInstance<double>(rowInstance.OrderNo);
 
-            for (int row = 0; row < Height; row++)
+            for (int row = 0; row < Width; row++)
             {
-                for (int col = 0; col < Width; col++)
+                for (int col = 0; col < Height; col++)
                 {
                     var currentNode = Map[row, col];
                     var distanceToWinningNode = Math.Pow(winningNode.GetGridDistance(currentNode), 2);
@@ -306,5 +308,7 @@ namespace SOMLibrary
         }
 
         #endregion
+
+
     }
 }

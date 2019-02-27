@@ -33,6 +33,9 @@
     <Reference Include="LumenWorks.Framework.IO, Version=3.9.1.0, Culture=neutral, PublicKeyToken=5ad3ea2f85776344, processorArchitecture=MSIL">
       <HintPath>..\packages\LumenWorksCsvReader.3.9.1\lib\net20\LumenWorks.Framework.IO.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -47,12 +50,18 @@
     <Compile Include="DataModel\Dataset.cs" />
     <Compile Include="DataModel\Instance.cs" />
     <Compile Include="Extensions\Extension.cs" />
+    <Compile Include="IClusterer.cs" />
+    <Compile Include="Implementation\Clusterer\KMeansClustering.cs" />
+    <Compile Include="Implementation\ClusterMeasure\DaviesBouldinIndex.cs" />
     <Compile Include="Implementation\CSVReader.cs" />
     <Compile Include="Implementation\DistanceMeasure\EuclideanDistance.cs" />
     <Compile Include="Implementation\NodeLabeller\KNNLabeller.cs" />
+    <Compile Include="Implementation\RandomNumberGenerator.cs" />
     <Compile Include="Implementation\WFDBReader.cs" />
+    <Compile Include="Interface\IClusterMeasure.cs" />
     <Compile Include="Interface\IDistanceMeasure.cs" />
     <Compile Include="Interface\ILabel.cs" />
+    <Compile Include="Interface\IRandom.cs" />
     <Compile Include="Interface\IReader.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="Node.cs" />
@@ -64,12 +73,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ThirdParty\WfdbCsharpWrapper\Source\WfdbCsharpWrapper.Library\WfdbCsharpWrapper.Library.csproj">
-      <Project>{c8f0114d-a28e-48d7-9013-3fd6b3c8aedd}</Project>
-      <Name>WfdbCsharpWrapper.Library</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

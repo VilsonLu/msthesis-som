@@ -46,7 +46,7 @@
                 .append("div")
                 .style("position", "absolute")
                 .style("z-index", "10")
-                .style("visibility", "hidden")
+                .style("visibility", "hidden");
 
             var rgb_nodes = svg.append('g').attr('class', 'nodes all');
 
@@ -71,15 +71,15 @@
                 .attr('text', function (node) { return node.Label })
                 .style('fill', function (node) {
 
-                    if (node.Label == 'Amphibians') {
+                    if (node.Label == '1') {
                         return rgb(labelColor['green'])
-                    } else if (node.Label == 'Birds') {
+                    } else if (node.Label == '2') {
                         return rgb(labelColor['cyan'])
-                    } else if (node.Label == 'Cnidaria') {
+                    } else if (node.Label == '3') {
                         return rgb(labelColor['blue'])
-                    } else if (node.Label == 'Crustacean') {
+                    } else if (node.Label == '4') {
                         return rgb(labelColor['indigo'])
-                    } else if (node.Label == 'Fish') {
+                    } else if (node.Label == '5') {
                         return rgb(labelColor['violet'])
                     } else if (node.Label == 'Insects') {
                         return rgb(labelColor['orange'])

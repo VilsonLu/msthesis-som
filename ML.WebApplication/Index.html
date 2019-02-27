@@ -1,0 +1,322 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>SOM Visualization</title>
+    <link href="Content/materialize/css/materialize.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="Content/Site.css" rel="stylesheet" />
+</head>
+<body ng-app="mlApp">
+    <nav>
+        <div class="nav-wrapper">
+            <a href="#" class="left brand-logo">SOM.io</a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a href="sass.html">About</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div ng-controller="configController">
+        <div class="row">
+            <div class="col s12 m12 l8">
+
+                <div class="row">
+                    <h4>Configuration</h4>
+                </div>
+                <!-- Main configuration-->
+                <form ng-submit="TrainModel()" class="col s12 m6">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="epoch">Epoch</label>
+                            <input type="number" id="epoch" min="0" ng-model="Configuration.Epoch">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="learningrate">Learning Rate:</label>
+                            <input type="number" id="learningrate" step="0.1" max="1" min="0" ng-model="Configuration.LearningRate">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="somX">SOM Size X</label>
+                            <input type="number" id="somX" min="0" ng-model="Configuration.Width">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="somY">SOM Size Y</label>
+                            <input type="number" id="somY" min="0" ng-model="Configuration.Height">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="kmeans">Number of Clusters</label>
+                            <input type="number" id="kmeans" min="0" ng-model="Configuration.KMeans">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="labels">Labels</label>
+                            <input type="text" id="labels" data-role="tagsinput" ng-model="Configuration.Labels">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="featureLabel">Target Label</label>
+                            <input type="text" id="featureLabel" ng-model="Configuration.FeatureLabel">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <a class="waves-effect waves-light btn modal-trigger col s12" id="regions" href="#modal1">Add Regions</a>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <table class="highlight striped col-s12">
+                            <thead>
+                                <tr>
+                                    <th>Label</th>
+                                    <th>Regions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="r in Configuration.Regions">
+                                    <td>{{ r.Label }}</td>
+                                    <td>({{r.TopLeft.X}}, {{r.TopLeft.Y}}), ({{r.TopRight.X}}, {{r.TopRight.Y}}), ({{r.BottomLeft.X}}, {{r.BottomLeft.Y}}), ({{r.BottomRight.X}}, {{r.BottomRight.Y}})</td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <button id="clearRegionButton" type="button" class="btn btn-default col s12" ng-click="RemoveRegions()">Remove Region</button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <div class="file-field input-field">
+                                <div class="btn">
+                                    <span>File</span>
+                                    <input type="file" id="dataset" upload-files>
+                                </div>
+                                <div class="file-path-wrapper">
+                                    <input class="file-path validate" type="text">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <div>
+                                <button type="submit" class="btn btn-default col s12">Train</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <button id="exportModel" type="button" class="btn btn-default col s12" ng-click="ExportModel()">Export Model</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Import Model-->
+                <div class="row col s12 m6">
+                    <form ng-submit="ImportModel()">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <div class="file-field input-field">
+                                    <div class="btn">
+                                        <span>File</span>
+                                        <input type="file" id="importModel" upload-files>
+                                    </div>
+                                    <div class="file-path-wrapper">
+                                        <input class="file-path validate" type="text">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <div>
+                                    <button type="submit" class="btn btn-default col s12">Import Model</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Trajectory configuration-->
+                    <form ng-submit="PlotTrajectory()">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <div class="file-field input-field">
+                                    <div class="btn">
+                                        <span>File</span>
+                                        <input type="file" id="trajectory" upload-files>
+                                    </div>
+                                    <div class="file-path-wrapper">
+                                        <input class="file-path validate" type="text">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <div>
+                                    <button type="submit" class="btn btn-default col s12">Plot Trajectory</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Modal Structure -->
+                <div id="modal1" class="modal">
+                    <div class="modal-content">
+                        <div>
+                            <h3>Adding Region</h3>
+                            <div class="row col s12">
+                                <div class="col s12">
+                                    <h5>Top Left</h5>
+                                    <div class="col s6">
+                                        <div class="input-field">
+                                            <label for="x0">X</label>
+                                            <input type="number" id="x0" min="0" ng-model="Region.TopLeft.X">
+                                        </div>
+                                    </div>
+                                    <div class="col s6">
+                                        <div class="input-field">
+                                            <label for="y0">Y</label>
+                                            <input type="number" id="y0" min="0" ng-model="Region.TopLeft.Y">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col s12">
+                                    <h5>Top Right</h5>
+                                    <div class="col s6">
+                                        <div class="input-field">
+                                            <label for="x1">X</label>
+                                            <input type="number" id="x1" min="0" ng-model="Region.TopRight.X">
+                                        </div>
+                                    </div>
+                                    <div class="col s6">
+                                        <div class="input-field">
+                                            <label for="y1">Y</label>
+                                            <input type="number" id="y1" min="0" ng-model="Region.TopRight.Y">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col s12">
+                                    <h5>Bottom Left</h5>
+                                    <div class="col s6">
+                                        <div class="input-field">
+                                            <label for="x2">X</label>
+                                            <input type="number" id="x2" min="0" ng-model="Region.BottomLeft.X">
+                                        </div>
+                                    </div>
+                                    <div class="col s6">
+                                        <div class="input-field">
+                                            <label for="y2">Y</label>
+                                            <input type="number" id="y2" min="0" ng-model="Region.BottomLeft.Y">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col s12">
+                                    <h5>Bottom Right</h5>
+                                    <div class="col s6">
+                                        <div class="input-field">
+                                            <label for="x0">X</label>
+                                            <input type="number" id="x0" min="0" ng-model="Region.BottomRight.X">
+                                        </div>
+                                    </div>
+                                    <div class="col s6">
+                                        <div class="input-field">
+                                            <label for="y3">Y</label>
+                                            <input type="number" id="y3" min="0" ng-model="Region.BottomRight.Y">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col s12">
+                                    <div class="col s12">
+                                        <div class="input-field">
+                                            <label for="rLabel">Label</label>
+                                            <input type="text" id="rLabel" min="0" ng-model="Region.Label">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col s12">
+                                    <div class="input-field col s12">
+                                        <button id="addRegionButton" type="button" class="btn btn-default col s12" ng-click="AddRegion()">Add Region</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+             
+            <div class="col s12 m12 l4" ng-controller="visualizationController">
+                <h4>Visualization</h4>
+                <div class="progress" ng-show="ShowLoader">
+                    <div class="indeterminate"></div>
+                </div>
+
+                <div class="card-panel red lighten-3" ng-show="ShowError">
+                    <p>Encountered error. Please try again later.</p>
+                </div>
+
+                <div>
+                    <div id="chart">
+                    </div>
+                    <div>
+                        <input type="checkbox" id="check" ng-model="isShowCluster" ng-change="showCluster()">
+                        <label for="check">Show K-Means Clusters</label>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+        </div>
+    </div>
+
+    <script src="Scripts/jquery-3.0.0.min.js"></script>
+    <script src="Scripts/angular.min.js"></script>
+    <script src="Scripts/materialize/materialize.min.js"></script>
+    <script src="Scripts/FileSaver.min.js"></script>
+    <script src="Scripts/bootstrap-tagsinput.min.js"></script>
+    <script src="Scripts/ng-file-upload-shim.min.js"></script>
+    <script src="Scripts/ng-file-upload.min.js"></script>
+    <script src="Scripts/d3/d3.js"></script>
+    <script src="Scripts/utility.js"></script>
+
+    <script src="Scripts/controller/main.js"></script>
+    <script src="Scripts/controller/directives.js"></script>
+    <script src="Scripts/controller/configController.js"></script>
+    <script src="Scripts/controller/visualizationController.js"></script>
+</body>
+</html>

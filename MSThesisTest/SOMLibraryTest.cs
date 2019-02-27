@@ -5,6 +5,10 @@ using SOMLibrary;
 using SOMLibrary.Interface;
 using SOMLibrary.Implementation;
 using SOMLibrary.DataModel;
+using FluentAssertions;
+using ML.TrajectoryAnalysis.Implementation;
+using ML.TrajectoryAnalysis;
+using ML.Common.Implementation;
 
 namespace MSThesisTest
 {
@@ -159,13 +163,13 @@ namespace MSThesisTest
             var p2 = new Coordinate(4, 5);
             var p3 = new Coordinate(1, 2);
             var p4 = new Coordinate(4, 2);
-            var region1 = new Region(p1, p2, p3, p4);
+            var region1 = new Region(p1, p2, p3, p4, "");
 
             var r1 = new Coordinate(3, 7);
             var r2 = new Coordinate(6, 7);
             var r3 = new Coordinate(3, 4);
             var r4 = new Coordinate(6, 4);
-            var region2 = new Region(r1, r2, r3, r4);
+            var region2 = new Region(r1, r2, r3, r4, "");
 
             // Act
             bool result = region1.IsOverlappedRegion(region2);
@@ -184,13 +188,13 @@ namespace MSThesisTest
             var p2 = new Coordinate(4, 5);
             var p3 = new Coordinate(1, 2);
             var p4 = new Coordinate(4, 2);
-            var region1 = new Region(p1, p2, p3, p4);
+            var region1 = new Region(p1, p2, p3, p4, "");
 
             var r1 = new Coordinate(7, 3);
             var r2 = new Coordinate(9, 3);
             var r3 = new Coordinate(7, 1);
             var r4 = new Coordinate(9, 4);
-            var region2 = new Region(r1, r2, r3, r4);
+            var region2 = new Region(r1, r2, r3, r4, "");
 
             // Act
             bool result = region1.IsOverlappedRegion(region2);
@@ -209,7 +213,7 @@ namespace MSThesisTest
             var p2 = new Coordinate(4, 5);
             var p3 = new Coordinate(1, 2);
             var p4 = new Coordinate(4, 2);
-            var region = new Region(p1, p2, p3, p4);
+            var region = new Region(p1, p2, p3, p4, "");
 
             var point = new Coordinate(2, 3);
 
@@ -229,7 +233,7 @@ namespace MSThesisTest
             var p2 = new Coordinate(4, 5);
             var p3 = new Coordinate(1, 2);
             var p4 = new Coordinate(4, 2);
-            var region = new Region(p1, p2, p3, p4);
+            var region = new Region(p1, p2, p3, p4, "");
 
             var point = new Coordinate(1, 4);
 
@@ -249,7 +253,7 @@ namespace MSThesisTest
             var p2 = new Coordinate(4, 5);
             var p3 = new Coordinate(1, 2);
             var p4 = new Coordinate(4, 2);
-            var region = new Region(p1, p2, p3, p4);
+            var region = new Region(p1, p2, p3, p4, "");
 
             var point = new Coordinate(4, 1);
 
@@ -266,10 +270,10 @@ namespace MSThesisTest
         {
             // Arrange
             var p1 = new Coordinate(15, 15);
-            var p2 = new Coordinate(15, 20);
-            var p3 = new Coordinate(20, 15);
+            var p2 = new Coordinate(20, 15);
+            var p3 = new Coordinate(15, 20);
             var p4 = new Coordinate(20, 20);
-            var region = new Region(p1, p2, p3, p4);
+            var region = new Region(p1, p2, p3, p4, "");
 
 
             // Act
@@ -285,10 +289,10 @@ namespace MSThesisTest
         {
             // Arrange
             var p1 = new Coordinate(15, 15);
-            var p2 = new Coordinate(15, 20);
-            var p3 = new Coordinate(20, 15);
+            var p2 = new Coordinate(20, 15);
+            var p3 = new Coordinate(15, 20);
             var p4 = new Coordinate(20, 20);
-            var region = new Region(p1, p2, p3, p4);
+            var region = new Region(p1, p2, p3, p4, "");
 
             // Act
             int result = region.Width;
@@ -298,26 +302,56 @@ namespace MSThesisTest
             Assert.AreEqual(expectedResult, result);
         }
 
+        [TestMethod]
+        public void Instance_ToString_GetTheConcatenatedValue()
+        {
+            Instance instance = new Instance();
+            instance.OrderNo = 1;
+
+            object[] values = { 0.5, 0.7, 0.8, 0.9 };
+
+            instance.Values = values;
+
+            var actualResult = instance.ToString();
+
+            var expectedResult = "0.5 0.7 0.8 0.9";
+
+            actualResult.Should().BeEquivalentTo(expectedResult);
+        }
 
 
+        [TestMethod]
         public void Test_Method()
         {
-            // Arrange
-            string filename = @"C:\Users\Vilson\Documents\Visual Studio 2017\Projects\MSThesis\SOMClient\Dataset\Iris.csv";
-            IReader reader = new CSVReader(filename);
-            SOM som = new SOM(10, 10, 0.5);
 
-            som.GetData(reader);
-            som.FeatureLabel = "Species";
+            List<Trajectory> trajectoriesA = new List<Trajectory>();
+            List<Trajectory> trajectoriesB = new List<Trajectory>();
 
-            Dataset dataset = som.Dataset;
-            dataset.SetKey("Id");
-            dataset.SetLabel("Species");
 
-            // Act
-            som.Train();
-            som.LabelNodes();
-            bool test = true;
+            CompressionDissimilarityMeasure cdm = new CompressionDissimilarityMeasure(new FileHelper());
+            Instance instance = new Instance();
+            instance.OrderNo = 1;
+
+            object[] values = { 0.5, 0.7, 0.8, 0.9 };
+
+            instance.Values = values;
+            trajectoriesA.Add(new Trajectory()
+            {
+                Instance = instance
+            });
+
+            instance = new Instance();
+            instance.OrderNo = 1;
+
+            object[] values2 = { 0.1, 0.7, 0.2, 0.9 };
+
+            instance.Values = values2;
+            trajectoriesB.Add(new Trajectory()
+            {
+                Instance = instance
+            });
+
+            double score = cdm.MeasureSimilarity(trajectoriesA, trajectoriesB);
         }
     }
 

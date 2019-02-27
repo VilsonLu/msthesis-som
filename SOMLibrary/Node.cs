@@ -18,6 +18,8 @@ namespace SOMLibrary
 
         public string Label { get; set; }
 
+        public int ClusterGroup { get; set; }
+
 
         public Node(double[] weights, int x, int y)
         {

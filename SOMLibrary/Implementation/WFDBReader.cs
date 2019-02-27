@@ -10,6 +10,8 @@ namespace SOMLibrary.Implementation
 {
     public class WFDBReader : IReader
     {
+        public string FileName => throw new NotImplementedException();
+
         public Dataset Read()
         {
             throw new NotImplementedException();
