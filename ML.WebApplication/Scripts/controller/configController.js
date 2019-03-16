@@ -111,7 +111,7 @@
 
             var data = new FormData();
             data.append("map", angular.toJson($scope.Map));
-            data.append("file", $scope.Files[0]);
+            data.append("file", $scope.Files[1]);
 
             $http({
                 method: "POST",

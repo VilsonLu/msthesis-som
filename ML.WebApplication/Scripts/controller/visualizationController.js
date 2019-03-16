@@ -74,21 +74,34 @@
         var plotTrajectory = function () {
 
             var data = $scope.Trajectory.Trajectories;
+
             var coordinateMapper = function (d) {
                 return d * sen + 0.5 * sen
             }
 
-            svg.selectAll("circle")
-                .data(data).enter()
-                .append("circle")
-                .attr("cy", function (d) { return coordinateMapper(d.Node.Coordinate.X); })
-                .attr("cx", function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
-                .attr("r", "6px")
-                .attr("fill", "red")
+            var lineFunction = d3.svg.line()
+                .x(function (d) { return coordinateMapper(d.Node.Coordinate.X); })
+                .y(function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
+                .interpolate('linear');
+
+            //The line SVG Path we draw
+            var lineGraph = svg.append("path")
+                .attr("d", lineFunction(data))
+                .attr("stroke", "blue")
+                .attr("stroke-width", 2)
+                .attr("fill", "none");
+
+            //svg.selectAll("circle")
+            //    .data(data).enter()
+            //    .append("circle")
+            //    .attr("cy", function (d) { return coordinateMapper(d.Node.Coordinate.X); })
+            //    .attr("cx", function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
+            //    .attr("r", "6px")
+            //    .attr("fill", "red")
 
         }
 
-        var visualizeCluster = function() {
+        var visualizeCluster = function () {
             d3.select("svg").remove();
             var w = $scope.Data.Width * sen;
             var h = $scope.Data.Height * sen;
@@ -113,31 +126,31 @@
                 .attr("height", sen)
                 .attr("text", function (node) { return node.Label })
                 .style("fill",
-                    function (node) {
-                        return rgb(dictColor[node.ClusterGroup]);
-                    })
+                function (node) {
+                    return rgb(dictColor[node.ClusterGroup]);
+                })
                 .on("mouseover",
-                    function (node) {
-                        mover();
-                        return tooltip.style("visibility", "visible")
-                            .text(node.Label);
-                    })
+                function (node) {
+                    mover();
+                    return tooltip.style("visibility", "visible")
+                        .text(node.Label);
+                })
                 .on("mousemove",
-                    function () {
-                        return tooltip.style("top", (event.pageY - 10) + "px")
-                            .style("left", (event.pageX + 10) + "px");
-                    })
+                function () {
+                    return tooltip.style("top", (event.pageY - 10) + "px")
+                        .style("left", (event.pageX + 10) + "px");
+                })
                 .on("mouseout",
-                    function (node) {
-                        mout();
-                        return tooltip.style("visibility", "hidden");
-                    });
+                function (node) {
+                    mout();
+                    return tooltip.style("visibility", "hidden");
+                });
         }
 
 
         // Shows the cluster group
         $scope.isShowCluster = false;
-        $scope.showCluster = function() {
+        $scope.showCluster = function () {
             if ($scope.isShowCluster) {
                 visualizeCluster();
             } else {

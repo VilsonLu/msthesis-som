@@ -144,7 +144,7 @@ namespace MLService.WebService.Controllers
 
                 SOM som = JsonConvert.DeserializeObject<SOM>(map);
 
-                string file = provider.FileData.First().LocalFileName;
+                string file = provider.FileData.Last().LocalFileName;
 
                 IReader reader = new CSVReader(file);
 
