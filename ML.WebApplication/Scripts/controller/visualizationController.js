@@ -75,6 +75,17 @@
 
             var data = $scope.Trajectory.Trajectories;
 
+            var dataLength = data.length;
+
+            var index = 0;
+
+            var colorMapper = function () {
+                index = index++;
+                var color = 255 -  (255/index);
+                return 'rgb(255, 255, ' + color + ')';
+
+            }
+
             var coordinateMapper = function (d) {
                 return d * sen + 0.5 * sen
             }
@@ -87,17 +98,18 @@
             //The line SVG Path we draw
             var lineGraph = svg.append("path")
                 .attr("d", lineFunction(data))
-                .attr("stroke", "blue")
-                .attr("stroke-width", 2)
+                .attr("stroke", colorMapper(index++))
+                .attr("stroke-width", 5)
                 .attr("fill", "none");
 
-            //svg.selectAll("circle")
-            //    .data(data).enter()
-            //    .append("circle")
-            //    .attr("cy", function (d) { return coordinateMapper(d.Node.Coordinate.X); })
-            //    .attr("cx", function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
-            //    .attr("r", "6px")
-            //    .attr("fill", "red")
+            svg.selectAll("circle")
+                .data(data).enter()
+                .append("circle")
+                .attr("cx", function (d) { return coordinateMapper(d.Node.Coordinate.X); })
+                .attr("cy", function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
+                .attr("r", "6px")
+                .attr("fill", "red")
+
 
         }
 
