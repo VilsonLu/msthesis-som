@@ -52,43 +52,87 @@
                 .style("fill",
                 function (node) {
                     return rgb(dictColor[node.Label]);
-                })
-                .on("mouseover",
-                function (node) {
-                    mover();
-                    return tooltip.style("visibility", "visible")
-                        .text(node.Label);
-                })
-                .on("mousemove",
-                function () {
-                    return tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
-                })
-                .on("mouseout",
-                function (node) {
-                    mout();
-                    return tooltip.style("visibility", "hidden");
                 });
+                //.on("mouseover",
+                //function (node) {
+                //    mover();
+                //    return tooltip.style("visibility", "visible")
+                //        .text(node.Label);
+                //})
+                //.on("mousemove",
+                //function () {
+                //    return tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
+                //})
+                //.on("mouseout",
+                //function (node) {
+                //    mout();
+                //    return tooltip.style("visibility", "hidden");
+                //});
 
         };
 
         var plotTrajectory = function () {
 
             var data = $scope.Trajectory.Trajectories;
+            var newdata = data.map((p, index) => index === data.length - 1 ? [p] : [p, data[index + 1]]);
+            var dataLength = data.length;
+
+            var index = 0;
+
+            var lineInterpolator = function (d) {
+
+                var interval = Math.round(255 / dataLength);
+                var index = d[0].Instance.OrderNo * interval;
+
+                var green = 0 + index;
+                var blue = 255 - index;
+
+                var rgb = "rgb(0, " + green + "," + blue + ")";
+                console.log(rgb);
+                return rgb;
+            }
+
+            var dotsInterpolator = function (d) {
+
+                var interval = Math.round(255 / dataLength);
+                var index = d.Instance.OrderNo * interval;
+
+                var green = 0 + index;
+                var blue = 255 - index;
+
+                var rgb = "rgb(0, " + green + "," + blue + ")";
+                console.log(rgb);
+                return rgb;
+            }
+
             var coordinateMapper = function (d) {
                 return d * sen + 0.5 * sen
             }
 
+            var lineFunction = d3.line()
+                .x(function (d) { return coordinateMapper(d.Node.Coordinate.X); })
+                .y(function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
+                .curve(d3.curveLinear);
+
+            //The line SVG Path we draw
+            var lineGraph = svg.selectAll("path")
+                .data(newdata).enter().append("path")
+                .attr("d", p => lineFunction(p))
+                .attr("stroke", p => lineInterpolator(p))
+                .attr("stroke-width", 5)
+                .attr("fill", "none");
+
             svg.selectAll("circle")
                 .data(data).enter()
                 .append("circle")
-                .attr("cy", function (d) { return coordinateMapper(d.Node.Coordinate.X); })
-                .attr("cx", function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
+                .attr("cx", function (d) { return coordinateMapper(d.Node.Coordinate.X); })
+                .attr("cy", function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
                 .attr("r", "6px")
-                .attr("fill", "red")
+                .attr("fill", p => dotsInterpolator(p));
 
         }
 
-        var visualizeCluster = function() {
+        var visualizeCluster = function () {
             d3.select("svg").remove();
             var w = $scope.Data.Width * sen;
             var h = $scope.Data.Height * sen;
@@ -113,31 +157,31 @@
                 .attr("height", sen)
                 .attr("text", function (node) { return node.Label })
                 .style("fill",
-                    function (node) {
-                        return rgb(dictColor[node.ClusterGroup]);
-                    })
+                function (node) {
+                    return rgb(dictColor[node.ClusterGroup]);
+                })
                 .on("mouseover",
-                    function (node) {
-                        mover();
-                        return tooltip.style("visibility", "visible")
-                            .text(node.Label);
-                    })
+                function (node) {
+                    mover();
+                    return tooltip.style("visibility", "visible")
+                        .text(node.Label);
+                })
                 .on("mousemove",
-                    function () {
-                        return tooltip.style("top", (event.pageY - 10) + "px")
-                            .style("left", (event.pageX + 10) + "px");
-                    })
+                function () {
+                    return tooltip.style("top", (event.pageY - 10) + "px")
+                        .style("left", (event.pageX + 10) + "px");
+                })
                 .on("mouseout",
-                    function (node) {
-                        mout();
-                        return tooltip.style("visibility", "hidden");
-                    });
+                function (node) {
+                    mout();
+                    return tooltip.style("visibility", "hidden");
+                });
         }
 
 
         // Shows the cluster group
         $scope.isShowCluster = false;
-        $scope.showCluster = function() {
+        $scope.showCluster = function () {
             if ($scope.isShowCluster) {
                 visualizeCluster();
             } else {
