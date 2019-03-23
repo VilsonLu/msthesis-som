@@ -79,31 +79,19 @@
 
             var index = 0;
 
-            var lineInterpolator = function (d) {
 
-                var interval = Math.round(255 / dataLength);
-                var index = d[0].Instance.OrderNo * interval;
 
-                var green = 0 + index;
-                var blue = 255 - index;
-
-                var rgb = "rgb(0, " + green + "," + blue + ")";
-                console.log(rgb);
-                return rgb;
+            var interpolator = function (d) {
+                return d / dataLength;
             }
 
-            var dotsInterpolator = function (d) {
-
-                var interval = Math.round(255 / dataLength);
-                var index = d.Instance.OrderNo * interval;
-
-                var green = 0 + index;
-                var blue = 255 - index;
-
-                var rgb = "rgb(0, " + green + "," + blue + ")";
-                console.log(rgb);
-                return rgb;
+            var timeInterpolator = function (d) {
+                var interpolatedNum = interpolator(d);
+                var color = d3.interpolateLab("red", "blue")(interpolatedNum);
+                console.log(`${d} : ${interpolatedNum} : ${color} `);
+                return color;
             }
+
 
             var coordinateMapper = function (d) {
                 return d * sen + 0.5 * sen
@@ -118,7 +106,7 @@
             var lineGraph = svg.selectAll("path")
                 .data(newdata).enter().append("path")
                 .attr("d", p => lineFunction(p))
-                .attr("stroke", p => lineInterpolator(p))
+                .attr("stroke", p => timeInterpolator(p[0].Instance.OrderNo))
                 .attr("stroke-width", 5)
                 .attr("fill", "none");
 
@@ -128,7 +116,7 @@
                 .attr("cx", function (d) { return coordinateMapper(d.Node.Coordinate.X); })
                 .attr("cy", function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
                 .attr("r", "6px")
-                .attr("fill", p => dotsInterpolator(p));
+                .attr("fill", p => timeInterpolator(p.Instance.OrderNo));
 
         }
 
@@ -188,9 +176,8 @@
                 visualizeSOM();
             }
 
-            var count = $scope.Trajectory.Trajectories.length;
 
-            if (count > 0) {
+            if ($scope.Trajectory.length > 0) {
                 plotTrajectory();
             }
         };
