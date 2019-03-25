@@ -36,7 +36,7 @@ function mout(d) {
             .duration(1000)
             .style("fill-opacity", 1)
         ;
-};
+}
 
 function rgb(array) {
     return "rgb(" + array.map(function (r) { return Math.round(r); }).join(",") + ")";
