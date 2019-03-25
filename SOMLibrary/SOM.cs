@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SOMLibrary.DataModel;
+using SOMLibrary.Implementation.LearningRate;
 using SOMLibrary.Implementation.NodeLabeller;
 using SOMLibrary.Interface;
 using System;
@@ -17,17 +18,29 @@ namespace SOMLibrary
     {
 
         #region Properties
-        [JsonProperty("MapId")]
         public Guid MapId { get; set; }
-
+   
+        /// <summary>
+        /// Learning Rate
+        /// </summary>
         public double ConstantLearningRate { get; set; }
 
         public Node[,] Map { get; set; }
 
+        /// <summary>
+        /// Width of the map (X)
+        /// </summary>
         public int Width { get; set; }
 
+        /// <summary>
+        /// Height of the map (Y)
+        /// </summary>
         public int Height { get; set; }
 
+
+        /// <summary>
+        /// Number of times it will train using the dataset
+        /// </summary>
         public int Epoch { get; set; }
 
         public int TotalIteration { get; set; }
@@ -37,7 +50,7 @@ namespace SOMLibrary
         /// <summary>
         /// Number of neighbors for K-NN
         /// </summary>
-        public int K { get; set; } = 5;
+        public int K { get; set; } = 7;
 
         #endregion
 
@@ -57,7 +70,15 @@ namespace SOMLibrary
 
         #endregion
 
+        /// <summary>
+        /// To label the nodes
+        /// </summary>
         private ILabel _labeller;
+
+        /// <summary>
+        /// To calculate the decay of the learning rate
+        /// </summary>
+        private ILearningRate _learningRate;
 
         #region Constructor
 
@@ -68,6 +89,8 @@ namespace SOMLibrary
             ConstantLearningRate = 0;
             Epoch = 1;
             Map = new Node[Width, Height];
+            _learningRate = new PowerSeriesLearningRate(ConstantLearningRate);
+
         }
 
         public SOM(int x, int y)
@@ -77,11 +100,13 @@ namespace SOMLibrary
             ConstantLearningRate = 0.5;
             Epoch = 1;
             Map = new Node[x, y];
+            _learningRate = new PowerSeriesLearningRate(ConstantLearningRate);
         }
 
         public SOM(int x, int y, double learningRate) : this(x, y)
         {
             ConstantLearningRate = learningRate;
+            _learningRate = new PowerSeriesLearningRate(ConstantLearningRate);
             Epoch = 1;
         }
 
@@ -232,14 +257,13 @@ namespace SOMLibrary
         }
 
         /// <summary>
-        /// Learning Rate Decay Function
-        /// Formula: L(t+1) = LearningRate * exp(- iteration / total iterations)
+        /// Calculate how fast model will learn every iteration
         /// </summary>
         /// <param name="iteration"></param>
         /// <returns></returns>
         protected double LearningRateDecay(int iteration)
         {
-            double learningRate = ConstantLearningRate * Math.Exp(-iteration / TotalIteration);
+            double learningRate = _learningRate.CalculateLearningRate(iteration, TotalIteration);
             return learningRate;
         }
 

@@ -33,6 +33,9 @@
     <Reference Include="LumenWorks.Framework.IO, Version=3.9.1.0, Culture=neutral, PublicKeyToken=5ad3ea2f85776344, processorArchitecture=MSIL">
       <HintPath>..\packages\LumenWorksCsvReader.3.9.1\lib\net20\LumenWorks.Framework.IO.dll</HintPath>
     </Reference>
+    <Reference Include="MinimumEditDistance, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LevenshteinMinimumEditDistance.1.2.0\lib\MinimumEditDistance.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -55,6 +58,8 @@
     <Compile Include="Implementation\ClusterMeasure\DaviesBouldinIndex.cs" />
     <Compile Include="Implementation\CSVReader.cs" />
     <Compile Include="Implementation\DistanceMeasure\EuclideanDistance.cs" />
+    <Compile Include="Implementation\LearningRate\PowerSeriesLearningRate.cs" />
+    <Compile Include="Interface\ILearningRate.cs" />
     <Compile Include="Implementation\NodeLabeller\KNNLabeller.cs" />
     <Compile Include="Implementation\RandomNumberGenerator.cs" />
     <Compile Include="Implementation\WFDBReader.cs" />

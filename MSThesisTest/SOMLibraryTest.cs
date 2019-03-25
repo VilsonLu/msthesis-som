@@ -9,6 +9,7 @@ using FluentAssertions;
 using ML.TrajectoryAnalysis.Implementation;
 using ML.TrajectoryAnalysis;
 using ML.Common.Implementation;
+using SOMLibrary.Implementation.LearningRate;
 
 namespace MSThesisTest
 {
@@ -319,39 +320,61 @@ namespace MSThesisTest
             actualResult.Should().BeEquivalentTo(expectedResult);
         }
 
+        [TestMethod]
+        public void PowerSeriesLearning_CalculateLearningRate_Initial()
+        {
+            // Arrange
+            ILearningRate learningRate = new PowerSeriesLearningRate(0.75);
+
+            // Act
+            var result = learningRate.CalculateLearningRate(0, 10);
+
+            // Assert
+            double expected = 0.75;
+            result.Should<double>().BeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void PowerSeriesLearning_CalculateLearningRate_Halfway()
+        {
+            // Arrange
+            ILearningRate learningRate = new PowerSeriesLearningRate(0.75);
+
+            // Act
+            var result = learningRate.CalculateLearningRate(5, 10);
+
+            // Assert
+            double expected = 0.454;
+            result.Should().BeApproximately(expected, 0.001);
+        }
+
+        [TestMethod]
+        public void PowerSeriesLearning_CalculateLearningRate_End()
+        {
+            // Arrange
+            ILearningRate learningRate = new PowerSeriesLearningRate(0.75);
+
+            // Act
+            var result = learningRate.CalculateLearningRate(10, 10);
+
+            // Assert
+            double expected = 0.275;
+            result.Should().BeApproximately(expected, 0.001);
+        }
 
         [TestMethod]
         public void Test_Method()
         {
 
-            List<Trajectory> trajectoriesA = new List<Trajectory>();
-            List<Trajectory> trajectoriesB = new List<Trajectory>();
+            //List<Trajectory> trajectoriesA = new List<Trajectory>();
+            //List<Trajectory> trajectoriesB = new List<Trajectory>();
 
 
-            CompressionDissimilarityMeasure cdm = new CompressionDissimilarityMeasure(new FileHelper());
-            Instance instance = new Instance();
-            instance.OrderNo = 1;
+            //ISimilarityMeasure measure = new EditDistanceMeasure();
 
-            object[] values = { 0.5, 0.7, 0.8, 0.9 };
+            //var result = measure.MeasureSimilarity(trajectoriesA, trajectoriesB);
 
-            instance.Values = values;
-            trajectoriesA.Add(new Trajectory()
-            {
-                Instance = instance
-            });
 
-            instance = new Instance();
-            instance.OrderNo = 1;
-
-            object[] values2 = { 0.1, 0.7, 0.2, 0.9 };
-
-            instance.Values = values2;
-            trajectoriesB.Add(new Trajectory()
-            {
-                Instance = instance
-            });
-
-            double score = cdm.MeasureSimilarity(trajectoriesA, trajectoriesB);
         }
     }
 
