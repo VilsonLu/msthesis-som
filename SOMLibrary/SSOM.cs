@@ -73,9 +73,9 @@ namespace SOMLibrary
 
             if(region != null)
             {
-                for (int row = startRow; row < currentWidth; row++)
+                for (int row = startRow; row <= currentWidth; row++)
                 {
-                    for (int col = startCol; col < currentHeight; col++)
+                    for (int col = startCol; col <= currentHeight; col++)
                     {
                         Node currentNode = Map[row, col];
                         double currentDistance = currentNode.GetDistance(instance);

@@ -50,7 +50,7 @@ namespace SOMLibrary
         /// <summary>
         /// Number of neighbors for K-NN
         /// </summary>
-        public int K { get; set; } = 7;
+        public int K { get; set; } = 3;
 
         #endregion
 
