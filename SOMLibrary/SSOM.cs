@@ -33,16 +33,26 @@ namespace SOMLibrary
         public SSOM(int x, int y) : base(x, y)
         {
             Regions = new List<Region>();
+            Width = x;
+            Height = y;
         }
 
         public SSOM(int x, int y, double learningRate) : base(x, y, learningRate)
         {
             Regions = new List<Region>();
+            ConstantLearningRate = learningRate;
         }
 
         public SSOM(int x, int y, double learningRate, int epoch) : base(x, y, learningRate, epoch)
         {
             Regions = new List<Region>();
+            Epoch = epoch;
+        }
+
+        public SSOM(int x, int y, double learningRate, int epoch, int k) : base(x, y, learningRate, epoch)
+        {
+            Regions = new List<Region>();
+            K = k;
         }
 
 

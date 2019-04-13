@@ -115,6 +115,11 @@ namespace SOMLibrary
             Epoch = epoch;
         }
 
+        public SOM(int x, int y, double learningRate, int epoch, int k) : this(x, y, learningRate)
+        {
+            K = k;
+        }
+
         #endregion
 
         public void GetData(IReader reader)
