@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SOMLibrary.DataModel;
 using SOMLibrary.Implementation.LearningRate;
+using SOMLibrary.Implementation.NeighborhoodRadius;
 using SOMLibrary.Implementation.NodeLabeller;
 using SOMLibrary.Interface;
 using System;
@@ -64,7 +65,7 @@ namespace SOMLibrary
         {
             get
             {
-                return Math.Max(Width, Height) / 2.0;
+                return Math.Max(Width, Height);
             }
         }
 
@@ -80,6 +81,11 @@ namespace SOMLibrary
         /// </summary>
         private ILearningRate _learningRate;
 
+        /// <summary>
+        /// To calculate the neighborhood radius
+        /// </summary>
+        private INeighborhoodRadius _neighborhoodRadius;
+
         #region Constructor
 
         public SOM()
@@ -90,7 +96,7 @@ namespace SOMLibrary
             Epoch = 1;
             Map = new Node[Width, Height];
             _learningRate = new PowerSeriesLearningRate(ConstantLearningRate);
-
+           
         }
 
         public SOM(int x, int y)
@@ -126,6 +132,8 @@ namespace SOMLibrary
         {
             base.Dataset = reader.Read();
             TotalIteration = base.Dataset.Instances.Length * Epoch;
+
+            _neighborhoodRadius = new DecayNeighborhoodRadius(MapRadius, TotalIteration);
         }
 
         /// <summary>
@@ -185,6 +193,7 @@ namespace SOMLibrary
 
                     // Find the BMU (Best Matching Unit)
                     Node winningNode = FindBestMatchingUnit(instance);
+                    //winningNode.IncrementCount();
 
                     // Adjust the weights of the BMU and neighbor
                     UpdateNeighborhood(winningNode, instance, t);
@@ -253,7 +262,7 @@ namespace SOMLibrary
                     var currentNode = Map[row, col];
                     var distanceToWinningNode = Math.Pow(winningNode.GetGridDistance(currentNode), 2);
                     double neighborhoodRadius = Math.Pow(NeighborhoodRadius(iteration), 2);
-                    if (distanceToWinningNode < neighborhoodRadius)
+                    if (distanceToWinningNode <= neighborhoodRadius)
                     {
                         currentNode.Weights = AdjustWeights(winningNode, currentNode, instance, iteration);
                     }
@@ -272,26 +281,16 @@ namespace SOMLibrary
             return learningRate;
         }
 
-        /// <summary>
-        /// Time Constant (lambda)
-        /// Formula: TotalIterations / log(map_radius)
-        /// </summary>
-        /// <returns></returns>
-        protected double TimeConstant()
-        {
-            double timeConstant = TotalIteration / Math.Log(MapRadius);
-            return timeConstant;
-        }
-
+        
         /// <summary>
         /// Neighborhood Radius: The neighborhood shrinks as time passes by
-        /// Formula: MapRadius * exp(-iteration/timeConstant)
         /// </summary>
         /// <returns></returns>
         protected double NeighborhoodRadius(int iteration)
         {
-            double neighboodRadius = MapRadius * Math.Exp(-iteration / TimeConstant());
-            return neighboodRadius;
+
+            return _neighborhoodRadius.CalculateRadius(iteration);
+            
         }
 
         /// <summary>
@@ -311,9 +310,9 @@ namespace SOMLibrary
 
             for (int i = 0; i < currentWeight.Length; i++)
             {
-                double influence = Influence(winningNode, currentNode, iteration);
+                //double influence = Influence(winningNode, currentNode, iteration);
                 double learningRate = LearningRateDecay(iteration);
-                double newWeight = currentWeight[i] + influence * learningRate * (instance[i] - currentWeight[i]);
+                double newWeight = currentWeight[i] + (learningRate * (instance[i] - currentWeight[i]));
                 currentWeight[i] = newWeight;
             }
 

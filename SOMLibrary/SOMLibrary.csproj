@@ -70,6 +70,8 @@
     <Compile Include="Implementation\CSVReader.cs" />
     <Compile Include="Implementation\DistanceMeasure\EuclideanDistance.cs" />
     <Compile Include="Implementation\LearningRate\PowerSeriesLearningRate.cs" />
+    <Compile Include="Implementation\NeighborhoodRadius\BasicNeighborhoodRadius.cs" />
+    <Compile Include="Implementation\NeighborhoodRadius\DecayNeighborhoodRadius.cs" />
     <Compile Include="Interface\ILearningRate.cs" />
     <Compile Include="Implementation\NodeLabeller\KNNLabeller.cs" />
     <Compile Include="Implementation\RandomNumberGenerator.cs" />
@@ -77,6 +79,7 @@
     <Compile Include="Interface\IClusterMeasure.cs" />
     <Compile Include="Interface\IDistanceMeasure.cs" />
     <Compile Include="Interface\ILabel.cs" />
+    <Compile Include="Interface\INeighborhoodRadius.cs" />
     <Compile Include="Interface\IRandom.cs" />
     <Compile Include="Interface\IReader.cs" />
     <Compile Include="Model.cs" />
@@ -90,6 +93,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Accord.3.8.0\build\Accord.targets" Condition="Exists('..\packages\Accord.3.8.0\build\Accord.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

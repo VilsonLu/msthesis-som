@@ -58,7 +58,7 @@ namespace SOMLibrary
 
         public override Node FindBestMatchingUnit(Instance rowInstance)
         {
-            double bestDistance = double.MaxValue;
+
             Node bestNode = null;
 
             var instance = base.Dataset.GetInstance<double>(rowInstance.OrderNo);
@@ -83,6 +83,8 @@ namespace SOMLibrary
 
             if(region != null)
             {
+                double bestDistance = double.MaxValue;
+                bestNode = null;
                 for (int row = startRow; row <= currentWidth; row++)
                 {
                     for (int col = startCol; col <= currentHeight; col++)
@@ -98,9 +100,12 @@ namespace SOMLibrary
 
                     }
                 }
+                
             }
             else
             {
+                double bestDistance = double.MaxValue;
+                bestNode = null;
                 for (int row = startRow; row < currentWidth; row++)
                 {
                     for (int col = startCol; col < currentHeight; col++)
@@ -122,9 +127,10 @@ namespace SOMLibrary
 
                     }
                 }
+
+                bestNode.IncrementCount();
             }
            
-
             return bestNode;
         }
 

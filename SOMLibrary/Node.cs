@@ -20,11 +20,14 @@ namespace SOMLibrary
 
         public int ClusterGroup { get; set; }
 
+        public int Count { get; set; }
+
 
         public Node(double[] weights, int x, int y)
         {
             Weights = weights;
             Coordinate = new Coordinate(x, y);
+            Count = 0;
 
             _distanceMeasure = new EuclideanDistance();
         }
@@ -36,7 +39,6 @@ namespace SOMLibrary
         /// <returns>double - Euclidean distance</returns>
         public double GetDistance(double[] inputVectors)
         {
-
             return _distanceMeasure.GetDistance(Weights, inputVectors);
         }
 
@@ -45,6 +47,11 @@ namespace SOMLibrary
             double x = Math.Pow(Coordinate.X - node.Coordinate.X, 2);
             double y = Math.Pow(Coordinate.Y - node.Coordinate.Y, 2);
             return Math.Sqrt(x + y);
+        }
+
+        public void IncrementCount()
+        {
+            Count++;
         }
 
     }
