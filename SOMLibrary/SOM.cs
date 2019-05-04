@@ -331,7 +331,7 @@ namespace SOMLibrary
         {
             double distance = winningNode.GetGridDistance(currentNode);
             double radius = 2 * Math.Pow(NeighborhoodRadius(iteration), 2);
-            double influence = Math.Exp(-Math.Pow(distance, 2) / radius);
+            double influence = Math.Exp(Math.Pow(distance, 2) / radius);
             return influence;
         }
 

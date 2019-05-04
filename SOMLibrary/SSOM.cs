@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SOMLibrary.DataModel;
+using SOMLibrary.Implementation.Builder;
 
 namespace SOMLibrary
 {
@@ -28,6 +29,17 @@ namespace SOMLibrary
             Map = new Node[Width, Height];
             Regions = new List<Region>();
             K = 5;
+        }
+
+        public SSOM(SSOMBuilder builder)
+        {
+            Width = builder.Width;
+            Height = builder.Height;
+            ConstantLearningRate = builder.ConstantLearningRate;
+            Epoch = builder.Epoch;
+            Map = new Node[Width, Height];
+            Regions = builder.Regions;
+            K = builder.KNeighbor;
         }
 
         public SSOM(int x, int y) : base(x, y)
