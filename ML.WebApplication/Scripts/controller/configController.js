@@ -11,6 +11,7 @@
             Labels: "",
             FeatureLabel: "",
             KMeans: 2,
+            K: 5,
             Regions: []
         };
 

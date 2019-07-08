@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SOMLibrary.DataModel;
 using SOMLibrary.Implementation.LearningRate;
+using SOMLibrary.Implementation.NeighborhoodRadius;
 using SOMLibrary.Implementation.NodeLabeller;
 using SOMLibrary.Interface;
 using System;
@@ -19,7 +20,7 @@ namespace SOMLibrary
 
         #region Properties
         public Guid MapId { get; set; }
-   
+
         /// <summary>
         /// Learning Rate
         /// </summary>
@@ -50,9 +51,14 @@ namespace SOMLibrary
         /// <summary>
         /// Number of neighbors for K-NN
         /// </summary>
-        public int K { get; set; } = 7;
+        public int K { get; set; } = 3;
 
         #endregion
+
+        #region Events
+        public delegate void OnTrainingEventHandler(object sender, OnTrainingEventArgs args);
+        public event OnTrainingEventHandler Training;
+        #endregion 
 
         #region Calculated
 
@@ -64,11 +70,13 @@ namespace SOMLibrary
         {
             get
             {
-                return Math.Max(Width, Height) / 2.0;
+                return Math.Max(Width, Height);
             }
         }
 
         #endregion
+
+        #region SOM Functions
 
         /// <summary>
         /// To label the nodes
@@ -80,6 +88,12 @@ namespace SOMLibrary
         /// </summary>
         private ILearningRate _learningRate;
 
+        /// <summary>
+        /// To calculate the neighborhood radius
+        /// </summary>
+        private INeighborhoodRadius _neighborhoodRadius;
+        #endregion
+
         #region Constructor
 
         public SOM()
@@ -90,7 +104,7 @@ namespace SOMLibrary
             Epoch = 1;
             Map = new Node[Width, Height];
             _learningRate = new PowerSeriesLearningRate(ConstantLearningRate);
-
+           
         }
 
         public SOM(int x, int y)
@@ -115,12 +129,19 @@ namespace SOMLibrary
             Epoch = epoch;
         }
 
+        public SOM(int x, int y, double learningRate, int epoch, int k) : this(x, y, learningRate)
+        {
+            K = k;
+        }
+
         #endregion
 
         public void GetData(IReader reader)
         {
             base.Dataset = reader.Read();
             TotalIteration = base.Dataset.Instances.Length * Epoch;
+
+            _neighborhoodRadius = new DecayNeighborhoodRadius(MapRadius, TotalIteration);
         }
 
         /// <summary>
@@ -180,11 +201,17 @@ namespace SOMLibrary
 
                     // Find the BMU (Best Matching Unit)
                     Node winningNode = FindBestMatchingUnit(instance);
+                    //winningNode.IncrementCount();
 
                     // Adjust the weights of the BMU and neighbor
                     UpdateNeighborhood(winningNode, instance, t);
 
                     t++;
+                }
+
+                if(Training != null)
+                {
+                    Training(this, new OnTrainingEventArgs() { CurrentIteration = i, TotalIteration = Epoch });
                 }
             }
         }
@@ -248,7 +275,7 @@ namespace SOMLibrary
                     var currentNode = Map[row, col];
                     var distanceToWinningNode = Math.Pow(winningNode.GetGridDistance(currentNode), 2);
                     double neighborhoodRadius = Math.Pow(NeighborhoodRadius(iteration), 2);
-                    if (distanceToWinningNode < neighborhoodRadius)
+                    if (distanceToWinningNode <= neighborhoodRadius)
                     {
                         currentNode.Weights = AdjustWeights(winningNode, currentNode, instance, iteration);
                     }
@@ -267,26 +294,16 @@ namespace SOMLibrary
             return learningRate;
         }
 
-        /// <summary>
-        /// Time Constant (lambda)
-        /// Formula: TotalIterations / log(map_radius)
-        /// </summary>
-        /// <returns></returns>
-        protected double TimeConstant()
-        {
-            double timeConstant = TotalIteration / Math.Log(MapRadius);
-            return timeConstant;
-        }
-
+        
         /// <summary>
         /// Neighborhood Radius: The neighborhood shrinks as time passes by
-        /// Formula: MapRadius * exp(-iteration/timeConstant)
         /// </summary>
         /// <returns></returns>
         protected double NeighborhoodRadius(int iteration)
         {
-            double neighboodRadius = MapRadius * Math.Exp(-iteration / TimeConstant());
-            return neighboodRadius;
+
+            return _neighborhoodRadius.CalculateRadius(iteration);
+            
         }
 
         /// <summary>
@@ -308,7 +325,7 @@ namespace SOMLibrary
             {
                 double influence = Influence(winningNode, currentNode, iteration);
                 double learningRate = LearningRateDecay(iteration);
-                double newWeight = currentWeight[i] + influence * learningRate * (instance[i] - currentWeight[i]);
+                double newWeight = currentWeight[i] + (learningRate * influence * (instance[i] - currentWeight[i]));
                 currentWeight[i] = newWeight;
             }
 
@@ -325,14 +342,21 @@ namespace SOMLibrary
         /// <returns></returns>
         protected double Influence(Node winningNode, Node currentNode, int iteration)
         {
+           
             double distance = winningNode.GetGridDistance(currentNode);
-            double radius = 2 * Math.Pow(NeighborhoodRadius(iteration), 2);
-            double influence = Math.Exp(-Math.Pow(distance, 2) / radius);
+            double radius = 2 * Math.Pow(MapRadius, 2);
+            double influence = Math.Exp(Math.Pow(distance, 2) / radius);
             return influence;
         }
 
         #endregion
 
 
+    }
+
+    public class OnTrainingEventArgs :EventArgs
+    {
+        public int CurrentIteration { get; set; }
+        public int TotalIteration { get; set; }
     }
 }

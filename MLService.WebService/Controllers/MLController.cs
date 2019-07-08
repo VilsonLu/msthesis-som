@@ -62,12 +62,13 @@ namespace MLService.WebService.Controllers
                 var height = (int)parsedModel["Height"];
                 var width = (int)parsedModel["Width"];
                 var kmeans = (int)parsedModel["KMeans"];
+                var k = (int)parsedModel["K"];
                 var regions = JsonConvert.DeserializeObject<List<Region>>(parsedModel["Regions"].ToString());
 
  
                 var csvFile = result.FileData.First();
 
-                SSOM model = new SSOM(width, height, learningRate, epoch);
+                SSOM model = new SSOM(width, height, learningRate, epoch, k);
                 model.Regions = regions;
 
                 var featureLabel = (string)parsedModel["FeatureLabel"];

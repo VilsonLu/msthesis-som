@@ -60,7 +60,7 @@ namespace SOMLibrary.Implementation.NodeLabeller
 
             
 
-            return labels.GroupBy(x => x).OrderBy(x => x.Count()).First().Key;
+            return labels.GroupBy(x => x).OrderByDescending(x => x.Count()).First().Key;
         }
 
     }   

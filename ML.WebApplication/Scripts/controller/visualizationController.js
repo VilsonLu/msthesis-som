@@ -48,28 +48,44 @@
                 .attr("y", function (node) { return node.Coordinate.Y * sen; })
                 .attr("width", sen)
                 .attr("height", sen)
-                .attr("text", function (node) { return node.Label })
                 .style("fill",
                 function (node) {
                     return rgb(dictColor[node.Label]);
                 });
-                //.on("mouseover",
-                //function (node) {
-                //    mover();
-                //    return tooltip.style("visibility", "visible")
-                //        .text(node.Label);
-                //})
-                //.on("mousemove",
-                //function () {
-                //    return tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
-                //})
-                //.on("mouseout",
-                //function (node) {
-                //    mout();
-                //    return tooltip.style("visibility", "hidden");
-                //});
+            //.on("mouseover",
+            //function (node) {
+            //    mover();
+            //    return tooltip.style("visibility", "visible")
+            //        .text(node.Label);
+            //})
+            //.on("mousemove",
+            //function () {
+            //    return tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
+            //})
+            //.on("mouseout",
+            //function (node) {
+            //    mout();
+            //    return tooltip.style("visibility", "hidden");
+            //});
+
+            var text = rgb_nodes.selectAll("text")
+                .data(nodes)
+                .enter()
+                .append("text");
+
+            var textLabels = text
+                .attr("x", function (node) { return coordinateMapper(node.Coordinate.X); })
+                .attr("y", function (node) { return coordinateMapper(node.Coordinate.Y); })
+                .text(function (node) { return  node.Label; })
+                .attr("font-family", "sans-serif")
+                .attr("font-size", "15px")
+                .attr("fill", "black");
 
         };
+
+        var coordinateMapper = function (d) {
+            return d * sen + 0.5 * sen
+        }
 
         var plotTrajectory = function () {
 
@@ -93,9 +109,7 @@
             }
 
 
-            var coordinateMapper = function (d) {
-                return d * sen + 0.5 * sen
-            }
+            
 
             var lineFunction = d3.line()
                 .x(function (d) { return coordinateMapper(d.Node.Coordinate.X); })
@@ -148,22 +162,22 @@
                 function (node) {
                     return rgb(dictColor[node.ClusterGroup]);
                 })
-                .on("mouseover",
-                function (node) {
-                    mover();
-                    return tooltip.style("visibility", "visible")
-                        .text(node.Label);
-                })
-                .on("mousemove",
-                function () {
-                    return tooltip.style("top", (event.pageY - 10) + "px")
-                        .style("left", (event.pageX + 10) + "px");
-                })
-                .on("mouseout",
-                function (node) {
-                    mout();
-                    return tooltip.style("visibility", "hidden");
-                });
+            //.on("mouseover",
+            //function (node) {
+            //    mover();
+            //    return tooltip.style("visibility", "visible")
+            //        .text(node.Label);
+            //})
+            //.on("mousemove",
+            //function () {
+            //    return tooltip.style("top", (event.pageY - 10) + "px")
+            //        .style("left", (event.pageX + 10) + "px");
+            //})
+            //.on("mouseout",
+            //function (node) {
+            //    mout();
+            //    return tooltip.style("visibility", "hidden");
+            //});
         }
 
 
