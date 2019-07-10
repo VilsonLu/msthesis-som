@@ -179,9 +179,10 @@ namespace SOMLibrary
         /// 
         /// Steps:
         /// 1. Initialize the SOM with random weights
-        /// 2. Get an instance from the dataset
-        /// 3. Find the best matching unit. (Find the node with the least distance)
-        /// 4. Update the neighborhood that are within the neighborhood radius
+        /// 2. Randomize the order of the instance
+        /// 3. Get an instance from the dataset
+        /// 4. Find the best matching unit. (Find the node with the least distance)
+        /// 5. Update the neighborhood that are within the neighborhood radius
         /// 
         /// </summary>
         public override void Train()
@@ -194,6 +195,9 @@ namespace SOMLibrary
             int t = 1; // iteration
             for (int i = 0; i < Epoch; i++)
             {
+                // Randomize the order of the instance after every epoch
+                base.Dataset.Shuffle();
+
                 for (int d = 0; d < instanceCount; d++)
                 {
                     // Get data from datase
@@ -201,7 +205,6 @@ namespace SOMLibrary
 
                     // Find the BMU (Best Matching Unit)
                     Node winningNode = FindBestMatchingUnit(instance);
-                    //winningNode.IncrementCount();
 
                     // Adjust the weights of the BMU and neighbor
                     UpdateNeighborhood(winningNode, instance, t);

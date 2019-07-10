@@ -114,5 +114,22 @@ namespace SOMLibrary.DataModel
                 return Instances.Length;
             } 
         }
+
+        /// <summary>
+        /// Shuffles the order of the instance
+        /// </summary>
+        public void Shuffle()
+        {
+            Random rng = new Random();
+            int n = Instances.Length;
+            while(n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                Instance value = Instances[k];
+                Instances[k] = Instances[n];
+                Instances[n] = value;
+            }
+        }
     }
 }

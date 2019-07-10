@@ -28,7 +28,7 @@ namespace Sandbox
 
         public static void Program2(string[] args)
         {
-            string filePath = @"C:\Users\Vilson\Desktop\Datasets\EEG\config.json";
+            string filePath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\config.json";
             if(args.Length > 0)
             {
                 filePath = args[0];
