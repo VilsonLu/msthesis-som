@@ -45,7 +45,7 @@ namespace MSThesisTest
             double radius = som.MapRadius;
 
             // Assert
-            double expected = 5.0;
+            double expected = 10.0;
             Assert.AreEqual(expected, radius);
         }
 
