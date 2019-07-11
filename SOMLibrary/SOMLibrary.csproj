@@ -70,6 +70,7 @@
     <Compile Include="Implementation\ClusterMeasure\DaviesBouldinIndex.cs" />
     <Compile Include="Implementation\CSVReader.cs" />
     <Compile Include="Implementation\DistanceMeasure\EuclideanDistance.cs" />
+    <Compile Include="Implementation\DistanceMeasure\EuclideanDistanceFast.cs" />
     <Compile Include="Implementation\LearningRate\PowerSeriesLearningRate.cs" />
     <Compile Include="Implementation\NeighborhoodRadius\BasicNeighborhoodRadius.cs" />
     <Compile Include="Implementation\NeighborhoodRadius\DecayNeighborhoodRadius.cs" />

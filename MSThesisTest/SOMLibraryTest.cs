@@ -10,6 +10,7 @@ using ML.TrajectoryAnalysis.Implementation;
 using ML.TrajectoryAnalysis;
 using ML.Common.Implementation;
 using SOMLibrary.Implementation.LearningRate;
+using SOMLibrary.Implementation.DistanceMeasure;
 
 namespace MSThesisTest
 {
@@ -363,17 +364,18 @@ namespace MSThesisTest
         }
 
         [TestMethod]
-        public void Test_Method()
+        public void EuclideanDistanceFast_GetDistance_CalculateEuclideanDistance()
         {
+            IDistanceMeasure distance = new EuclideanDistanceFast();
 
-            //List<Trajectory> trajectoriesA = new List<Trajectory>();
-            //List<Trajectory> trajectoriesB = new List<Trajectory>();
+            var weights = new double[] { 0.1, 0.4, 0.5 };
+            var inputVectors = new double[] { 1, 0, 0 };
 
+            double actualResult = distance.GetDistance(weights, inputVectors);
 
-            //ISimilarityMeasure measure = new EditDistanceMeasure();
-
-            //var result = measure.MeasureSimilarity(trajectoriesA, trajectoriesB);
-
+            // Assert
+            double expectedResult = 1.1045361;
+            Assert.AreEqual(expectedResult, Math.Round(actualResult, 7));
 
         }
     }
