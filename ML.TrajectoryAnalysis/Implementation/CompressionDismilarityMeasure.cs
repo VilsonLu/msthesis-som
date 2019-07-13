@@ -20,35 +20,36 @@ namespace ML.TrajectoryAnalysis.Implementation
 
         public double MeasureSimilarity(List<Trajectory> a, List<Trajectory> b)
         {
-
             string directoryPath = _fileHelper.GetCurrentDirectory();
 
             StringBuilder contentA = new StringBuilder();
             string fileNameA = "FileA";
+            string textFileA = fileNameA + ".txt";
             string filePathA = directoryPath + @"\" + fileNameA + ".txt";
-            string zipPathA = directoryPath + @"\" + fileNameA + ".zip";
+            string zipPathA = directoryPath + fileNameA + ".zip";
             foreach (var item in a)
             {
-                contentA.AppendLine(item.Instance.ToString());
+                contentA.AppendLine(item.Node.ToString());
             }
 
             _fileHelper.WriteToTextFile(contentA.ToString(), filePathA);
-            _fileHelper.CompressFile(filePathA, zipPathA);
+            _fileHelper.CompressFile(filePathA, zipPathA, textFileA);
 
             long sizeA = _fileHelper.GetFileSize(zipPathA);
 
 
             StringBuilder contentB = new StringBuilder();
             string fileNameB = "FileB";
-            string filePathB = directoryPath + @"\" + fileNameB + ".txt";
-            string zipPathB = directoryPath + @"\" + fileNameB + ".zip";
+            string textFileB = fileNameB + ".txt";
+            string filePathB = directoryPath + fileNameB + ".txt";
+            string zipPathB = directoryPath + fileNameB + ".zip";
             foreach (var item in b)
             {
-                contentB.AppendLine(item.Instance.ToString());
+                contentB.AppendLine(item.Node.ToString());
             }
 
             _fileHelper.WriteToTextFile(contentB.ToString(), filePathB);
-            _fileHelper.CompressFile(filePathB, zipPathB);
+            _fileHelper.CompressFile(filePathB, zipPathB, textFileB);
             long sizeB = _fileHelper.GetFileSize(zipPathB);
 
 
@@ -56,15 +57,16 @@ namespace ML.TrajectoryAnalysis.Implementation
 
             StringBuilder contentAB = new StringBuilder();
             string fileNameAB = "FileAB";
-            string filePathAB = directoryPath + @"\" + fileNameAB + ".txt";
-            string zipPathAB = directoryPath + @"\" + fileNameAB + ".zip";
+            string textFileAB = fileNameAB + ".txt";
+            string filePathAB = directoryPath + fileNameAB + ".txt";
+            string zipPathAB = directoryPath + fileNameAB + ".zip";
             foreach (var item in combinedList)
             {
-                contentAB.AppendLine(item.Instance.ToString());
+                contentAB.AppendLine(item.Node.ToString());
             }
 
             _fileHelper.WriteToTextFile(contentAB.ToString(), filePathAB);
-            _fileHelper.CompressFile(filePathAB, zipPathAB);
+            _fileHelper.CompressFile(filePathAB, zipPathAB, textFileAB);
             long sizeAB = _fileHelper.GetFileSize(zipPathAB);
 
 

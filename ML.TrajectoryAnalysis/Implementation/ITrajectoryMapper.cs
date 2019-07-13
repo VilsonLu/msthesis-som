@@ -11,6 +11,6 @@ namespace ML.TrajectoryAnalysis.Implementation
     {
         void GetData(IReader reader);
 
-        List<Trajectory> GetTrajectories();
+        void PlotTrajectory();
     }
 }

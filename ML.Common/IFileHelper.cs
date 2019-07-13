@@ -12,6 +12,6 @@ namespace ML.Common
         long GetFileSize(string filePath);
         void WriteToTextFile(string content, string fileName);
         void DeleteFile(string filePath);
-        void CompressFile(string sourcePath, string destinationPath);
+        void CompressFile(string sourcePath, string destinationPath, string entryName);
     }
 }

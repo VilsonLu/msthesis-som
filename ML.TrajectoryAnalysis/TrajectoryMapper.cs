@@ -12,7 +12,7 @@ namespace ML.TrajectoryAnalysis
 
         private Dataset _dataset;
 
-        public List<Trajectory> Trajectories { get; set; }
+        public List<Trajectory> Trajectories { get; }
 
         private string _fileName;
         public string FileName
@@ -45,10 +45,9 @@ namespace ML.TrajectoryAnalysis
         }
 
         /// <summary>
-        /// Gets the best matching node for each instance in the dataset
+        /// Plot the time-series data in the map
         /// </summary>
-        /// <returns>List of trajectories</returns>
-        public List<Trajectory> GetTrajectories()
+        public void PlotTrajectory()
         {
             foreach (var instance in _dataset.Instances)
             {
@@ -60,8 +59,7 @@ namespace ML.TrajectoryAnalysis
                     Node = node
                 });
             }
-
-            return Trajectories;
         }
+
     }
 }

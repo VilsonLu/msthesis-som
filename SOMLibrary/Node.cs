@@ -54,5 +54,21 @@ namespace SOMLibrary
             Count++;
         }
 
+
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            foreach (var item in Weights)
+            {
+                sb.Append(item.ToString());
+                sb.Append(" ");
+            }
+
+            return sb.ToString().TrimEnd();
+        }
+
+
     }
 }

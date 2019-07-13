@@ -15,6 +15,7 @@ using ML.TrajectoryAnalysis;
 using ML.Common.Implementation;
 using SOMLibrary.Implementation.Builder;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Sandbox
 {
@@ -23,7 +24,7 @@ namespace Sandbox
 
         public static void Main(string[] args)
         {
-            Program2(args);
+            Program1(args);
         }
 
         public static void Program2(string[] args)
@@ -127,52 +128,29 @@ namespace Sandbox
 
             Stopwatch stopwatch = new Stopwatch();
 
+            string trainedModelFile = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\experiment_1\Map_experiment_1.json";
+            string filepath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\MALE_PLEASANT_UNNORMALIZED.csv";
+            string mapLabels = "USER,SEG,CLASS_PLEASANTNESS";
 
-            string filepath = @"C:\Users\Vilson\Desktop\Datasets\Financial Distress\FD_Training.csv";
-
-            SOM _model = new SOM(10, 10, 0.3, 20);
+            var jsonContent = System.IO.File.ReadAllText(trainedModelFile);
+            SSOM _model = JsonConvert.DeserializeObject<SSOM>(jsonContent);
+            
             _model.Training += _model_Training; 
             IReader _reader = new CSVReader(filepath);
             IClusterer _kmeans = new KMeansClustering();
 
             _model.GetData(_reader);
-            _model.Dataset.SetLabel("Company");
-            _model.Dataset.SetLabel("Time");
-            _model.Dataset.SetLabel("Financial Distress");
-            _model.Dataset.SetLabel("Status");
 
-            _model.FeatureLabel = "Status";
 
-            Console.WriteLine("Start initializing map...");
-            stopwatch.Start();
-            _model.InitializeMap();
-            stopwatch.Stop();
-            Console.WriteLine("Completed initialization...");
-            Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
+            // Get the labels
+            string[] labels = mapLabels.Split(',');
 
-            Console.WriteLine("Start training model...");
-            stopwatch.Restart();
-            _model.Train();
-            stopwatch.Stop();
-            Console.WriteLine("Completed training model...");
-            Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
+            foreach (var label in labels)
+            {
+                _model.Dataset.SetLabel(label);
+            }
 
-            Console.WriteLine("Start labelling node...");
-            stopwatch.Restart();
-            _model.LabelNodes();
-            stopwatch.Stop();
-            Console.WriteLine("Completed labelling node...");
-            Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
-
-            Console.WriteLine("Start clustering nodes...");
-            stopwatch.Restart();
-            var flattenedMap = ArrayHelper<Node>.FlattenMap(_model.Map);
-            var clusteredNodes = _kmeans.Cluster(flattenedMap, 3);
-            stopwatch.Stop();
-            Console.WriteLine("Completed clustering nodes...");
-            Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
-
-            string trainingPath = @"C:\Users\Vilson\Desktop\Datasets\Financial Distress\Training";
+            string trainingPath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\male_pleasant_trajectories";
 
             List<TrajectoryMapper> dbTrajectories = new List<TrajectoryMapper>();
 
@@ -185,7 +163,7 @@ namespace Sandbox
                 IReader trajectoryReader = new CSVReader(file);
 
                 trajectoryMapper.GetData(trajectoryReader);
-                trajectoryMapper.GetTrajectories();
+                trajectoryMapper.PlotTrajectory();
 
                 dbTrajectories.Add(trajectoryMapper);
                 
@@ -196,24 +174,40 @@ namespace Sandbox
             Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
 
 
-            string testingPath = @"C:\Users\Vilson\Desktop\Datasets\Financial Distress\Test\fd_297.csv";
+            string testingPath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\experiment_1\unknown_trajectory\m_pleasant_9_1.csv";
 
             TrajectoryMapper testMapper = new TrajectoryMapper(_model);
-            IReader trjaectoryDataReader = new CSVReader(testingPath);
+            IReader trajectoryDataReader = new CSVReader(testingPath);
 
-            testMapper.GetData(trjaectoryDataReader);
-            var unknownTrajectory = testMapper.GetTrajectories();
+            testMapper.GetData(trajectoryDataReader);
+
+            testMapper.PlotTrajectory();
+            var unknownTrajectory = testMapper.Trajectories;
 
             IFileHelper fileHelper = new FileHelper();
             ISimilarityMeasure similarityMeasure = new CompressionDissimilarityMeasure(fileHelper);
 
+
+            var scores = new List<Tuple<string, double>>();
             foreach (var trajectory in dbTrajectories)
             {
-                var currentTrajectory = trajectory.GetTrajectories();
+                var currentTrajectory = trajectory.Trajectories;
 
                 var score = similarityMeasure.MeasureSimilarity(currentTrajectory, unknownTrajectory);
+                scores.Add(new Tuple<string, double>(trajectory.FileName, score));
                 Console.WriteLine("{0}: {1}", trajectory.FileName, score);
             }
+
+
+            var topNScores = scores.OrderBy(x => x.Item2).Take(10);
+
+            Console.WriteLine();
+            Console.WriteLine("Top 10 Trajectories");
+            foreach(var item in topNScores)
+            {
+                Console.WriteLine("{0} : {1}", item.Item1, item.Item2);
+            }
+
 
             Console.ReadLine();
         }
