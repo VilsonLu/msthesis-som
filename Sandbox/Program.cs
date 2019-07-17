@@ -24,7 +24,7 @@ namespace Sandbox
 
         public static void Main(string[] args)
         {
-            Program1(args);
+            Program2(args);
         }
 
         public static void Program2(string[] args)

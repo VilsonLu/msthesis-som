@@ -103,7 +103,7 @@
 
             var timeInterpolator = function (d) {
                 var interpolatedNum = interpolator(d);
-                var color = d3.interpolateLab("red", "blue")(interpolatedNum);
+                var color = d3.interpolateLab("yellow", "green")(interpolatedNum);
                 console.log(`${d} : ${interpolatedNum} : ${color} `);
                 return color;
             }

@@ -34,6 +34,9 @@
     <Reference Include="ICSharpCode.SharpZipLib, Version=1.0.0.999, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpZipLib.1.0.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
+    <Reference Include="MinimumEditDistance, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LevenshteinMinimumEditDistance.1.2.0\lib\MinimumEditDistance.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -44,7 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Implementation\CompressionDismilarityMeasure.cs" />
+    <Compile Include="Implementation\CompressionDissimilarityMeasure.cs" />
+    <Compile Include="Implementation\EditDistanceMeasure.cs" />
     <Compile Include="Implementation\ITrajectoryMapper.cs" />
     <Compile Include="ISimilarityMeasure.cs" />
     <Compile Include="Trajectory.cs" />

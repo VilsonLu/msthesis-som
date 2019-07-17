@@ -17,7 +17,7 @@ namespace MLService.WebService.Controllers
             trajectoryMapper.GetData(reader);
 
            // Get the mapped trajectories
-           var trajectories =  trajectoryMapper.GetTrajectories();
+           var trajectories =  trajectoryMapper.Trajectories;
 
             return new TrajectoryResponse()
             {

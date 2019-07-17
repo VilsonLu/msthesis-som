@@ -144,6 +144,17 @@ namespace MLService.WebService.Controllers
                 var map = result.FormData["map"];
 
                 SOM som = JsonConvert.DeserializeObject<SOM>(map);
+                IReader datasetreader = new CSVReader(System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/MALE_PLEASANT_UNNORMALIZED.csv"));
+                som.GetData(datasetreader);
+
+                string[] labels = { "USER", "SEG", "CLASS_PLEASANTNESS" };
+
+                foreach(var item in labels)
+                {
+                    som.Dataset.SetLabel(item);
+                }
+
+                som.FeatureLabel = "CLASS_PLEASANTNESS";
 
                 string file = provider.FileData.Last().LocalFileName;
 
@@ -151,10 +162,11 @@ namespace MLService.WebService.Controllers
 
                 TrajectoryMapper trajectoryMapper = new TrajectoryMapper(som);
                 trajectoryMapper.GetData(reader);
+                trajectoryMapper.PlotTrajectory();
 
                 TrajectoryResponse trajectoryResponse = new TrajectoryResponse()
                 {
-                    Trajectories = trajectoryMapper.GetTrajectories().ToArray()
+                    Trajectories = trajectoryMapper.Trajectories.ToArray()
                 };
 
                 File.Delete(result.FileData.First().LocalFileName);

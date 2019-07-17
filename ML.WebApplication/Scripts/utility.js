@@ -1,14 +1,14 @@
-﻿var labelColor = [
-    { "color": [120, 78, 129] },    // violet
+﻿var labelColor = [  
+    { "color": [255, 189, 114] },    // orange
+    { "color": [81, 205, 213] },    // cyan
+    { "color": [107, 178, 140] },   // green
+    { "color": [210, 179, 63] },    // yellow
     { "color": [64, 67, 153] },     // indigo
     { "color": [72, 139, 194] },    // blue
-    { "color": [107, 178, 140] },   // green
     { "color": [159, 190, 87] },    // olive
-    { "color": [210, 179, 63] },    // yellow
     { "color": [231, 126, 49] },    // orange
     { "color": [218, 33, 32] },     // red
-    { "color": [81, 205, 213] }     // cyan
-
+    { "color": [120, 78, 129] }    // violet
 ];
 
 var dictColor = {};
