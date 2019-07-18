@@ -1,6 +1,7 @@
 ﻿using MinimumEditDistance;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ML.TrajectoryAnalysis.Implementation
 {
@@ -8,7 +9,20 @@ namespace ML.TrajectoryAnalysis.Implementation
     {
         public double MeasureSimilarity(List<Trajectory> a, List<Trajectory> b)
         {
-            return (double) Levenshtein.CalculateDistance("a", "b", 2);
+            string trajectoryA = ConcatenateNodeId(a);
+            string trajectoryB = ConcatenateNodeId(b);
+            return (double) Levenshtein.CalculateDistance(trajectoryA, trajectoryB, 2);
+        }
+
+        private string ConcatenateNodeId(List<Trajectory> trajectory)
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach(var item in trajectory)
+            {
+                builder.Append(item.Node.NodeId);
+            }
+
+            return builder.ToString();
         }
     }
 }

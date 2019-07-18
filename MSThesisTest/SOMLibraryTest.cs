@@ -378,6 +378,150 @@ namespace MSThesisTest
             Assert.AreEqual(expectedResult, Math.Round(actualResult, 7));
 
         }
+
+        [TestMethod]
+        public void EditDistanceMeasure_GetDistance_Substitution_CalculateLevenstheinDistance()
+        {
+            ISimilarityMeasure similarityMeasure = new EditDistanceMeasure();
+
+            var weights = new double[] { 0.1, 0.4, 0.5 };
+            var trajectoryA = new List<Trajectory>()
+            {
+                new Trajectory()
+                {
+                    Node = new Node(weights, 1, 1)
+                    {
+                        NodeId = "AA"
+                    }
+                }
+            };
+
+            var trajectoryB = new List<Trajectory>()
+            {
+                new Trajectory()
+                {
+                    Node = new Node(weights, 1, 1)
+                    {
+                        NodeId = "BB"
+                    }
+                }
+            };
+
+            double actualResult = similarityMeasure.MeasureSimilarity(trajectoryA, trajectoryB);
+
+            // Assert
+            double expectedResult = 4.0;
+            Assert.AreEqual(expectedResult, Math.Round(actualResult, 7));
+
+        }
+
+        [TestMethod]
+        public void EditDistanceMeasure_GetDistance_Addition_CalculateLevenstheinDistance()
+        {
+            ISimilarityMeasure similarityMeasure = new EditDistanceMeasure();
+
+            var weights = new double[] { 0.1, 0.4, 0.5 };
+            var trajectoryA = new List<Trajectory>()
+            {
+                new Trajectory()
+                {
+                    Node = new Node(weights, 1, 1)
+                    {
+                        NodeId = "AA"
+                    }
+                }
+            };
+
+            var trajectoryB = new List<Trajectory>()
+            {
+                new Trajectory()
+                {
+                    Node = new Node(weights, 1, 1)
+                    {
+                        NodeId = "AACC"
+                    }
+                }
+            };
+
+            double actualResult = similarityMeasure.MeasureSimilarity(trajectoryA, trajectoryB);
+
+            // Assert
+            double expectedResult = 2.0;
+            Assert.AreEqual(expectedResult, Math.Round(actualResult, 7));
+
+        }
+
+        [TestMethod]
+        public void EditDistanceMeasure_GetDistance_Deletion_CalculateLevenstheinDistance()
+        {
+            ISimilarityMeasure similarityMeasure = new EditDistanceMeasure();
+
+            var weights = new double[] { 0.1, 0.4, 0.5 };
+            var trajectoryA = new List<Trajectory>()
+            {
+                new Trajectory()
+                {
+                    Node = new Node(weights, 1, 1)
+                    {
+                        NodeId = "AACC"
+                    }
+                }
+            };
+
+            var trajectoryB = new List<Trajectory>()
+            {
+                new Trajectory()
+                {
+                    Node = new Node(weights, 1, 1)
+                    {
+                        NodeId = "AA"
+                    }
+                }
+            };
+
+            double actualResult = similarityMeasure.MeasureSimilarity(trajectoryA, trajectoryB);
+
+            // Assert
+            double expectedResult = 2.0;
+            Assert.AreEqual(expectedResult, Math.Round(actualResult, 7));
+
+        }
+
+        [TestMethod]
+        public void EditDistanceMeasure_GetDistance_Mixed_CalculateLevenstheinDistance()
+        {
+            ISimilarityMeasure similarityMeasure = new EditDistanceMeasure();
+
+            var weights = new double[] { 0.1, 0.4, 0.5 };
+            var trajectoryA = new List<Trajectory>()
+            {
+                new Trajectory()
+                {
+                    Node = new Node(weights, 1, 1)
+                    {
+                        NodeId = "AABBCC"
+                    }
+                }
+            };
+
+            var trajectoryB = new List<Trajectory>()
+            {
+                new Trajectory()
+                {
+                    Node = new Node(weights, 1, 1)
+                    {
+                        NodeId = "BBDDEE"
+                    }
+                }
+            };
+
+            double actualResult = similarityMeasure.MeasureSimilarity(trajectoryA, trajectoryB);
+
+            // Assert
+            double expectedResult = 8.0;
+            Assert.AreEqual(expectedResult, Math.Round(actualResult, 7));
+
+        }
     }
 
 }

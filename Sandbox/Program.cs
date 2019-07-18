@@ -16,12 +16,13 @@ using ML.Common.Implementation;
 using SOMLibrary.Implementation.Builder;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SOMLibrary.Implementation.Metric;
 
 namespace Sandbox
 {
     class Program
     {
-
+        private static List<Tuple<int, double>> disorderScores = new List<Tuple<int, double>>();
         public static void Main(string[] args)
         {
             Program2(args);
@@ -35,6 +36,7 @@ namespace Sandbox
                 filePath = args[0];
             }
 
+            var disorderScores = new List<Tuple<int, double>>();
             var content = System.IO.File.ReadAllText(filePath);
             var config = ReadToObject(content);
 
@@ -67,7 +69,7 @@ namespace Sandbox
             // Initialize the training
             Stopwatch stopwatch = new Stopwatch();
 
-             Console.WriteLine("Start initializing map...");
+            Console.WriteLine("Start initializing map...");
             stopwatch.Start();
             model.InitializeMap();
             stopwatch.Stop();
@@ -105,6 +107,14 @@ namespace Sandbox
                 Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
             }
 
+            Console.WriteLine("Printing disorder scores...");
+            Console.WriteLine();
+            foreach(var item in disorderScores)
+            {
+                Console.WriteLine("Iteration {0}: {1}", item.Item1, item.Item2);
+            }
+            Console.WriteLine("End of Disorder Scores");
+
             // Export the model
             Console.WriteLine("Exporting model...");
             var guid = Guid.NewGuid();
@@ -132,6 +142,7 @@ namespace Sandbox
             string filepath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\MALE_PLEASANT_UNNORMALIZED.csv";
             string mapLabels = "USER,SEG,CLASS_PLEASANTNESS";
 
+            Console.WriteLine("Loading model...");
             var jsonContent = System.IO.File.ReadAllText(trainedModelFile);
             SSOM _model = JsonConvert.DeserializeObject<SSOM>(jsonContent);
             
@@ -141,7 +152,6 @@ namespace Sandbox
 
             _model.GetData(_reader);
 
-
             // Get the labels
             string[] labels = mapLabels.Split(',');
 
@@ -150,8 +160,20 @@ namespace Sandbox
                 _model.Dataset.SetLabel(label);
             }
 
-            string trainingPath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\male_pleasant_trajectories";
+            Console.WriteLine("Model loaded.");
 
+
+            Console.WriteLine("Measuring disorder...");
+            IMetric disorderMeasure = new DisorderMeasure();
+            var disorderScore = disorderMeasure.Measure(_model);
+            Console.WriteLine("Disorder Score: {0}", disorderScore);
+
+            Console.WriteLine("Assigning Node ID...");
+            _model.AssignNodeId();
+            Console.WriteLine("Completed assigning ID");
+
+
+            string trainingPath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\male_pleasant_trajectories";
             List<TrajectoryMapper> dbTrajectories = new List<TrajectoryMapper>();
 
             Console.WriteLine("Start plotting trajectories...");
@@ -187,25 +209,26 @@ namespace Sandbox
             IFileHelper fileHelper = new FileHelper();
             ISimilarityMeasure similarityMeasure = new CompressionDissimilarityMeasure(fileHelper);
 
+            Console.WriteLine("Computing similarity measure using {0}", similarityMeasure.GetType().Name);
 
-            var scores = new List<Tuple<string, double>>();
+            var scores = new List<Tuple<string, double, int>>();
             foreach (var trajectory in dbTrajectories)
             {
                 var currentTrajectory = trajectory.Trajectories;
 
                 var score = similarityMeasure.MeasureSimilarity(currentTrajectory, unknownTrajectory);
-                scores.Add(new Tuple<string, double>(trajectory.FileName, score));
-                Console.WriteLine("{0}: {1}", trajectory.FileName, score);
+                scores.Add(new Tuple<string, double, int>(trajectory.FileName, score, trajectory.Trajectories.Count));
+                Console.WriteLine("{0}:{1}:{2}", trajectory.FileName, score, trajectory.Trajectories.Count);
             }
 
 
-            var topNScores = scores.OrderBy(x => x.Item2).Take(10);
+            var topNScores = scores.OrderBy(x => x.Item2).Take(20);
 
             Console.WriteLine();
-            Console.WriteLine("Top 10 Trajectories");
+            Console.WriteLine("Top 20 Trajectories");
             foreach(var item in topNScores)
             {
-                Console.WriteLine("{0} : {1}", item.Item1, item.Item2);
+                Console.WriteLine("{0}:{1}:{2}", item.Item1, item.Item2, item.Item3);
             }
 
 
@@ -214,8 +237,25 @@ namespace Sandbox
 
         private static void _model_Training(object sender, OnTrainingEventArgs args)
         {
-            ClearLastLine();
-            Console.WriteLine("Current Iteration: {0} / {1}", args.CurrentIteration + 1, args.TotalIteration);
+            //ClearLastLine();
+            var currentIteration = args.CurrentIteration;
+            //Console.WriteLine("Current Iteration: {0} / {1}", currentIteration + 1, args.TotalIteration);
+
+            var model = sender as SOM;
+
+            if(model == null)
+            {
+                return;
+            }
+
+
+            IMetric disorderMetric = new DisorderMeasure();
+            if(currentIteration % 5 == 0)
+            {
+                var score = disorderMetric.Measure(model);
+                Console.WriteLine("Iteration {0}: {1}", currentIteration, score);
+                disorderScores.Add(new Tuple<int, double>(currentIteration, score));
+            }
             
         }
 

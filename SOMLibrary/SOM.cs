@@ -1,14 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using ML.Common;
 using SOMLibrary.DataModel;
 using SOMLibrary.Implementation.LearningRate;
 using SOMLibrary.Implementation.NeighborhoodRadius;
 using SOMLibrary.Implementation.NodeLabeller;
 using SOMLibrary.Interface;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SOMLibrary
 {
@@ -214,8 +211,9 @@ namespace SOMLibrary
 
                 if(Training != null)
                 {
-                    Training(this, new OnTrainingEventArgs() { CurrentIteration = i, TotalIteration = Epoch });
+                    Training(this, new OnTrainingEventArgs() { CurrentIteration = i, TotalIteration = Epoch});
                 }
+
             }
         }
 
@@ -265,6 +263,23 @@ namespace SOMLibrary
             }
 
             return bestNode;
+        }
+
+        /// <summary>
+        /// Assign a 2-letter ID to all nodes
+        /// </summary>
+        public virtual void AssignNodeId()
+        {
+            for (int i = 0; i < Width; i++)
+            {
+                for (int j = 0; j < Height; j++)
+                {
+                    StringBuilder builder = new StringBuilder();
+                    builder.Append(UtilityHelper.GetLetter(i));
+                    builder.Append(UtilityHelper.GetLetter(j));
+                    Map[i, j].NodeId = builder.ToString();
+                }
+            }
         }
 
         protected virtual void UpdateNeighborhood(Node winningNode, Instance rowInstance, int iteration)
@@ -351,7 +366,6 @@ namespace SOMLibrary
             double influence = Math.Exp(Math.Pow(distance, 2) / radius);
             return influence;
         }
-
         #endregion
 
 
@@ -362,4 +376,5 @@ namespace SOMLibrary
         public int CurrentIteration { get; set; }
         public int TotalIteration { get; set; }
     }
+
 }

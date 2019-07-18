@@ -23,6 +23,12 @@ namespace SOMLibrary
         public int Count { get; set; }
 
 
+        /// <summary>
+        /// This will be used for measuring the similarity measure using edit-distance
+        /// </summary>
+        public string NodeId { get; set; }
+
+
         public Node(double[] weights, int x, int y)
         {
             Weights = weights;
