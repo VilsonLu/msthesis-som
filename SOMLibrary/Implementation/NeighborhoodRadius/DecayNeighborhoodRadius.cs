@@ -24,8 +24,9 @@ namespace SOMLibrary.Implementation.NeighborhoodRadius
 
             //tex: $$r(t) = \left \lfloor{max(r) - \frac{t}{d}}\right \rfloor $$
        
-            double decay = CalculateDecay();
-            return Math.Floor(_mapRadius - (iteration / decay));
+            double rateOfDecay = CalculateDecay();
+            double newRadius = Math.Floor(_mapRadius - (iteration / rateOfDecay));
+            return newRadius;
         }
 
         /// <summary>

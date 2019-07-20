@@ -12,7 +12,7 @@ namespace SOMLibrary.Implementation.LearningRate
     /// </summary>
     public class PowerSeriesLearningRate : ILearningRate
     {
-        private const double LEARNING_RATE = 0.1;
+        private const double LEARNING_RATE = 0.01;
         private double _constantLearningRate;
 
         public PowerSeriesLearningRate(double learningRate)
@@ -28,17 +28,17 @@ namespace SOMLibrary.Implementation.LearningRate
         /// <returns></returns>
         public double CalculateLearningRate(double iteration, double totalIteration)
         {
-            double x = Math.Exp(-(double) iteration / (double) totalIteration);
-            double y = _constantLearningRate;
+            double decay = Math.Exp(-(double) iteration / (double) totalIteration);
+            double learningRate = _constantLearningRate;
 
-            double learningRate = x * y;
+            double newLearningRate = decay * learningRate;
 
-            if (learningRate < LEARNING_RATE)
+            if (newLearningRate < LEARNING_RATE)
             {
-                learningRate = LEARNING_RATE;
+                newLearningRate = LEARNING_RATE;
             }
 
-            return learningRate;
+            return newLearningRate;
         }
     }
 }

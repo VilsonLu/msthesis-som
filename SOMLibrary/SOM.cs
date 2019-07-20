@@ -65,10 +65,8 @@ namespace SOMLibrary
         /// </summary>
         public double MapRadius
         {
-            get
-            {
-                return Math.Max(Width, Height);
-            }
+            get;
+            set;
         }
 
         #endregion
@@ -84,6 +82,13 @@ namespace SOMLibrary
         /// To calculate the decay of the learning rate
         /// </summary>
         private ILearningRate _learningRate;
+        public ILearningRate LearningRate
+        {
+            set
+            {
+                _learningRate = value;
+            }
+        }
 
         /// <summary>
         /// To calculate the neighborhood radius
@@ -101,7 +106,7 @@ namespace SOMLibrary
             Epoch = 1;
             Map = new Node[Width, Height];
             _learningRate = new PowerSeriesLearningRate(ConstantLearningRate);
-           
+
         }
 
         public SOM(int x, int y)
@@ -126,7 +131,7 @@ namespace SOMLibrary
             Epoch = epoch;
         }
 
-        public SOM(int x, int y, double learningRate, int epoch, int k) : this(x, y, learningRate)
+        public SOM(int x, int y, double learningRate, int epoch, int k) : this(x, y, learningRate, epoch)
         {
             K = k;
         }
@@ -138,7 +143,8 @@ namespace SOMLibrary
             base.Dataset = reader.Read();
             TotalIteration = base.Dataset.Instances.Length * Epoch;
 
-            _neighborhoodRadius = new DecayNeighborhoodRadius(MapRadius, TotalIteration);
+            //_neighborhoodRadius = new BasicNeighborhoodRadius(MapRadius, TotalIteration);
+            _neighborhoodRadius = new FixedNeighborhoodRadius(MapRadius);
         }
 
         /// <summary>
@@ -206,13 +212,15 @@ namespace SOMLibrary
                     // Adjust the weights of the BMU and neighbor
                     UpdateNeighborhood(winningNode, instance, t);
 
+                    if (Training != null)
+                    {
+                        Training(this, new OnTrainingEventArgs() { CurrentIteration = t, TotalIteration = TotalIteration });
+                    }
+
                     t++;
                 }
 
-                if(Training != null)
-                {
-                    Training(this, new OnTrainingEventArgs() { CurrentIteration = i, TotalIteration = Epoch});
-                }
+
 
             }
         }
@@ -291,7 +299,7 @@ namespace SOMLibrary
                 for (int col = 0; col < Height; col++)
                 {
                     var currentNode = Map[row, col];
-                    var distanceToWinningNode = Math.Pow(winningNode.GetGridDistance(currentNode), 2);
+                    var distanceToWinningNode = winningNode.GetGridDistance(currentNode);
                     double neighborhoodRadius = Math.Pow(NeighborhoodRadius(iteration), 2);
                     if (distanceToWinningNode <= neighborhoodRadius)
                     {
@@ -312,7 +320,7 @@ namespace SOMLibrary
             return learningRate;
         }
 
-        
+
         /// <summary>
         /// Neighborhood Radius: The neighborhood shrinks as time passes by
         /// </summary>
@@ -321,7 +329,7 @@ namespace SOMLibrary
         {
 
             return _neighborhoodRadius.CalculateRadius(iteration);
-            
+
         }
 
         /// <summary>
@@ -339,10 +347,12 @@ namespace SOMLibrary
             var currentWeight = currentNode.Weights;
             var inputWeight = winningNode.Weights;
 
+            double learningRate = LearningRateDecay(iteration);
+            double influence = Influence(winningNode, currentNode, iteration);
+            
+
             for (int i = 0; i < currentWeight.Length; i++)
             {
-                double influence = Influence(winningNode, currentNode, iteration);
-                double learningRate = LearningRateDecay(iteration);
                 double newWeight = currentWeight[i] + (learningRate * influence * (instance[i] - currentWeight[i]));
                 currentWeight[i] = newWeight;
             }
@@ -360,10 +370,9 @@ namespace SOMLibrary
         /// <returns></returns>
         protected double Influence(Node winningNode, Node currentNode, int iteration)
         {
-           
-            double distance = winningNode.GetGridDistance(currentNode);
-            double radius = 2 * Math.Pow(MapRadius, 2);
-            double influence = Math.Exp(Math.Pow(distance, 2) / radius);
+            double distance = Math.Pow(winningNode.GetGridDistance(currentNode), 2);
+            double radius = 2 * Math.Pow(NeighborhoodRadius(iteration), 2);
+            double influence = Math.Exp(-((double)distance / (double)radius));
             return influence;
         }
         #endregion
@@ -371,7 +380,7 @@ namespace SOMLibrary
 
     }
 
-    public class OnTrainingEventArgs :EventArgs
+    public class OnTrainingEventArgs : EventArgs
     {
         public int CurrentIteration { get; set; }
         public int TotalIteration { get; set; }

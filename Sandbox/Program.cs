@@ -17,15 +17,95 @@ using SOMLibrary.Implementation.Builder;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SOMLibrary.Implementation.Metric;
+using SOMLibrary.Implementation.LearningRate;
 
 namespace Sandbox
 {
     class Program
     {
         private static List<Tuple<int, double>> disorderScores = new List<Tuple<int, double>>();
+        private const string OUTPUT_LOCATION = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\som_experiment\";
         public static void Main(string[] args)
         {
-            Program2(args);
+            Program3(args);
+        }
+
+        public static void Program3(string[] args)
+        {
+            IFileHelper fileHelper = new FileHelper();
+            fileHelper.DeleteFile(string.Format("{0}disorder-measure.txt", OUTPUT_LOCATION));
+
+            string filePath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\som_experiment\config.json";
+            if (args.Length > 0)
+            {
+                filePath = args[0];
+            }
+
+            var disorderScores = new List<Tuple<int, double>>();
+            var content = System.IO.File.ReadAllText(filePath);
+            var config = ReadToObject(content);
+
+            // Build the Model
+            SOM model = new SOM(config.Width, config.Height, config.ConstantLearningRate, config.Epoch, config.K);
+            model.MapRadius = 10;
+            //model.Regions = config.Regions;
+            //model.LearningRate = new FixedLearningRate(config.ConstantLearningRate);
+
+            // Subscribe to OnTrainingEvent
+            model.Training += _model_Training;
+
+            // Instantiate the reader 
+            IReader _reader = new CSVReader(config.Dataset);
+
+            // Instantiate the clusterer
+            IClusterer clusterer = new KMeansClustering();
+
+            model.GetData(_reader);
+
+            // Get the labels
+            string[] labels = config.Labels.Split(',');
+
+            foreach (var label in labels)
+            {
+                model.Dataset.SetLabel(label);
+            }
+
+            // Set the feature label
+            model.FeatureLabel = config.FeatureLabel;
+
+            // Initialize the training
+            Stopwatch stopwatch = new Stopwatch();
+
+            Console.WriteLine("Start initializing map...");
+            stopwatch.Start();
+            model.InitializeMap();
+            stopwatch.Stop();
+            Console.WriteLine("Completed initialization...");
+            Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
+
+            Console.WriteLine("Start training model...");
+            stopwatch.Restart();
+            model.Train();
+            stopwatch.Stop();
+            Console.WriteLine("Completed training model...");
+            Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
+
+            // Export the model
+            Console.WriteLine("Exporting model...");
+            var guid = Guid.NewGuid();
+            model.MapId = guid;
+            model.Dataset = null;
+
+            var serializeObject = JsonConvert.SerializeObject(model, Formatting.Indented);
+
+            string exportFileName = string.Format("{0}Map_{1}.json", config.Export, guid);
+
+            System.IO.File.WriteAllText(exportFileName, serializeObject);
+
+            Console.WriteLine("Training completed...");
+
+            Console.ReadLine();
+
         }
 
         public static void Program2(string[] args)
@@ -248,13 +328,16 @@ namespace Sandbox
                 return;
             }
 
+            IFileHelper fileHelper = new FileHelper();
 
             IMetric disorderMetric = new DisorderMeasure();
-            if(currentIteration % 5 == 0)
+            if(currentIteration % 10 == 0)
             {
                 var score = disorderMetric.Measure(model);
-                Console.WriteLine("Iteration {0}: {1}", currentIteration, score);
-                disorderScores.Add(new Tuple<int, double>(currentIteration, score));
+                string record = string.Format("{0},{1}\n", currentIteration, score);
+                string outputFile = string.Format("{0}disorder-measure.txt", OUTPUT_LOCATION);
+                Console.WriteLine(string.Format("Iteration {0}: {1}", currentIteration, score));
+                fileHelper.WriteToTextFile(record, outputFile);
             }
             
         }

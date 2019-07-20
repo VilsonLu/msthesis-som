@@ -22,7 +22,6 @@ namespace SOMLibrary.Implementation.Metric
                     Node currentNode = map.Map[i, j];
                     List<Node> neighbors = GetDirectNeighbor(map, i, j);
                     disorderMeasures.Add(neighbors.Average(x => x.GetDistance(currentNode.Weights)));
-
                 }
             }
 

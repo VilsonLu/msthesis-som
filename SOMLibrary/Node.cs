@@ -52,7 +52,7 @@ namespace SOMLibrary
         {
             double x = Math.Pow(Coordinate.X - node.Coordinate.X, 2);
             double y = Math.Pow(Coordinate.Y - node.Coordinate.Y, 2);
-            return Math.Sqrt(x + y);
+            return x + y;
         }
 
         public void IncrementCount()
