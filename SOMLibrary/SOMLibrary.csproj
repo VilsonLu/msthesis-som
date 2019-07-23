@@ -71,6 +71,7 @@
     <Compile Include="Implementation\CSVReader.cs" />
     <Compile Include="Implementation\DistanceMeasure\EuclideanDistance.cs" />
     <Compile Include="Implementation\DistanceMeasure\EuclideanDistanceFast.cs" />
+    <Compile Include="Implementation\LearningRate\FastLearningRateDecay.cs" />
     <Compile Include="Implementation\LearningRate\FixedLearningRate.cs" />
     <Compile Include="Implementation\LearningRate\PowerSeriesLearningRate.cs" />
     <Compile Include="Implementation\Metric\DisorderMeasure.cs" />

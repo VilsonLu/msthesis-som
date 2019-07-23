@@ -143,8 +143,8 @@ namespace SOMLibrary
             base.Dataset = reader.Read();
             TotalIteration = base.Dataset.Instances.Length * Epoch;
 
-            //_neighborhoodRadius = new BasicNeighborhoodRadius(MapRadius, TotalIteration);
-            _neighborhoodRadius = new FixedNeighborhoodRadius(MapRadius);
+            _neighborhoodRadius = new BasicNeighborhoodRadius(MapRadius, TotalIteration);
+            //_neighborhoodRadius = new FixedNeighborhoodRadius(MapRadius);
         }
 
         /// <summary>

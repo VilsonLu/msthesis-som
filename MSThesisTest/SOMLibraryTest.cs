@@ -11,6 +11,7 @@ using ML.TrajectoryAnalysis;
 using ML.Common.Implementation;
 using SOMLibrary.Implementation.LearningRate;
 using SOMLibrary.Implementation.DistanceMeasure;
+using ML.Common;
 
 namespace MSThesisTest
 {
@@ -32,22 +33,6 @@ namespace MSThesisTest
             // Assert
             double expectedResult = 1.1045361;
             Assert.AreEqual(expectedResult, Math.Round(distance, 7));
-        }
-
-        [TestMethod]
-        public void SOM_MapRadius_CalculateMapRadius()
-        {
-            // Arrange
-            var x = 10;
-            var y = 8;
-
-            // Act
-            SOM som = new SOM(x, y);
-            double radius = som.MapRadius;
-
-            // Assert
-            double expected = 10.0;
-            Assert.AreEqual(expected, radius);
         }
 
         [TestMethod]
@@ -427,7 +412,7 @@ namespace MSThesisTest
                 {
                     Node = new Node(weights, 1, 1)
                     {
-                        NodeId = "AA"
+                        NodeId = "AAAA"
                     }
                 }
             };
@@ -521,6 +506,51 @@ namespace MSThesisTest
             double expectedResult = 8.0;
             Assert.AreEqual(expectedResult, Math.Round(actualResult, 7));
 
+        }
+
+        [TestMethod]
+        [TestCategory("String Compression")]
+        public void RunLengthCompression_NoCharactersInDifferentPlaces()
+        {
+            // Arrange
+            ICompression compression = new RunLengthCompression();
+
+            // Act
+            string result = compression.Compress("ABBBBBBBBCCCCC");
+
+            // Assert
+            string expectedResult = "ABBCC";
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [TestMethod]
+        [TestCategory("String Compression")]
+        public void RunLengthCompression_Compress_WithMultipleCharactersInDifferentPlaces()
+        {
+            // Arrange
+            ICompression compression = new RunLengthCompression();
+
+            // Act
+            string result = compression.Compress("ABBBBBBBBCCCCCAAAA");
+
+            // Assert
+            string expectedResult = "ABBCCAA";
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [TestMethod]
+        [TestCategory("String Compression")]
+        public void RunLengthCompression_Compress_NoRepeatingCharacters()
+        {
+            // Arrange
+            ICompression compression = new RunLengthCompression();
+
+            // Act
+            string result = compression.Compress("ABC");
+
+            // Assert
+            string expectedResult = "ABC";
+            result.Should().BeEquivalentTo(expectedResult);
         }
     }
 

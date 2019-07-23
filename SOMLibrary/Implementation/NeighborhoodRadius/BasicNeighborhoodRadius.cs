@@ -22,7 +22,7 @@ namespace SOMLibrary.Implementation.NeighborhoodRadius
         {
             //tex: $$r = radius * e^{\frac{-iteration}{\lambda}}$$
 
-            double neighboodRadius = _mapRadius * Math.Exp(-((double)iteration / (double)_totalIteration));
+            double neighboodRadius = _mapRadius * Math.Exp(-((double)iteration / _totalIteration));
             return neighboodRadius;
         }
 
