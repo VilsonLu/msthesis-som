@@ -19,6 +19,7 @@ namespace SOMLibrary
         public string Label { get; set; }
 
         public int ClusterGroup { get; set; }
+        public string ClusterLabel { get; set; }
 
         public int Count { get; set; }
 

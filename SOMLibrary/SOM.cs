@@ -5,6 +5,8 @@ using SOMLibrary.Implementation.NeighborhoodRadius;
 using SOMLibrary.Implementation.NodeLabeller;
 using SOMLibrary.Interface;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 
 namespace SOMLibrary
@@ -212,16 +214,13 @@ namespace SOMLibrary
                     // Adjust the weights of the BMU and neighbor
                     UpdateNeighborhood(winningNode, instance, t);
 
-                    if (Training != null)
-                    {
-                        Training(this, new OnTrainingEventArgs() { CurrentIteration = t, TotalIteration = TotalIteration });
-                    }
-
                     t++;
                 }
 
-
-
+                if (Training != null)
+                {
+                    Training(this, new OnTrainingEventArgs() { CurrentIteration = i, TotalIteration = Epoch });
+                }
             }
         }
 
@@ -290,6 +289,36 @@ namespace SOMLibrary
             }
         }
 
+        public virtual void AssignClusterLabel()
+        {
+            Hashtable clusterLabels = new Hashtable();
+            Queue<string> letters = UtilityHelper.GetLetterQueue();
+
+            for (int i = 0; i < Width; i++)
+            {
+                for (int j = 0; j < Height; j++)
+                {
+                    int currentClusterGroup = Map[i, j].ClusterGroup;
+                    if (clusterLabels.ContainsKey(currentClusterGroup))
+                    {
+                        Map[i, j].ClusterLabel = clusterLabels[currentClusterGroup].ToString();
+                    }
+                    else
+                    {
+                        string label = string.Empty;
+                        if (letters.Count > 0)
+                        {
+                            label = letters.Dequeue();
+                        }
+                        
+                        clusterLabels.Add(currentClusterGroup, label);
+
+                        Map[i, j].ClusterLabel = label;
+                    }
+                }
+            }
+        }
+
         protected virtual void UpdateNeighborhood(Node winningNode, Instance rowInstance, int iteration)
         {
             var instance = base.Dataset.GetInstance<double>(rowInstance.OrderNo);
@@ -349,7 +378,7 @@ namespace SOMLibrary
 
             double learningRate = LearningRateDecay(iteration);
             double influence = Influence(winningNode, currentNode, iteration);
-            
+
 
             for (int i = 0; i < currentWeight.Length; i++)
             {

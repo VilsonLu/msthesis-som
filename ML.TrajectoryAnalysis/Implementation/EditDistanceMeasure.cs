@@ -35,7 +35,7 @@ namespace ML.TrajectoryAnalysis.Implementation
             StringBuilder builder = new StringBuilder();
             foreach(var item in trajectory)
             {
-                builder.Append(item.Node.NodeId);
+                builder.Append(item.Node.ClusterLabel);
             }
 
             return builder.ToString();

@@ -13,5 +13,17 @@ namespace ML.Common
         {
             return _letters[index];
         }
+
+        public static Queue<string> GetLetterQueue()
+        {
+            Queue<string> letters = new Queue<string>();
+
+            foreach (var item in _letters)
+            {
+                letters.Enqueue(item);
+            }
+
+            return letters;
+        }
     }
 }

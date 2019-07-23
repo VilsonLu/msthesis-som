@@ -24,10 +24,11 @@ namespace Sandbox
     class Program
     {
         private static List<Tuple<int, double>> disorderScores = new List<Tuple<int, double>>();
-        private const string OUTPUT_LOCATION = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\som_experiment\";
+        private static string OUTPUT_LOCATION = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\som_experiment\";
+        private static int FREQUENCY = 10;
         public static void Main(string[] args)
         {
-            Program3(args);
+            Program1(args);
         }
 
         public static void Program3(string[] args)
@@ -49,7 +50,7 @@ namespace Sandbox
             SOM model = new SOM(config.Width, config.Height, config.ConstantLearningRate, config.Epoch, config.K);
             model.MapRadius = 10;
             //model.Regions = config.Regions;
-            //model.LearningRate = new FixedLearningRate(config.ConstantLearningRate);
+            //model.LearningRate = new FastLearningRateDecay(config.ConstantLearningRate);
 
             // Subscribe to OnTrainingEvent
             model.Training += _model_Training;
@@ -110,8 +111,10 @@ namespace Sandbox
 
         public static void Program2(string[] args)
         {
-            string filePath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\config.json";
-            if(args.Length > 0)
+            string filePath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\experiment_3\config.json";
+            OUTPUT_LOCATION = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\experiment_3\";
+            FREQUENCY = 10;
+            if (args.Length > 0)
             {
                 filePath = args[0];
             }
@@ -122,6 +125,7 @@ namespace Sandbox
 
             // Build the Model
             SSOM model = new SSOM(config.Width, config.Height, config.ConstantLearningRate, config.Epoch, config.K);
+            model.MapRadius = 10;
             model.Regions = config.Regions;
 
             // Subscribe to OnTrainingEvent
@@ -185,15 +189,9 @@ namespace Sandbox
                 stopwatch.Stop();
                 Console.WriteLine("Completed clustering nodes...");
                 Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
-            }
 
-            Console.WriteLine("Printing disorder scores...");
-            Console.WriteLine();
-            foreach(var item in disorderScores)
-            {
-                Console.WriteLine("Iteration {0}: {1}", item.Item1, item.Item2);
+                model.AssignClusterLabel();
             }
-            Console.WriteLine("End of Disorder Scores");
 
             // Export the model
             Console.WriteLine("Exporting model...");
@@ -219,26 +217,13 @@ namespace Sandbox
             Stopwatch stopwatch = new Stopwatch();
 
             string trainedModelFile = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\experiment_1\Map_experiment_1.json";
-            string filepath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\MALE_PLEASANT_UNNORMALIZED.csv";
-            string mapLabels = "USER,SEG,CLASS_PLEASANTNESS";
 
             Console.WriteLine("Loading model...");
             var jsonContent = System.IO.File.ReadAllText(trainedModelFile);
             SSOM _model = JsonConvert.DeserializeObject<SSOM>(jsonContent);
+            _model.AssignClusterLabel();
             
             _model.Training += _model_Training; 
-            IReader _reader = new CSVReader(filepath);
-            IClusterer _kmeans = new KMeansClustering();
-
-            _model.GetData(_reader);
-
-            // Get the labels
-            string[] labels = mapLabels.Split(',');
-
-            foreach (var label in labels)
-            {
-                _model.Dataset.SetLabel(label);
-            }
 
             Console.WriteLine("Model loaded.");
 
@@ -283,11 +268,18 @@ namespace Sandbox
 
             testMapper.GetData(trajectoryDataReader);
 
+            string[] labels = { "USER", "SEG", "CLASS_PLEASANTNESS" };
+
+            foreach (var label in labels)
+            {
+                testMapper.SetLabel(label);
+            }
+
             testMapper.PlotTrajectory();
             var unknownTrajectory = testMapper.Trajectories;
 
             IFileHelper fileHelper = new FileHelper();
-            ISimilarityMeasure similarityMeasure = new CompressionDissimilarityMeasure(fileHelper);
+            ISimilarityMeasure similarityMeasure = new EditDistanceMeasure();
 
             Console.WriteLine("Computing similarity measure using {0}", similarityMeasure.GetType().Name);
 
@@ -302,10 +294,10 @@ namespace Sandbox
             }
 
 
-            var topNScores = scores.OrderBy(x => x.Item2).Take(20);
+            var topNScores = scores.OrderBy(x => x.Item2);
 
             Console.WriteLine();
-            Console.WriteLine("Top 20 Trajectories");
+            Console.WriteLine("Trajectories...");
             foreach(var item in topNScores)
             {
                 Console.WriteLine("{0}:{1}:{2}", item.Item1, item.Item2, item.Item3);
@@ -331,7 +323,7 @@ namespace Sandbox
             IFileHelper fileHelper = new FileHelper();
 
             IMetric disorderMetric = new DisorderMeasure();
-            if(currentIteration % 10 == 0)
+            if(currentIteration % FREQUENCY == 0)
             {
                 var score = disorderMetric.Measure(model);
                 string record = string.Format("{0},{1}\n", currentIteration, score);

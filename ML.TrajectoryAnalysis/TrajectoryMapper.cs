@@ -14,6 +14,8 @@ namespace ML.TrajectoryAnalysis
 
         public List<Trajectory> Trajectories { get; }
 
+        public string FeatureLabel { get; set; }
+
         private string _fileName;
         public string FileName
         {
@@ -44,6 +46,35 @@ namespace ML.TrajectoryAnalysis
             FileName = reader.FileName;
         }
 
+        public void SetLabel(string labels)
+        {
+            _dataset.SetLabel(labels);
+        }
+
+        public Node FindBestMatchingUnit(Instance instance)
+        {
+            double bestDistance = double.MaxValue;
+            Node bestNode = null;
+
+            var currentInstance = _dataset.GetInstance<double>(instance.OrderNo);
+            for(int i = 0; i < _som.Width; i++)
+            {
+                for(int j = 0; j < _som.Height; j++)
+                {
+                    var currentNode = _som.Map[i, j];
+                    var currentDistance = currentNode.GetDistance(currentInstance);
+
+                    if(currentDistance < bestDistance)
+                    {
+                        bestNode = currentNode;
+                        bestDistance = currentDistance;
+                    }
+                }
+            }
+
+            return bestNode;
+        }
+
         /// <summary>
         /// Plot the time-series data in the map
         /// </summary>
@@ -51,7 +82,7 @@ namespace ML.TrajectoryAnalysis
         {
             foreach (var instance in _dataset.Instances)
             {
-                var node = _som.FindBestMatchingUnit(instance);
+                var node = FindBestMatchingUnit(instance);
 
                 Trajectories.Add(new Trajectory()
                 {
