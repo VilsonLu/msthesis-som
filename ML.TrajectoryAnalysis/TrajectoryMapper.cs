@@ -3,6 +3,7 @@ using SOMLibrary;
 using SOMLibrary.DataModel;
 using SOMLibrary.Interface;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ML.TrajectoryAnalysis
 {
@@ -90,6 +91,18 @@ namespace ML.TrajectoryAnalysis
                     Node = node
                 });
             }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach(var item in Trajectories)
+            {
+                builder.Append(item.Node.ClusterLabel);
+            }
+
+            return builder.ToString();
+
         }
 
 

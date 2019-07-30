@@ -20,5 +20,7 @@ namespace Sandbox
         public string Dataset { get; set; }
         public int Clusters { get; set; }
         public string Export { get; set; }
+
+        public int Neighborhood { get; set; }
     }
 }

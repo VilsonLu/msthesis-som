@@ -103,7 +103,7 @@
 
             var timeInterpolator = function (d) {
                 var interpolatedNum = interpolator(d);
-                var color = d3.interpolateLab("yellow", "green")(interpolatedNum);
+                var color = d3.interpolateLab("yellow", "red")(interpolatedNum);
                 console.log(`${d} : ${interpolatedNum} : ${color} `);
                 return color;
             }
@@ -161,7 +161,21 @@
                 .style("fill",
                 function (node) {
                     return rgb(dictColor[node.ClusterGroup]);
-                })
+                });
+
+
+            var text = rgb_nodes.selectAll("text")
+                .data(nodes)
+                .enter()
+                .append("text");
+
+            var textLabels = text
+                .attr("x", function (node) { return coordinateMapper(node.Coordinate.X); })
+                .attr("y", function (node) { return coordinateMapper(node.Coordinate.Y); })
+                .text(function (node) { return node.ClusterLabel; })
+                .attr("font-family", "sans-serif")
+                .attr("font-size", "15px")
+                .attr("fill", "black");
             //.on("mouseover",
             //function (node) {
             //    mover();
@@ -190,8 +204,11 @@
                 visualizeSOM();
             }
 
+            if ($scope.Trajectory === undefined) {
+                return;
+            }
 
-            if ($scope.Trajectory.length > 0) {
+            if ($scope.Trajectory.Trajectories.length > 0) {
                 plotTrajectory();
             }
         };
@@ -210,8 +227,8 @@
             function (event, args) {
                 $scope.Trajectory = args.trajectory;
                 plotTrajectory();
-                console.log("Plotting Trajectory")
-            })
+                console.log("Plotting Trajectory");
+            });
 
         $scope.$on("onShowLoader",
             function (event, args) {
