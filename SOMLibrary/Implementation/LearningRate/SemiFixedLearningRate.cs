@@ -7,15 +7,13 @@ using System.Threading.Tasks;
 
 namespace SOMLibrary.Implementation.LearningRate
 {
-    /// <summary>
-    /// Class that implements a Power Series Learning Decay
-    /// </summary>
-    public class PowerSeriesLearningRate : ILearningRate
+
+    public class SemiFixedLearningRate : ILearningRate
     {
-        private const double LEARNING_RATE = 0.01;
+        private const double LEARNING_RATE = 0.9;
         private double _constantLearningRate;
 
-        public PowerSeriesLearningRate(double learningRate)
+        public SemiFixedLearningRate(double learningRate)
         {
             _constantLearningRate = learningRate;
         }
@@ -28,7 +26,7 @@ namespace SOMLibrary.Implementation.LearningRate
         /// <returns></returns>
         public double CalculateLearningRate(double iteration, double totalIteration)
         {
-            double decay = Math.Exp((double) iteration / (double) totalIteration);
+            double decay = Math.Exp(-(double)iteration / (double)totalIteration);
             double learningRate = _constantLearningRate;
 
             double newLearningRate = decay * learningRate;

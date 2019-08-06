@@ -49,6 +49,11 @@ namespace SOMLibrary
             return _distanceMeasure.GetDistance(Weights, inputVectors);
         }
 
+        /// <summary>
+        /// Get the distance^2 between nodes in terms of coordinates
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         public double GetGridDistance(Node node)
         {
             double x = Math.Pow(Coordinate.X - node.Coordinate.X, 2);

@@ -73,7 +73,10 @@
     <Compile Include="Implementation\DistanceMeasure\EuclideanDistanceFast.cs" />
     <Compile Include="Implementation\LearningRate\FastLearningRateDecay.cs" />
     <Compile Include="Implementation\LearningRate\FixedLearningRate.cs" />
+    <Compile Include="Implementation\LearningRate\InverseTimeLearningRate.cs" />
+    <Compile Include="Implementation\LearningRate\LinearLearningRate.cs" />
     <Compile Include="Implementation\LearningRate\PowerSeriesLearningRate.cs" />
+    <Compile Include="Implementation\LearningRate\SemiFixedLearningRate.cs" />
     <Compile Include="Implementation\Metric\DisorderMeasure.cs" />
     <Compile Include="Implementation\NeighborhoodRadius\BasicNeighborhoodRadius.cs" />
     <Compile Include="Implementation\NeighborhoodRadius\DecayNeighborhoodRadius.cs" />

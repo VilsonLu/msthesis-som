@@ -23,14 +23,31 @@ namespace Sandbox
 {
     class Program
     {
-        private static List<Tuple<int, double>> disorderScores = new List<Tuple<int, double>>();
+        /// <summary>
+        /// Configuration for the location to save the text files
+        /// </summary>
         private static string OUTPUT_LOCATION = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\som_experiment\";
+
+        /// <summary>
+        /// Configuration for the frequency to calculate the disorder measure
+        /// </summary>
         private static int FREQUENCY = 10;
+
+        /// <summary>
+        /// Configuration to save the model per frequency
+        /// </summary>
+        private static bool IS_PRINT_MODEL = false;
+
         public static void Main(string[] args)
         {
-            Program1(args);
+            Program2(args);
         }
 
+
+        /// <summary>
+        /// Training models
+        /// </summary>
+        /// <param name="args"></param>
         public static void Program3(string[] args)
         {
             IFileHelper fileHelper = new FileHelper();
@@ -115,9 +132,11 @@ namespace Sandbox
         /// <param name="args"></param>
         public static void Program2(string[] args)
         {
-            string filePath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\experiment_4\config.json";
+            string filePath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\som_experiment\config.json";
             
-            FREQUENCY = 10;
+            FREQUENCY = 100;
+            IS_PRINT_MODEL = false;
+
             if (args.Length > 0)
             {
                 filePath = args[0];
@@ -130,9 +149,12 @@ namespace Sandbox
             OUTPUT_LOCATION = config.Export;
 
             // Build the Model
-            SSOM model = new SSOM(config.Width, config.Height, config.ConstantLearningRate, config.Epoch, config.K);
+            SOM model = new SOM(config.Width, config.Height, config.ConstantLearningRate, config.Epoch, config.K);
             model.MapRadius = config.Neighborhood;
-            model.Regions = config.Regions;
+            var learningRate = new InverseTimeLearningRate(config.ConstantLearningRate);
+            model.LearningRate = learningRate;
+
+            Console.WriteLine("Learning Rate Type: {0}", learningRate.GetType());
 
             // Subscribe to OnTrainingEvent
             model.Training += _model_Training;
@@ -173,43 +195,43 @@ namespace Sandbox
             Console.WriteLine("Completed training model...");
             Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
 
-            Console.WriteLine("Start labelling node...");
-            stopwatch.Restart();
-            model.LabelNodes();
-            stopwatch.Stop();
-            Console.WriteLine("Completed labelling node...");
-            Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
+            //Console.WriteLine("Start labelling node...");
+            //stopwatch.Restart();
+            //model.LabelNodes();
+            //stopwatch.Stop();
+            //Console.WriteLine("Completed labelling node...");
+            //Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
 
-            if(config.Clusters > 0)
-            {
-                Console.WriteLine("Start clustering nodes...");
-                stopwatch.Restart();
-                var flattenedMap = ArrayHelper<Node>.FlattenMap(model.Map);
-                var clusteredNodes = clusterer.Cluster(flattenedMap, config.Clusters);
+            //if(config.Clusters > 0)
+            //{
+            //    Console.WriteLine("Start clustering nodes...");
+            //    stopwatch.Restart();
+            //    var flattenedMap = ArrayHelper<Node>.FlattenMap(model.Map);
+            //    var clusteredNodes = clusterer.Cluster(flattenedMap, config.Clusters);
 
-                foreach(var node in clusteredNodes)
-                {
-                    model.Map[node.Coordinate.X, node.Coordinate.Y].ClusterGroup = node.ClusterGroup;
-                }
+            //    foreach(var node in clusteredNodes)
+            //    {
+            //        model.Map[node.Coordinate.X, node.Coordinate.Y].ClusterGroup = node.ClusterGroup;
+            //    }
 
-                stopwatch.Stop();
-                Console.WriteLine("Completed clustering nodes...");
-                Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
+            //    stopwatch.Stop();
+            //    Console.WriteLine("Completed clustering nodes...");
+            //    Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
 
-                model.AssignClusterLabel();
-            }
+            //    model.AssignClusterLabel();
+            //}
 
             // Export the model
-            Console.WriteLine("Exporting model...");
-            var guid = Guid.NewGuid();
-            model.MapId = guid;
-            model.Dataset = null;
+            //Console.WriteLine("Exporting model...");
+            //var guid = Guid.NewGuid();
+            //model.MapId = guid;
+            //model.Dataset = null;
 
-            var serializeObject = JsonConvert.SerializeObject(model, Formatting.Indented);
+            //var serializeObject = JsonConvert.SerializeObject(model, Formatting.Indented);
 
-            string exportFileName = string.Format("{0}Map_{1}.json", config.Export, guid);
+            //string exportFileName = string.Format("{0}Map_{1}.json", config.Export, guid);
 
-            System.IO.File.WriteAllText(exportFileName, serializeObject);
+            //System.IO.File.WriteAllText(exportFileName, serializeObject);
 
             Console.WriteLine("Training completed...");
 
@@ -334,7 +356,7 @@ namespace Sandbox
             var currentIteration = args.CurrentIteration;
             //Console.WriteLine("Current Iteration: {0} / {1}", currentIteration + 1, args.TotalIteration);
 
-            var model = sender as SSOM;
+            var model = sender as SOM;
 
             if(model == null)
             {
@@ -349,14 +371,17 @@ namespace Sandbox
                 var score = disorderMetric.Measure(model);
                 string record = string.Format("{0},{1}\n", currentIteration, score);
                 string outputFile = string.Format("{0}disorder-measure.txt", OUTPUT_LOCATION);
-                Console.WriteLine(string.Format("Iteration {0}: {1}", currentIteration, score));
+              
+                Console.WriteLine(string.Format("Iteration {0}: {1}, Learning Rate: {2}, Radius: {3}", currentIteration, score, model.LearningRateDisplay, model.RadiusDisplay));
                 fileHelper.WriteToTextFile(record, outputFile);
 
-
-                string mapJson = JsonConvert.SerializeObject(model, Formatting.Indented);
-                string mapName = string.Format("{0}map_iteration_{1}.json", OUTPUT_LOCATION, currentIteration);
-                fileHelper.WriteToTextFile(mapJson, mapName);
-
+                if (IS_PRINT_MODEL)
+                {
+                    string mapJson = JsonConvert.SerializeObject(model, Formatting.Indented);
+                    string mapName = string.Format("{0}map_iteration_{1}.json", OUTPUT_LOCATION, currentIteration);
+                    fileHelper.WriteToTextFile(mapJson, mapName);
+                }
+  
             }
             
         }

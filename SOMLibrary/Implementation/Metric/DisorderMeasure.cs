@@ -101,5 +101,20 @@ namespace SOMLibrary.Implementation.Metric
 
             return true;
         }    
+
+        private void PrintInfo(Node currentNode, List<Node> neighbors)
+        {
+            Console.WriteLine("---------");
+            Console.WriteLine("X:{0}, Y{1}", currentNode.Coordinate.X, currentNode.Coordinate.Y);
+            foreach (var item in neighbors)
+            {
+                var distance = item.GetDistance(currentNode.Weights);
+
+                Console.WriteLine("X:{0}, Y:{1}: {2}", item.Coordinate.X, item.Coordinate.Y, distance);
+            }
+
+            Console.WriteLine("Average: {0} ", neighbors.Average(x => x.GetDistance(currentNode.Weights)));
+            Console.WriteLine("---------");
+        }
     }
 }

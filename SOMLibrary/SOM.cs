@@ -1,4 +1,5 @@
 ﻿using ML.Common;
+using Newtonsoft.Json;
 using SOMLibrary.DataModel;
 using SOMLibrary.Implementation.LearningRate;
 using SOMLibrary.Implementation.NeighborhoodRadius;
@@ -92,6 +93,11 @@ namespace SOMLibrary
             }
         }
 
+        [JsonIgnore]
+        public double LearningRateDisplay { get; set; }
+        [JsonIgnore]
+        public double RadiusDisplay { get; set; }
+
         /// <summary>
         /// To calculate the neighborhood radius
         /// </summary>
@@ -145,7 +151,8 @@ namespace SOMLibrary
             base.Dataset = reader.Read();
             TotalIteration = base.Dataset.Instances.Length * Epoch;
 
-            _neighborhoodRadius = new BasicNeighborhoodRadius(MapRadius, TotalIteration);
+            //_neighborhoodRadius = new BasicNeighborhoodRadius(MapRadius, TotalIteration);
+            _neighborhoodRadius = new DecayNeighborhoodRadius(MapRadius, TotalIteration);
             //_neighborhoodRadius = new FixedNeighborhoodRadius(MapRadius);
         }
 
@@ -214,13 +221,15 @@ namespace SOMLibrary
                     // Adjust the weights of the BMU and neighbor
                     UpdateNeighborhood(winningNode, instance, t);
 
+                    if (Training != null)
+                    {
+                        Training(this, new OnTrainingEventArgs() { CurrentIteration = t, TotalIteration = Epoch });
+                    }
+
                     t++;
                 }
 
-                if (Training != null)
-                {
-                    Training(this, new OnTrainingEventArgs() { CurrentIteration = i, TotalIteration = Epoch });
-                }
+                
             }
         }
 
@@ -328,11 +337,12 @@ namespace SOMLibrary
                 for (int col = 0; col < Height; col++)
                 {
                     var currentNode = Map[row, col];
-                    var distanceToWinningNode = winningNode.GetGridDistance(currentNode);
-                    double neighborhoodRadius = Math.Pow(NeighborhoodRadius(iteration), 2);
+                    var distanceToWinningNode = Math.Sqrt(winningNode.GetGridDistance(currentNode));
+                    double neighborhoodRadius = NeighborhoodRadius(iteration);
+                    RadiusDisplay = neighborhoodRadius;
                     if (distanceToWinningNode <= neighborhoodRadius)
                     {
-                        currentNode.Weights = AdjustWeights(winningNode, currentNode, instance, iteration);
+                        currentNode.Weights = AdjustWeights(winningNode, currentNode, instance, iteration, neighborhoodRadius);
                     }
                 }
             }
@@ -371,14 +381,14 @@ namespace SOMLibrary
         /// <param name="instance"></param>
         /// <param name="iteration"></param>
         /// <returns></returns>
-        protected double[] AdjustWeights(Node winningNode, Node currentNode, double[] instance, int iteration)
+        protected double[] AdjustWeights(Node winningNode, Node currentNode, double[] instance, int iteration, double radius)
         {
             var currentWeight = currentNode.Weights;
-            var inputWeight = winningNode.Weights;
 
             double learningRate = LearningRateDecay(iteration);
-            double influence = Influence(winningNode, currentNode, iteration);
+            double influence = learningRate * Influence(winningNode, currentNode, radius);
 
+            LearningRateDisplay = learningRate;
 
             for (int i = 0; i < currentWeight.Length; i++)
             {
@@ -397,10 +407,10 @@ namespace SOMLibrary
         /// <param name="currentNode"></param>
         /// <param name="iteration"></param>
         /// <returns></returns>
-        protected double Influence(Node winningNode, Node currentNode, int iteration)
+        protected double Influence(Node winningNode, Node currentNode, double neighborhoodRadius)
         {
-            double distance = Math.Pow(winningNode.GetGridDistance(currentNode), 2);
-            double radius = 2 * Math.Pow(NeighborhoodRadius(iteration), 2);
+            double distance = winningNode.GetGridDistance(currentNode);
+            double radius = 2 * Math.Pow(neighborhoodRadius, 2);
             double influence = Math.Exp(-((double)distance / (double)radius));
             return influence;
         }
