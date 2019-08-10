@@ -28,7 +28,7 @@ namespace SOMLibrary.Implementation.LearningRate
         /// <returns></returns>
         public double CalculateLearningRate(double iteration, double totalIteration)
         {
-            double decay = Math.Exp((double) iteration / (double) totalIteration);
+            double decay = Math.Exp(-(double) iteration / (double) totalIteration);
             double learningRate = _constantLearningRate;
 
             double newLearningRate = decay * learningRate;

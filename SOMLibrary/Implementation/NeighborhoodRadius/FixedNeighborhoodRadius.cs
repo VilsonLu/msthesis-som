@@ -16,7 +16,7 @@ namespace SOMLibrary.Implementation.NeighborhoodRadius
             _neigborhoodRadius = neighborhoodRadius;
         }
 
-        public double CalculateRadius(int iteration)
+        public double CalculateRadius(int iteration, int totalIteration)
         {
             return _neigborhoodRadius;
         }

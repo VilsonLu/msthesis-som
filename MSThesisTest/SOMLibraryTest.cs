@@ -376,7 +376,7 @@ namespace MSThesisTest
                 {
                     Node = new Node(weights, 1, 1)
                     {
-                        NodeId = "AA"
+                        ClusterLabel = "AA"
                     }
                 }
             };
@@ -387,7 +387,7 @@ namespace MSThesisTest
                 {
                     Node = new Node(weights, 1, 1)
                     {
-                        NodeId = "BB"
+                        ClusterLabel = "BB"
                     }
                 }
             };
@@ -412,7 +412,7 @@ namespace MSThesisTest
                 {
                     Node = new Node(weights, 1, 1)
                     {
-                        NodeId = "AAAA"
+                        ClusterLabel = "AAAA"
                     }
                 }
             };
@@ -423,7 +423,7 @@ namespace MSThesisTest
                 {
                     Node = new Node(weights, 1, 1)
                     {
-                        NodeId = "AACC"
+                        ClusterLabel = "AACC"
                     }
                 }
             };
@@ -448,7 +448,7 @@ namespace MSThesisTest
                 {
                     Node = new Node(weights, 1, 1)
                     {
-                        NodeId = "AACC"
+                        ClusterLabel = "AACC"
                     }
                 }
             };
@@ -459,7 +459,7 @@ namespace MSThesisTest
                 {
                     Node = new Node(weights, 1, 1)
                     {
-                        NodeId = "AA"
+                        ClusterLabel = "AA"
                     }
                 }
             };
@@ -484,7 +484,7 @@ namespace MSThesisTest
                 {
                     Node = new Node(weights, 1, 1)
                     {
-                        NodeId = "AABBCC"
+                        ClusterLabel = "AABBCC"
                     }
                 }
             };
@@ -495,7 +495,7 @@ namespace MSThesisTest
                 {
                     Node = new Node(weights, 1, 1)
                     {
-                        NodeId = "BBDDEE"
+                        ClusterLabel = "BBDDEE"
                     }
                 }
             };

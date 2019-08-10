@@ -1,6 +1,7 @@
 ﻿using ML.Common;
 using Newtonsoft.Json;
 using SOMLibrary.DataModel;
+using SOMLibrary.Implementation;
 using SOMLibrary.Implementation.LearningRate;
 using SOMLibrary.Implementation.NeighborhoodRadius;
 using SOMLibrary.Implementation.NodeLabeller;
@@ -17,7 +18,6 @@ namespace SOMLibrary
     /// </summary>
     public class SOM : Model
     {
-
         #region Properties
         public Guid MapId { get; set; }
 
@@ -38,7 +38,6 @@ namespace SOMLibrary
         /// </summary>
         public int Height { get; set; }
 
-
         /// <summary>
         /// Number of times it will train using the dataset
         /// </summary>
@@ -53,28 +52,30 @@ namespace SOMLibrary
         /// </summary>
         public int K { get; set; } = 3;
 
+        public int GlobalEpoch { get; set; }
+        public int TotalGlobalIteration { get; set; }
+        public int LocalEpoch { get; set; }
+
+        /// <summary>
+        /// Initial neighborhood radius
+        /// </summary>
+        public double MapRadius { get; set; }
+
         #endregion
 
         #region Events
         public delegate void OnTrainingEventHandler(object sender, OnTrainingEventArgs args);
         public event OnTrainingEventHandler Training;
-        #endregion 
-
-        #region Calculated
-
-        /// <summary>
-        /// Map Radius (sigma)
-        /// Formula: Max(Width, Height) / 2
-        /// </summary>
-        public double MapRadius
-        {
-            get;
-            set;
-        }
-
         #endregion
 
-        #region SOM Functions
+        #region Observations
+        [JsonIgnore]
+        public double LearningRateDisplay { get; set; }
+        [JsonIgnore]
+        public double RadiusDisplay { get; set; }
+        #endregion
+
+        #region Implementations
 
         /// <summary>
         /// To label the nodes
@@ -82,10 +83,22 @@ namespace SOMLibrary
         private ILabel _labeller;
 
         /// <summary>
+        /// To calculate the neighborhood radius
+        /// </summary>
+        private INeighborhoodRadius _neighborhoodRadius;
+        public INeighborhoodRadius NeighborhoodRadiusCalculator
+        {
+            set
+            {
+                _neighborhoodRadius = value;
+            }
+        }
+
+        /// <summary>
         /// To calculate the decay of the learning rate
         /// </summary>
         private ILearningRate _learningRate;
-        public ILearningRate LearningRate
+        public ILearningRate LearningRateCalculator
         {
             set
             {
@@ -93,15 +106,18 @@ namespace SOMLibrary
             }
         }
 
-        [JsonIgnore]
-        public double LearningRateDisplay { get; set; }
-        [JsonIgnore]
-        public double RadiusDisplay { get; set; }
-
         /// <summary>
-        /// To calculate the neighborhood radius
+        /// To calculate the neighborhood function
         /// </summary>
-        private INeighborhoodRadius _neighborhoodRadius;
+        private INeighborhoodKernel _neighborhoodKernel;
+        public INeighborhoodKernel NeighborFunctionCalculator
+        {
+            set
+            {
+                _neighborhoodKernel = value;
+            }
+        }
+
         #endregion
 
         #region Constructor
@@ -114,6 +130,7 @@ namespace SOMLibrary
             Epoch = 1;
             Map = new Node[Width, Height];
             _learningRate = new PowerSeriesLearningRate(ConstantLearningRate);
+            _neighborhoodRadius = new DecayNeighborhoodRadius(MapRadius);
 
         }
 
@@ -125,12 +142,14 @@ namespace SOMLibrary
             Epoch = 1;
             Map = new Node[x, y];
             _learningRate = new PowerSeriesLearningRate(ConstantLearningRate);
+            _neighborhoodRadius = new DecayNeighborhoodRadius(MapRadius);
         }
 
         public SOM(int x, int y, double learningRate) : this(x, y)
         {
             ConstantLearningRate = learningRate;
             _learningRate = new PowerSeriesLearningRate(ConstantLearningRate);
+            _neighborhoodRadius = new DecayNeighborhoodRadius(MapRadius);
             Epoch = 1;
         }
 
@@ -144,16 +163,23 @@ namespace SOMLibrary
             K = k;
         }
 
+        public SOM(int x, int y, double learningRate, int epoch, int globalEpoch, int localEpoch, int k) : this(x, y, learningRate, epoch, k)
+        {
+            GlobalEpoch = globalEpoch;
+            LocalEpoch = localEpoch;
+        }
+
         #endregion
 
+        /// <summary>
+        /// Load the data from source
+        /// </summary>
+        /// <param name="reader"></param>
         public void GetData(IReader reader)
         {
             base.Dataset = reader.Read();
             TotalIteration = base.Dataset.Instances.Length * Epoch;
-
-            //_neighborhoodRadius = new BasicNeighborhoodRadius(MapRadius, TotalIteration);
-            _neighborhoodRadius = new DecayNeighborhoodRadius(MapRadius, TotalIteration);
-            //_neighborhoodRadius = new FixedNeighborhoodRadius(MapRadius);
+            TotalGlobalIteration = base.Dataset.Instances.Length * GlobalEpoch;
         }
 
         /// <summary>
@@ -204,6 +230,7 @@ namespace SOMLibrary
 
             int instanceCount = base.Dataset.Instances.Length;
             var instances = base.Dataset.Instances;
+
             int t = 1; // iteration
             for (int i = 0; i < Epoch; i++)
             {
@@ -223,38 +250,21 @@ namespace SOMLibrary
 
                     if (Training != null)
                     {
-                        Training(this, new OnTrainingEventArgs() { CurrentIteration = t, TotalIteration = Epoch });
+                        Training(this, new OnTrainingEventArgs() { CurrentIteration = t, TotalIteration = TotalIteration });
                     }
 
                     t++;
-                }
-
-                
-            }
-        }
-
-        /// <summary>
-        /// Give label to each node in the map
-        /// </summary>
-        public void LabelNodes()
-        {
-            if (string.IsNullOrEmpty(this.FeatureLabel))
-            {
-                return;
-            }
-
-            _labeller = new KNNLabeller(base.Dataset, K, this.FeatureLabel);
-            for (int row = 0; row < Width; row++)
-            {
-                for (int col = 0; col < Height; col++)
-                {
-                    Node node = Map[row, col];
-                    Map[row, col].Label = _labeller.GetLabel(node);
                 }
             }
         }
 
         #region SOM Functions
+
+        /// <summary>
+        /// Find the best matching unit based on the input data
+        /// </summary>
+        /// <param name="rowInstance"></param>
+        /// <returns></returns>
         public virtual Node FindBestMatchingUnit(Instance rowInstance)
         {
             double bestDistance = double.MaxValue;
@@ -282,22 +292,103 @@ namespace SOMLibrary
         }
 
         /// <summary>
-        /// Assign a 2-letter ID to all nodes
+        /// Determines the neighborhood of the winning node
         /// </summary>
-        public virtual void AssignNodeId()
+        /// <param name="winningNode"></param>
+        /// <param name="rowInstance"></param>
+        /// <param name="iteration"></param>
+        protected virtual void UpdateNeighborhood(Node winningNode, Instance rowInstance, int iteration)
         {
-            for (int i = 0; i < Width; i++)
+            var instance = base.Dataset.GetInstance<double>(rowInstance.OrderNo);
+
+            for (int row = 0; row < Width; row++)
             {
-                for (int j = 0; j < Height; j++)
+                for (int col = 0; col < Height; col++)
                 {
-                    StringBuilder builder = new StringBuilder();
-                    builder.Append(UtilityHelper.GetLetter(i));
-                    builder.Append(UtilityHelper.GetLetter(j));
-                    Map[i, j].NodeId = builder.ToString();
+                    var currentNode = Map[row, col];
+                    var distanceToWinningNode = Math.Sqrt(winningNode.GetGridDistance(currentNode));
+                    double neighborhoodRadius = NeighborhoodRadius(iteration);
+                    RadiusDisplay = neighborhoodRadius;
+                    if (distanceToWinningNode <= neighborhoodRadius)
+                    {
+                        currentNode.Weights = AdjustWeights(currentNode, distanceToWinningNode, instance, iteration, neighborhoodRadius);
+                    }
                 }
             }
         }
 
+        /// <summary>
+        /// Adjust the weights of the affected nodes
+        /// </summary>
+        /// <param name="winningNode"></param>
+        /// <param name="currentNode"></param>
+        /// <param name="instance"></param>
+        /// <param name="iteration"></param>
+        /// <param name="radius"></param>
+        /// <returns></returns>
+        protected double[] AdjustWeights(Node currentNode, double distance, double[] instance, int iteration, double radius)
+        {
+            var currentWeight = currentNode.Weights;
+
+            double learningRate = LearningRateDecay(iteration);
+            double influence = Influence(distance, radius);
+
+            LearningRateDisplay = learningRate;
+
+            for (int i = 0; i < currentWeight.Length; i++)
+            {
+                double newWeight = currentWeight[i] + (learningRate * influence * (instance[i] - currentWeight[i]));
+                currentWeight[i] = newWeight;
+            }
+
+            return currentWeight;
+        }
+
+        /// <summary>
+        /// Calculate how fast model will learn every iteration
+        /// </summary>
+        /// <param name="iteration"></param>
+        /// <returns></returns>
+        protected double LearningRateDecay(int iteration)
+        {
+            double learningRate = _learningRate.CalculateLearningRate(iteration, TotalGlobalIteration);
+            return learningRate;
+        }
+
+        /// <summary>
+        /// Neighborhood Radius: The neighborhood shrinks as time passes by
+        /// </summary>
+        /// <returns></returns>
+        protected double NeighborhoodRadius(int iteration)
+        {
+            return _neighborhoodRadius.CalculateRadius(iteration, TotalGlobalIteration);
+        }
+
+        /// <summary>
+        /// Influence: Rate of change around the winning node
+        /// </summary>
+        /// <param name="distance"></param>
+        /// <param name="neighborhoodRadius"></param>
+        /// <returns></returns>
+        protected double Influence(double distance, double neighborhoodRadius)
+        {
+            return _neighborhoodKernel.CalculateNeighborhoodFunction(distance, neighborhoodRadius);
+        }
+
+        /// <summary>
+        /// Formula for adjusting the weights of the node. 
+        /// Weights are adjusted based on the distance of the node to the winning node
+        /// Formula W(t+1) = W(t) + Influence(t) * LearningRate(t) * (V(t) - W(t))
+        /// </summary>
+        /// <param name="winningNode"></param>
+        /// <param name="currentNode"></param>
+        /// <param name="instance"></param>
+        /// <param name="iteration"></param>
+        /// <returns></returns>
+        
+        #endregion
+
+        #region Others
         public virtual void AssignClusterLabel()
         {
             Hashtable clusterLabels = new Hashtable();
@@ -319,7 +410,7 @@ namespace SOMLibrary
                         {
                             label = letters.Dequeue();
                         }
-                        
+
                         clusterLabels.Add(currentClusterGroup, label);
 
                         Map[i, j].ClusterLabel = label;
@@ -328,94 +419,27 @@ namespace SOMLibrary
             }
         }
 
-        protected virtual void UpdateNeighborhood(Node winningNode, Instance rowInstance, int iteration)
+        /// <summary>
+        /// Give label to each node in the map
+        /// </summary>
+        public void LabelNodes()
         {
-            var instance = base.Dataset.GetInstance<double>(rowInstance.OrderNo);
+            if (string.IsNullOrEmpty(this.FeatureLabel))
+            {
+                return;
+            }
 
+            _labeller = new KNNLabeller(base.Dataset, K, this.FeatureLabel);
             for (int row = 0; row < Width; row++)
             {
                 for (int col = 0; col < Height; col++)
                 {
-                    var currentNode = Map[row, col];
-                    var distanceToWinningNode = Math.Sqrt(winningNode.GetGridDistance(currentNode));
-                    double neighborhoodRadius = NeighborhoodRadius(iteration);
-                    RadiusDisplay = neighborhoodRadius;
-                    if (distanceToWinningNode <= neighborhoodRadius)
-                    {
-                        currentNode.Weights = AdjustWeights(winningNode, currentNode, instance, iteration, neighborhoodRadius);
-                    }
+                    Node node = Map[row, col];
+                    Map[row, col].Label = _labeller.GetLabel(node);
                 }
             }
         }
-
-        /// <summary>
-        /// Calculate how fast model will learn every iteration
-        /// </summary>
-        /// <param name="iteration"></param>
-        /// <returns></returns>
-        protected double LearningRateDecay(int iteration)
-        {
-            double learningRate = _learningRate.CalculateLearningRate(iteration, TotalIteration);
-            return learningRate;
-        }
-
-
-        /// <summary>
-        /// Neighborhood Radius: The neighborhood shrinks as time passes by
-        /// </summary>
-        /// <returns></returns>
-        protected double NeighborhoodRadius(int iteration)
-        {
-
-            return _neighborhoodRadius.CalculateRadius(iteration);
-
-        }
-
-        /// <summary>
-        /// Formula for adjusting the weights of the node. 
-        /// Weights are adjusted based on the distance of the node to the winning node
-        /// Formula W(t+1) = W(t) + Influence(t) * LearningRate(t) * (V(t) - W(t))
-        /// </summary>
-        /// <param name="winningNode"></param>
-        /// <param name="currentNode"></param>
-        /// <param name="instance"></param>
-        /// <param name="iteration"></param>
-        /// <returns></returns>
-        protected double[] AdjustWeights(Node winningNode, Node currentNode, double[] instance, int iteration, double radius)
-        {
-            var currentWeight = currentNode.Weights;
-
-            double learningRate = LearningRateDecay(iteration);
-            double influence = learningRate * Influence(winningNode, currentNode, radius);
-
-            LearningRateDisplay = learningRate;
-
-            for (int i = 0; i < currentWeight.Length; i++)
-            {
-                double newWeight = currentWeight[i] + (learningRate * influence * (instance[i] - currentWeight[i]));
-                currentWeight[i] = newWeight;
-            }
-
-            return currentWeight;
-        }
-
-        /// <summary>
-        /// Influence of the node based on distance
-        /// Formula I(t) = Exp(-distance^2/ (2*NeighborhoodRadius^2))
-        /// </summary>
-        /// <param name="winningNode"></param>
-        /// <param name="currentNode"></param>
-        /// <param name="iteration"></param>
-        /// <returns></returns>
-        protected double Influence(Node winningNode, Node currentNode, double neighborhoodRadius)
-        {
-            double distance = winningNode.GetGridDistance(currentNode);
-            double radius = 2 * Math.Pow(neighborhoodRadius, 2);
-            double influence = Math.Exp(-((double)distance / (double)radius));
-            return influence;
-        }
         #endregion
-
 
     }
 

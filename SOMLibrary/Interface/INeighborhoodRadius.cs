@@ -8,6 +8,6 @@ namespace SOMLibrary.Interface
 {
     public interface INeighborhoodRadius
     {
-        double CalculateRadius(int iteration);
+        double CalculateRadius(int iteration, int totalIteration);
     }
 }

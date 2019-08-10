@@ -71,6 +71,7 @@
     <Compile Include="Implementation\CSVReader.cs" />
     <Compile Include="Implementation\DistanceMeasure\EuclideanDistance.cs" />
     <Compile Include="Implementation\DistanceMeasure\EuclideanDistanceFast.cs" />
+    <Compile Include="Implementation\IKernel.cs" />
     <Compile Include="Implementation\LearningRate\FastLearningRateDecay.cs" />
     <Compile Include="Implementation\LearningRate\FixedLearningRate.cs" />
     <Compile Include="Implementation\LearningRate\InverseTimeLearningRate.cs" />
@@ -78,9 +79,11 @@
     <Compile Include="Implementation\LearningRate\PowerSeriesLearningRate.cs" />
     <Compile Include="Implementation\LearningRate\SemiFixedLearningRate.cs" />
     <Compile Include="Implementation\Metric\DisorderMeasure.cs" />
+    <Compile Include="Implementation\NeighborhoodKernel\GaussianKernel.cs" />
     <Compile Include="Implementation\NeighborhoodRadius\BasicNeighborhoodRadius.cs" />
     <Compile Include="Implementation\NeighborhoodRadius\DecayNeighborhoodRadius.cs" />
     <Compile Include="Implementation\NeighborhoodRadius\FixedNeighborhoodRadius.cs" />
+    <Compile Include="Implementation\NeighborhoodRadius\LinearDecayNeighborhoodRadius.cs" />
     <Compile Include="Interface\ILearningRate.cs" />
     <Compile Include="Implementation\NodeLabeller\KNNLabeller.cs" />
     <Compile Include="Implementation\RandomNumberGenerator.cs" />

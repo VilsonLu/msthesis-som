@@ -18,6 +18,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SOMLibrary.Implementation.Metric;
 using SOMLibrary.Implementation.LearningRate;
+using SOMLibrary.Implementation.NeighborhoodRadius;
+using SOMLibrary.Implementation.NeighborhoodKernel;
 
 namespace Sandbox
 {
@@ -67,7 +69,7 @@ namespace Sandbox
             SOM model = new SOM(config.Width, config.Height, config.ConstantLearningRate, config.Epoch, config.K);
             model.MapRadius = config.Neighborhood;
             //model.Regions = config.Regions;
-            model.LearningRate = new FixedLearningRate(config.ConstantLearningRate);
+            model.LearningRateCalculator = new FixedLearningRate(config.ConstantLearningRate);
 
             // Subscribe to OnTrainingEvent
             model.Training += _model_Training;
@@ -149,12 +151,18 @@ namespace Sandbox
             OUTPUT_LOCATION = config.Export;
 
             // Build the Model
-            SOM model = new SOM(config.Width, config.Height, config.ConstantLearningRate, config.Epoch, config.K);
+            SOM model = new SOM(config.Width, config.Height, config.ConstantLearningRate, config.Epoch, config.GlobalEpoch, config.LocalEpoch, config.K);
             model.MapRadius = config.Neighborhood;
-            var learningRate = new InverseTimeLearningRate(config.ConstantLearningRate);
-            model.LearningRate = learningRate;
+            var learningRate = new LinearLearningRate(config.ConstantLearningRate);
+            model.LearningRateCalculator = learningRate;
+            var neighborhoodRadius = new LinearDecayNeighborhoodRadius(config.Neighborhood);
+            model.NeighborhoodRadiusCalculator = neighborhoodRadius;
+            var kernel = new GaussianKernel();
+            model.NeighborFunctionCalculator = kernel;
 
-            Console.WriteLine("Learning Rate Type: {0}", learningRate.GetType());
+            Console.WriteLine("Learning Rate Type: {0}", learningRate.GetType().Name);
+            Console.WriteLine("Neighborhood Radius Type: {0}", neighborhoodRadius.GetType().Name);
+            Console.WriteLine("Neighborhood Function Type: {0}", kernel.GetType().Name);
 
             // Subscribe to OnTrainingEvent
             model.Training += _model_Training;
@@ -369,7 +377,7 @@ namespace Sandbox
             if(currentIteration % FREQUENCY == 0)
             {
                 var score = disorderMetric.Measure(model);
-                string record = string.Format("{0},{1}\n", currentIteration, score);
+                string record = string.Format("{0},{1},{2},{3}\n", currentIteration, score, model.LearningRateDisplay, model.RadiusDisplay);
                 string outputFile = string.Format("{0}disorder-measure.txt", OUTPUT_LOCATION);
               
                 Console.WriteLine(string.Format("Iteration {0}: {1}, Learning Rate: {2}, Radius: {3}", currentIteration, score, model.LearningRateDisplay, model.RadiusDisplay));
