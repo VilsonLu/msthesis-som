@@ -16,24 +16,29 @@ namespace SOMLibrary.Implementation.Clusterer
         private List<int> usedNumber;
 
         private IEnumerable<Node> _centroids;
-        public IEnumerable<Node> Centroids { get; }
+        public IEnumerable<Node> Centroids
+        {
+            get
+            {
+                return _centroids;
+            }
+        }
 
         public KMeansClustering()
         {
             rand = new RandomNumberGenerator();
-            distanceMeasure = new EuclideanDistance(); 
+            distanceMeasure = new EuclideanDistance();
         }
 
         public IEnumerable<Node> Cluster(List<Node> nodes, int k)
         {
-            var hasChanged = false;
-
             var centroids = GetCentroids(nodes.ToList(), k);
+            bool hasChanged;
 
             do
             {
                 hasChanged = false;
-                
+
                 // assign the each nodes to a cluster
                 for (var i = 0; i < nodes.Count(); i++)
                 {
@@ -104,7 +109,7 @@ namespace SOMLibrary.Implementation.Clusterer
             usedNumber = new List<int>();
 
             for (int i = 0; i < k; i++)
-            {    
+            {
                 var randomNodes = GetRandomNodes(nodes.ToList());
                 centroids.Add(randomNodes);
             }
@@ -142,7 +147,7 @@ namespace SOMLibrary.Implementation.Clusterer
             {
                 randomNumber = rand.GetRandomInteger(0, nodes.Count);
             }
-            
+
 
             var randomNode = nodes[randomNumber];
 

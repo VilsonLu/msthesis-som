@@ -239,7 +239,7 @@ namespace SOMLibrary
 
                 for (int d = 0; d < instanceCount; d++)
                 {
-                    // Get data from datase
+                    // Get data from dataset
                     var instance = instances[d];
 
                     // Find the BMU (Best Matching Unit)
@@ -374,17 +374,6 @@ namespace SOMLibrary
         {
             return _neighborhoodKernel.CalculateNeighborhoodFunction(distance, neighborhoodRadius);
         }
-
-        /// <summary>
-        /// Formula for adjusting the weights of the node. 
-        /// Weights are adjusted based on the distance of the node to the winning node
-        /// Formula W(t+1) = W(t) + Influence(t) * LearningRate(t) * (V(t) - W(t))
-        /// </summary>
-        /// <param name="winningNode"></param>
-        /// <param name="currentNode"></param>
-        /// <param name="instance"></param>
-        /// <param name="iteration"></param>
-        /// <returns></returns>
         
         #endregion
 

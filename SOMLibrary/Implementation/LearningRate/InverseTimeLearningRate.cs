@@ -10,7 +10,7 @@ namespace SOMLibrary.Implementation.LearningRate
     public class InverseTimeLearningRate : ILearningRate
     {
         private double _learningRate;
-        private const double LEARNING_RATE = 0.01;
+        private const double LEARNING_RATE = 0.1;
 
         public InverseTimeLearningRate(double learningRate)
         {

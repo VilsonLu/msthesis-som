@@ -79,6 +79,7 @@
     <Compile Include="Implementation\LearningRate\PowerSeriesLearningRate.cs" />
     <Compile Include="Implementation\LearningRate\SemiFixedLearningRate.cs" />
     <Compile Include="Implementation\Metric\DisorderMeasure.cs" />
+    <Compile Include="Implementation\NeighborhoodKernel\FixedKernel.cs" />
     <Compile Include="Implementation\NeighborhoodKernel\GaussianKernel.cs" />
     <Compile Include="Implementation\NeighborhoodRadius\BasicNeighborhoodRadius.cs" />
     <Compile Include="Implementation\NeighborhoodRadius\DecayNeighborhoodRadius.cs" />

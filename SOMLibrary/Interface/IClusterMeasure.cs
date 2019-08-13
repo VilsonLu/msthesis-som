@@ -8,6 +8,6 @@ namespace SOMLibrary.Interface
 {
     public interface IClusterMeasure
     {
-        double MeasureScore(SOM model);
+        double MeasureScore(List<Node> nodes, List<Node> centroids);
     }
 }
