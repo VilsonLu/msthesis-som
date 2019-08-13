@@ -1,5 +1,5 @@
 ﻿var labelColor = [  
-    { "color": [255, 189, 114] },    // orange
+    { "color": [255, 189, 114] },   // orange
     { "color": [81, 205, 213] },    // cyan
     { "color": [107, 178, 140] },   // green
     { "color": [210, 179, 63] },    // yellow
@@ -8,7 +8,19 @@
     { "color": [159, 190, 87] },    // olive
     { "color": [231, 126, 49] },    // orange
     { "color": [218, 33, 32] },     // red
-    { "color": [120, 78, 129] }    // violet
+    { "color": [120, 78, 129] },    // violet
+    { "color": [23, 48, 34] },      // amazon
+    { "color": [60, 40, 80] },      // amethyst
+    { "color": [65, 16, 16] },      // auburn
+    { "color": [54, 81, 94] },      // baby blue
+    { "color": [80, 50, 20] },      // bronze
+    { "color": [11, 30, 24] },      // brunswick green
+    { "color": [80, 33, 0] },       // burnt orange
+    { "color": [0, 80, 60] },       // carribean green
+    { "color": [89, 26, 20] },      // cinnabar
+    { "color": [82, 41, 12] },      // cocoa brown
+    { "color": [100, 74, 85] }      // cotton candy
+
 ];
 
 var dictColor = {};

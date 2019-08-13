@@ -7,7 +7,7 @@
         $scope.ShowError = false;
         var nodes = [];
         var n = 20;
-        var sen = 50;
+        var sen = 35;
 
         var svg = {};
 
