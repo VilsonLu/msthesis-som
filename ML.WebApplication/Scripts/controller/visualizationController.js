@@ -7,7 +7,7 @@
         $scope.ShowError = false;
         var nodes = [];
         var n = 20;
-        var sen = 35;
+        var sen = 50;
 
         var svg = {};
 
@@ -44,8 +44,8 @@
                 .selectAll("rect")
                 .data(nodes)
                 .enter().append("rect")
-                .attr("x", function (node) { return node.Coordinate.X * sen; })
-                .attr("y", function (node) { return node.Coordinate.Y * sen; })
+                .attr("x", function (node) { return node.Coordinate.Y * sen; })
+                .attr("y", function (node) { return node.Coordinate.X * sen; })
                 .attr("width", sen)
                 .attr("height", sen)
                 .style("fill",
@@ -74,9 +74,9 @@
                 .append("text");
 
             var textLabels = text
-                .attr("x", function (node) { return coordinateMapper(node.Coordinate.X); })
-                .attr("y", function (node) { return coordinateMapper(node.Coordinate.Y); })
-                .text(function (node) { return  node.Label; })
+                .attr("x", function (node) { return coordinateMapper(node.Coordinate.Y); })
+                .attr("y", function (node) { return coordinateMapper(node.Coordinate.X); })
+                .text(function (node) { return node.Label; })
                 .attr("font-family", "sans-serif")
                 .attr("font-size", "15px")
                 .attr("fill", "black");
@@ -84,7 +84,7 @@
         };
 
         var coordinateMapper = function (d) {
-            return d * sen + 0.5 * sen
+            return d * sen + 0.5 * sen;
         }
 
         var plotTrajectory = function () {
@@ -112,8 +112,8 @@
             
 
             var lineFunction = d3.line()
-                .x(function (d) { return coordinateMapper(d.Node.Coordinate.X); })
-                .y(function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
+                .x(function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
+                .y(function (d) { return coordinateMapper(d.Node.Coordinate.X); })
                 .curve(d3.curveLinear);
 
             //The line SVG Path we draw
@@ -127,8 +127,8 @@
             svg.selectAll("circle")
                 .data(data).enter()
                 .append("circle")
-                .attr("cx", function (d) { return coordinateMapper(d.Node.Coordinate.X); })
-                .attr("cy", function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
+                .attr("cx", function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
+                .attr("cy", function (d) { return coordinateMapper(d.Node.Coordinate.X); })
                 .attr("r", "6px")
                 .attr("fill", p => timeInterpolator(p.Instance.OrderNo));
 
