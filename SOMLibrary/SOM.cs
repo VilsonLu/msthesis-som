@@ -26,6 +26,8 @@ namespace SOMLibrary
         /// </summary>
         public double ConstantLearningRate { get; set; }
 
+        public double FinalLearningRate { get; set; }
+
         public Node[,] Map { get; set; }
 
         /// <summary>
@@ -53,13 +55,17 @@ namespace SOMLibrary
         public int K { get; set; } = 3;
 
         public int GlobalEpoch { get; set; }
+
         public int TotalGlobalIteration { get; set; }
+
         public int LocalEpoch { get; set; }
 
         /// <summary>
         /// Initial neighborhood radius
         /// </summary>
         public double MapRadius { get; set; }
+        
+        public double FinalMapRadius { get; set; }
 
         #endregion
 

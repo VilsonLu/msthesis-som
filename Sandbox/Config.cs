@@ -23,5 +23,7 @@ namespace Sandbox
         public int Clusters { get; set; }
         public string Export { get; set; }
         public int Neighborhood { get; set; }
+        public double FinalLearningRate { get; set; }
+        public double FinalNeighborhoodRadius { get; set; }
     }
 }

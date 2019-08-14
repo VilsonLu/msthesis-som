@@ -33,13 +33,32 @@ namespace SOMLibrary
 
         public SSOM(SSOMBuilder builder)
         {
+            // Dimensions
             Width = builder.Width;
             Height = builder.Height;
-            ConstantLearningRate = builder.ConstantLearningRate;
-            Epoch = builder.Epoch;
             Map = new Node[Width, Height];
+
+            // Learning Rate
+            ConstantLearningRate = builder.InitialLearningRate;
+            FinalLearningRate = builder.FinalLearningRate;
+
+            // Neighborhood Radius
+            MapRadius = builder.InitialRadius;
+            FinalMapRadius = builder.FinalRadius;
+
+            // Training Parameters
+            Epoch = builder.Epoch;
+            GlobalEpoch = builder.GlobalEpoch;
             Regions = builder.Regions;
-            K = builder.KNeighbor;
+            K = builder.K;
+
+            // Datasets
+            FeatureLabel = builder.FeatureLabel;
+            
+            // Implementations
+            NeighborhoodRadiusCalculator = builder.NeighborhoodRadiusCalculator;
+            LearningRateCalculator = builder.LearningRateCalculator;
+            NeighborFunctionCalculator = builder.NeighborhoodFunctionCalculator;
         }
 
         public SSOM(int x, int y) : base(x, y)

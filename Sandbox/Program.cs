@@ -151,14 +151,36 @@ namespace Sandbox
             OUTPUT_LOCATION = config.Export;
 
             // Build the Model
-            SOM model = new SOM(config.Width, config.Height, config.ConstantLearningRate, config.Epoch, config.GlobalEpoch, config.LocalEpoch, config.K);
-            model.MapRadius = config.Neighborhood;
-            var learningRate = new LinearLearningRate(config.ConstantLearningRate);
-            model.LearningRateCalculator = learningRate;
-            var neighborhoodRadius = new LinearDecayNeighborhoodRadius(config.Neighborhood);
-            model.NeighborhoodRadiusCalculator = neighborhoodRadius;
+            //SOM model = new SOM(config.Width, config.Height, config.ConstantLearningRate, config.Epoch, config.GlobalEpoch, config.LocalEpoch, config.K);
+            //model.MapRadius = config.Neighborhood;
+            
+            //model.LearningRateCalculator = learningRate;
+            
+            //model.NeighborhoodRadiusCalculator = neighborhoodRadius;
+            
+            //model.NeighborFunctionCalculator = kernel;
+
+            var learningRate = new LinearLearningRate(config.ConstantLearningRate, config.FinalLearningRate);
+            var neighborhoodRadius = new LinearDecayNeighborhoodRadius(config.Neighborhood, config.FinalNeighborhoodRadius);
             var kernel = new GaussianKernel();
-            model.NeighborFunctionCalculator = kernel;
+
+            SSOMBuilder builder = new SSOMBuilder()
+                                    .SetWidth(config.Width)
+                                    .SetHeight(config.Height)
+                                    .SetInitialLearningRate(config.ConstantLearningRate)
+                                    .SetFinalLearningRate(config.FinalLearningRate)
+                                    .SetInitialRadius(config.Neighborhood)
+                                    .SetFinalRadius(config.FinalNeighborhoodRadius)
+                                    .SetEpoch(config.Epoch)
+                                    .SetGlobalEpoch(config.GlobalEpoch)
+                                    .SetClusters(config.Clusters)
+                                    .SetKNeighbor(config.K)
+                                    .SetRegions(config.Regions)
+                                    .SetLearningRateCalculator(learningRate)
+                                    .SetNeighborhoodFunctionCalculator(kernel)
+                                    .SetNeighborhoodRadiusCalculator(neighborhoodRadius);
+
+            SOM model = builder.Build();
 
             Console.WriteLine("Learning Rate Type: {0}", learningRate.GetType().Name);
             Console.WriteLine("Neighborhood Radius Type: {0}", neighborhoodRadius.GetType().Name);

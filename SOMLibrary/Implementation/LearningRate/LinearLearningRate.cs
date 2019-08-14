@@ -13,11 +13,16 @@ namespace SOMLibrary.Implementation.LearningRate
     public class LinearLearningRate : ILearningRate
     {
         private double _initialLearningRate;
-        private const double FINAL_LEARNING_RATE = 0.1;
+        private double _finalLearningRate = 0.1;
 
         public LinearLearningRate(double learningRate)
         {
             _initialLearningRate = learningRate;
+        }
+
+        public LinearLearningRate(double learningRate, double finalLearningRate) : this(learningRate)
+        {
+            _finalLearningRate = finalLearningRate;
         }
 
         /// <summary>
@@ -30,13 +35,13 @@ namespace SOMLibrary.Implementation.LearningRate
         {
             double b = _initialLearningRate;
             double x = iteration;
-            double m = (_initialLearningRate - FINAL_LEARNING_RATE) / (0.0 - totalIteration);
+            double m = (_initialLearningRate - _finalLearningRate) / (0.0 - totalIteration);
 
             double y = m * x + b;
 
-            if(y < FINAL_LEARNING_RATE)
+            if(y < _finalLearningRate)
             {
-                y = FINAL_LEARNING_RATE;
+                y = _finalLearningRate;
             }
 
             return y;   

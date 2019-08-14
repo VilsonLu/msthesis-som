@@ -14,23 +14,28 @@ namespace SOMLibrary.Implementation.NeighborhoodRadius
     {
 
         private double _initialRadius;
-        private double FINAL_MAP_RADIUS = 1;
+        private double _finalMapRadius = 1;
         public LinearDecayNeighborhoodRadius(double mapRadius)
         {
             _initialRadius = mapRadius;
+        }
+
+        public LinearDecayNeighborhoodRadius(double mapRadius, double finalRadius) : this(mapRadius)
+        {
+            _finalMapRadius = finalRadius;
         }
 
         public double CalculateRadius(int iteration, int totalIteration)
         {
             double b = _initialRadius;
             double x = iteration;
-            double m = (_initialRadius - FINAL_MAP_RADIUS) / (0.0 - totalIteration);
+            double m = (_initialRadius - _finalMapRadius) / (0.0 - totalIteration);
 
             double y = Math.Floor(m * x + b);
 
-            if(y < FINAL_MAP_RADIUS)
+            if(y < _finalMapRadius)
             {
-                y = FINAL_MAP_RADIUS;
+                y = _finalMapRadius;
             }
 
             return y;
