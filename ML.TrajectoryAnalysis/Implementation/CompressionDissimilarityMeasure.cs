@@ -18,6 +18,8 @@ namespace ML.TrajectoryAnalysis.Implementation
             _fileHelper = fileHelper;
         }
 
+        public bool IsLowest => true;
+
         public double MeasureSimilarity(List<Trajectory> a, List<Trajectory> b)
         {
             string directoryPath = _fileHelper.GetCurrentDirectory();

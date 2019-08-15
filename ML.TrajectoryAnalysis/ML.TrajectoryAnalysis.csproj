@@ -51,6 +51,8 @@
     <Compile Include="Implementation\EditDistanceMeasure.cs" />
     <Compile Include="Implementation\ITrajectoryMapper.cs" />
     <Compile Include="Implementation\PairwiseDistanceMeasure.cs" />
+    <Compile Include="Implementation\Prediction\DirectPrediction.cs" />
+    <Compile Include="IPredict.cs" />
     <Compile Include="ISimilarityMeasure.cs" />
     <Compile Include="Trajectory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

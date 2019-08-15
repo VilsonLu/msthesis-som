@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace ML.TrajectoryAnalysis
 {
-    public interface ISimilarityMeasure
+    public interface IPredict
     {
-        bool IsLowest { get; }
-        double MeasureSimilarity(List<Trajectory> a, List<Trajectory> b);
+        TrajectoryMapper Predict(TrajectoryMapper currentTrajectory);
     }
 }

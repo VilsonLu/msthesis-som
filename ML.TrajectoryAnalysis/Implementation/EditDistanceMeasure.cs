@@ -16,6 +16,8 @@ namespace ML.TrajectoryAnalysis.Implementation
             _compression = new RunLengthCompression();
         }
 
+        public bool IsLowest => true;
+
         public double MeasureSimilarity(List<Trajectory> a, List<Trajectory> b)
         {
             // Concatenate the cluster group of the trajectories

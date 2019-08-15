@@ -8,6 +8,8 @@ namespace ML.TrajectoryAnalysis.Implementation
 {
     public class PairwiseDistanceMeasure : ISimilarityMeasure
     {
+        public bool IsLowest => false;
+
         public double MeasureSimilarity(List<Trajectory> a, List<Trajectory> b)
         {
             int length = a.Count <= b.Count ? a.Count : b.Count;
