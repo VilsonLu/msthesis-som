@@ -65,10 +65,12 @@
     <Compile Include="DataModel\Instance.cs" />
     <Compile Include="Extensions\Extension.cs" />
     <Compile Include="IClusterer.cs" />
+    <Compile Include="Implementation\Builder\SOMBuilder.cs" />
     <Compile Include="Implementation\Builder\SSOMBuilder.cs" />
     <Compile Include="Implementation\Clusterer\KMeansClustering.cs" />
     <Compile Include="Implementation\ClusterMeasure\DaviesBouldinIndex.cs" />
     <Compile Include="Implementation\CSVReader.cs" />
+    <Compile Include="Implementation\DistanceMeasure\CosineSimilarityMeasure.cs" />
     <Compile Include="Implementation\DistanceMeasure\EuclideanDistance.cs" />
     <Compile Include="Implementation\DistanceMeasure\EuclideanDistanceFast.cs" />
     <Compile Include="Implementation\IKernel.cs" />

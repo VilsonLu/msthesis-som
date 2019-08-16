@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SOMLibrary.DataModel;
 using SOMLibrary.Implementation;
+using SOMLibrary.Implementation.Builder;
 using SOMLibrary.Implementation.LearningRate;
 using SOMLibrary.Implementation.NeighborhoodRadius;
 using SOMLibrary.Implementation.NodeLabeller;
@@ -127,7 +128,34 @@ namespace SOMLibrary
         #endregion
 
         #region Constructor
+        public SOM(SOMBuilder builder)
+        {
+            // Dimensions
+            Width = builder.Width;
+            Height = builder.Height;
+            Map = new Node[Width, Height];
 
+            // Learning Rate
+            ConstantLearningRate = builder.InitialLearningRate;
+            FinalLearningRate = builder.FinalLearningRate;
+
+            // Neighborhood Radius
+            MapRadius = builder.InitialRadius;
+            FinalMapRadius = builder.FinalRadius;
+
+            // Training Parameters
+            Epoch = builder.Epoch;
+            GlobalEpoch = builder.GlobalEpoch;
+            K = builder.K;
+
+            // Datasets
+            FeatureLabel = builder.FeatureLabel;
+
+            // Implementations
+            NeighborhoodRadiusCalculator = builder.NeighborhoodRadiusCalculator;
+            LearningRateCalculator = builder.LearningRateCalculator;
+            NeighborFunctionCalculator = builder.NeighborhoodFunctionCalculator;
+        }
         public SOM()
         {
             Width = 0;
