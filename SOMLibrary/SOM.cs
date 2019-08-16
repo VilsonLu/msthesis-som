@@ -1,7 +1,6 @@
 ﻿using ML.Common;
 using Newtonsoft.Json;
 using SOMLibrary.DataModel;
-using SOMLibrary.Implementation;
 using SOMLibrary.Implementation.Builder;
 using SOMLibrary.Implementation.LearningRate;
 using SOMLibrary.Implementation.NeighborhoodRadius;
@@ -10,7 +9,6 @@ using SOMLibrary.Interface;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SOMLibrary
 {
