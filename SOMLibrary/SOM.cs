@@ -219,12 +219,9 @@ namespace SOMLibrary
         /// </summary>
         public void InitializeMap()
         {
-            int numOfIgnoreColumns = base.Dataset.GetIgnoreColumns().Count;
-            int featureCounts = base.Dataset.Features.Length;
-
             this.MapId = Guid.NewGuid();
 
-            int weightCount = featureCounts - numOfIgnoreColumns;
+            int weightCount = base.Dataset.WeightVectorCount;
             Random rand = new Random();
 
             for (int row = 0; row < Width; row++)
@@ -297,21 +294,19 @@ namespace SOMLibrary
         /// </summary>
         /// <param name="rowInstance"></param>
         /// <returns></returns>
-        public virtual Node FindBestMatchingUnit(Instance rowInstance)
+        public virtual Node FindBestMatchingUnit(Instance instance)
         {
-            double bestDistance = double.MaxValue;
+            double bestDistance = double.MinValue;
             Node bestNode = null;
-
-            var instance = base.Dataset.GetInstance<double>(rowInstance.OrderNo);
 
             for (int row = 0; row < Width; row++)
             {
                 for (int col = 0; col < Height; col++)
                 {
                     Node currentNode = Map[row, col];
-                    double currentDistance = currentNode.GetDistance(instance);
+                    double currentDistance = currentNode.GetDistance(instance.Values);
 
-                    if (currentDistance < bestDistance)
+                    if (currentDistance > bestDistance)
                     {
                         bestDistance = currentDistance;
                         bestNode = currentNode;
@@ -331,8 +326,6 @@ namespace SOMLibrary
         /// <param name="iteration"></param>
         protected virtual void UpdateNeighborhood(Node winningNode, Instance rowInstance, int iteration)
         {
-            var instance = base.Dataset.GetInstance<double>(rowInstance.OrderNo);
-
             for (int row = 0; row < Width; row++)
             {
                 for (int col = 0; col < Height; col++)
@@ -343,7 +336,7 @@ namespace SOMLibrary
                     RadiusDisplay = neighborhoodRadius;
                     if (distanceToWinningNode <= neighborhoodRadius)
                     {
-                        currentNode.Weights = AdjustWeights(currentNode, distanceToWinningNode, instance, iteration, neighborhoodRadius);
+                        currentNode.Weights = AdjustWeights(currentNode, distanceToWinningNode, rowInstance.Values, iteration, neighborhoodRadius);
                     }
                 }
             }

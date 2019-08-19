@@ -25,10 +25,9 @@ namespace MSThesisTest
             var weights = new double[] { 0.1, 0.4, 0.5 };
             var inputVectors = new double[] { 1, 0, 0 };
 
-            Node node = new Node(weights, 1, 1);
-
+            IDistanceMeasure distanceMeasure = new EuclideanDistance();
             // Act 
-            double distance = node.GetDistance(inputVectors);
+            double distance = distanceMeasure.GetDistance(weights, inputVectors);
 
             // Assert
             double expectedResult = 1.1045361;
@@ -40,13 +39,15 @@ namespace MSThesisTest
         {
             // Arrange
             string filename = @"Dataset\Iris.csv";
-            IReader reader = new CSVReader(filename);
+            string[] ignoreColumns = new string[0] { };
+            string label = "Species";
+            IReader reader = new CSVReader(filename, ignoreColumns, label);
 
             // Act
             Dataset dataset = reader.Read();
 
             // Assert
-            int expected = 6;
+            int expected = 5;
             Assert.AreEqual(expected, dataset.Features.Length);
         }
 
@@ -55,7 +56,9 @@ namespace MSThesisTest
         {
             // Arrange
             string filename = @"Dataset\Iris.csv";
-            IReader reader = new CSVReader(filename);
+            string[] ignoreColumns = new string[0] { };
+            string label = "Species";
+            IReader reader = new CSVReader(filename, ignoreColumns, label);
 
             // Act
             Dataset dataset = reader.Read();
@@ -65,82 +68,44 @@ namespace MSThesisTest
             Assert.AreEqual(expected, dataset.Instances.Length);
         }
 
-
         [TestMethod]
-        public void SOM_IgnoreColumns_GetIsLabelColumn_WhenIsLabelTrue()
+        public void CosineSimilarity_MeasureSimilarity_Positive()
         {
             // Arrange
-            string filename = @"Dataset\Iris.csv";
-            IReader reader = new CSVReader(filename);
-            SOM som = new SOM();
+            double[] a = new double[] { 1.0, 2.0, 3.0, 4.0, 5.0 };
+            double[] b = new double[] { 3.0, 4.0, 5.0, 6.0, 7.0 };
 
-            som.GetData(reader);
+            IDistanceMeasure distanceMeasure = new CosineSimilarityMeasure();
 
             // Act
-            Dataset dataset = som.Dataset;
-            dataset.SetLabel("Species");
-
-            List<int> ignoreColumns = dataset.GetIgnoreColumns();
+            double actual = distanceMeasure.GetDistance(a, b);
 
             // Assert
-            string expected = "Species";
-            string result = dataset.Features[ignoreColumns[0]].FeatureName;
-            Assert.AreEqual(expected, result);
+            double expectedValue = 4.465;
+
+            actual.Should().BeApproximately(expectedValue, 0.001);
+
         }
+
 
         [TestMethod]
-        public void SOM_IgnoreColumns_GetIsKeyColumn_WhenIsLabelTrue()
+        public void CosineSimilarity_MeasureSimilarity_Negative()
         {
             // Arrange
-            string filename = @"Dataset\Iris.csv";
-            IReader reader = new CSVReader(filename);
-            SOM som = new SOM();
+            double[] a = new double[] { 1.0, 2.0, 3.0, 4.0, 5.0 };
+            double[] b = new double[] { -3.0, -4.0, -5.0, -6.0, -7.0 };
 
-            som.GetData(reader);
-
-            // Act
-            Dataset dataset = som.Dataset;
-            dataset.SetKey("Id");
-
-            List<int> ignoreColumns = dataset.GetIgnoreColumns();
-
-            // Assert
-            string expected = "Id";
-            string result = dataset.Features[ignoreColumns[0]].FeatureName;
-            Assert.AreEqual(expected, result);
-        }
-
-        [TestMethod]
-        public void Dataset_GetInstance_WithLabelsAndKeys()
-        {
-            // Arrange
-            string filename = @"Dataset\Iris.csv";
-            IReader reader = new CSVReader(filename);
-            SOM som = new SOM();
-
-            som.GetData(reader);
-
-            Dataset dataset = som.Dataset;
-            dataset.SetKey("Id");
-            dataset.SetLabel("Species");
+            IDistanceMeasure distanceMeasure = new CosineSimilarityMeasure();
 
             // Act
-            double[] result = dataset.GetInstance<double>(0);
-
+            double actual = distanceMeasure.GetDistance(a, b);
 
             // Assert
-            int expectedCount = 4;
-            double x1 = 5.1;
-            double x2 = 3.5;
-            double x3 = 1.4;
-            double x4 = 0.2;
-            Assert.AreEqual(expectedCount, result.Length);
-            Assert.AreEqual(x1, result[0]);
-            Assert.AreEqual(x2, result[1]);
-            Assert.AreEqual(x3, result[2]);
-            Assert.AreEqual(x4, result[3]);
-        }
+            double expectedValue = -4.465;
 
+            actual.Should().BeApproximately(expectedValue, 0.001);
+
+        }
 
         [TestMethod]
         public void Region_IsOverlappingRegion_OverlappingRectangle_ReturnTrue()
@@ -295,7 +260,7 @@ namespace MSThesisTest
             Instance instance = new Instance();
             instance.OrderNo = 1;
 
-            object[] values = { 0.5, 0.7, 0.8, 0.9 };
+            double[] values = { 0.5, 0.7, 0.8, 0.9 };
 
             instance.Values = values;
 

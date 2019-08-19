@@ -47,23 +47,19 @@ namespace ML.TrajectoryAnalysis
             FileName = reader.FileName;
         }
 
-        public void SetLabel(string labels)
-        {
-            _dataset.SetLabel(labels);
-        }
+
 
         public Node FindBestMatchingUnit(Instance instance)
         {
             double bestDistance = double.MaxValue;
             Node bestNode = null;
 
-            var currentInstance = _dataset.GetInstance<double>(instance.OrderNo);
             for(int i = 0; i < _som.Width; i++)
             {
                 for(int j = 0; j < _som.Height; j++)
                 {
                     var currentNode = _som.Map[i, j];
-                    var currentDistance = currentNode.GetDistance(currentInstance);
+                    var currentDistance = currentNode.GetDistance(instance.Values);
 
                     if(currentDistance < bestDistance)
                     {

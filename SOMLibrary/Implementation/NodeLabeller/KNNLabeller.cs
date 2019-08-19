@@ -38,27 +38,21 @@ namespace SOMLibrary.Implementation.NodeLabeller
         /// <returns></returns>
         public string GetLabel(Node node)
         {
-            var currentInstances = new List<Tuple<int, double>>();
+            var scoreLabels = new List<Tuple<string, double>>();
             int numInstances = _dataset.Count;
 
             for (int i = 0; i < numInstances; i++)
             {
-                double[] vectors = _dataset.GetInstance<double>(i);
+                double[] vectors = _dataset.Instances[i].Values;
 
                 double distance = node.GetDistance(vectors);
-                var tuple = new Tuple<int, double>(i, distance);
+                var tuple = new Tuple<string, double>(_dataset.Instances[i].Label, distance);
 
-                currentInstances.Add(tuple);
+                scoreLabels.Add(tuple);
 
             }
 
-            List<Tuple<int, double>> bestInstances = currentInstances.OrderBy(x => x.Item2).Take(_k).ToList();
-
-
-            var labels = new List<string>();
-            bestInstances.ForEach(x => labels.Add(_dataset.GetInstanceLabel(x.Item1, _feature)));
-
-            
+            List<string> labels = scoreLabels.OrderBy(x => x.Item2).Take(_k).Select(x => x.Item1).ToList();
 
             return labels.GroupBy(x => x).OrderByDescending(x => x.Count()).First().Key;
         }

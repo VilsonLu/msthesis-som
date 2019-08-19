@@ -89,11 +89,10 @@ namespace SOMLibrary
 
         public override Node FindBestMatchingUnit(Instance rowInstance)
         {
-
             Node bestNode = null;
 
-            var instance = base.Dataset.GetInstance<double>(rowInstance.OrderNo);
-            var label = base.Dataset.GetInstanceLabel(rowInstance.OrderNo, this.FeatureLabel);
+            var instance = rowInstance.Values;
+            var label = rowInstance.Label;
 
             int startRow = 0;
             int startCol = 0;

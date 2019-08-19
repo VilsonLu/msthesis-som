@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Script.Serialization;
+using LumenWorks.Framework.IO.Csv;
 using ML.Common;
 using ML.TrajectoryAnalysis;
 using MLService.DataModels;
@@ -16,6 +17,7 @@ using MLService.WebService.Interface;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SOMLibrary;
+using SOMLibrary.DataModel;
 using SOMLibrary.Implementation;
 using SOMLibrary.Implementation.Clusterer;
 using SOMLibrary.Interface;
@@ -78,12 +80,6 @@ namespace MLService.WebService.Controllers
                 IReader reader = new CSVReader(csvFile.LocalFileName);
 
                 model.GetData(reader);
-
-                foreach (var item in labels)
-                {
-                    model.Dataset.SetLabel(item);
-                }
-
                 model.FeatureLabel = featureLabel;
                 model.InitializeMap();
                 model.Train();
@@ -152,18 +148,20 @@ namespace MLService.WebService.Controllers
                 TrajectoryMapper trajectoryMapper = new TrajectoryMapper(som);
                 trajectoryMapper.GetData(reader);
 
-                string[] labels = { "USER", "SEG", "CLASS_PLEASANTNESS" };
 
-                foreach (var item in labels)
-                {
-                    trajectoryMapper.SetLabel(item);
-                }
+                var musicTrajectory = ReadMusicTrajectory(file, som);
+                //string[] labels = { "USER", "SEG", "CLASS_PLEASANTNESS" };
 
-                trajectoryMapper.PlotTrajectory();
+                //foreach (var item in labels)
+                //{
+                //    trajectoryMapper.SetLabel(item);
+                //}
+
+                //trajectoryMapper.PlotTrajectory();
 
                 TrajectoryResponse trajectoryResponse = new TrajectoryResponse()
                 {
-                    Trajectories = trajectoryMapper.Trajectories.ToArray()
+                    Trajectories =  musicTrajectory.ToArray()
                 };
 
                 File.Delete(result.FileData.First().LocalFileName);
@@ -176,6 +174,39 @@ namespace MLService.WebService.Controllers
             }
            
 
+        }
+
+        private List<Trajectory> ReadMusicTrajectory(string filePath, SOM model)
+        {
+            List<Trajectory> trajectories = new List<Trajectory>();
+            int i = 1;
+            using (var csv = new CsvReader(new StreamReader(filePath), true))
+            {
+                int fieldCount = csv.FieldCount;
+
+                while (csv.ReadNextRecord())
+                {
+                    int x = Int32.Parse(csv[3]);
+                    int y = Int32.Parse(csv[4]);
+
+                    Node node = model.Map[y, x];
+
+
+                    Trajectory trajectory = new Trajectory()
+                    {
+                        Node = node,
+                        Instance = new Instance()
+                        {
+                            OrderNo = i
+                        }
+                    };
+
+                    trajectories.Add(trajectory);
+                    i++;
+                }
+            }
+
+            return trajectories;
         }
 
         [HttpGet]

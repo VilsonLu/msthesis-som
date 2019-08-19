@@ -1,25 +1,25 @@
-﻿using SOMLibrary.Implementation;
+﻿using LumenWorks.Framework.IO.Csv;
+using ML.Common;
+using ML.Common.Implementation;
+using ML.TrajectoryAnalysis;
+using ML.TrajectoryAnalysis.Implementation;
+using ML.TrajectoryAnalysis.Implementation.Prediction;
+using Newtonsoft.Json;
+using SOMLibrary;
+using SOMLibrary.Implementation;
+using SOMLibrary.Implementation.Builder;
+using SOMLibrary.Implementation.Clusterer;
+using SOMLibrary.Implementation.ClusterMeasure;
+using SOMLibrary.Implementation.LearningRate;
+using SOMLibrary.Implementation.Metric;
+using SOMLibrary.Implementation.NeighborhoodKernel;
+using SOMLibrary.Implementation.NeighborhoodRadius;
+using SOMLibrary.Interface;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ML.Common;
-using SOMLibrary;
-using SOMLibrary.Implementation.Clusterer;
-using SOMLibrary.Interface;
 using System.Diagnostics;
 using System.IO;
-using ML.TrajectoryAnalysis.Implementation;
-using ML.TrajectoryAnalysis;
-using ML.Common.Implementation;
-using SOMLibrary.Implementation.Builder;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SOMLibrary.Implementation.Metric;
-using SOMLibrary.Implementation.LearningRate;
-using SOMLibrary.Implementation.NeighborhoodRadius;
-using SOMLibrary.Implementation.NeighborhoodKernel;
+using System.Linq;
 
 namespace Sandbox
 {
@@ -43,6 +43,10 @@ namespace Sandbox
         public static void Main(string[] args)
         {
             Program2(args);
+            //Program2(args);
+            //Program5(args);
+            //Program1(args);
+            //CreateSyntheticDataset();
         }
 
 
@@ -75,20 +79,14 @@ namespace Sandbox
             model.Training += _model_Training;
 
             // Instantiate the reader 
-            IReader _reader = new CSVReader(config.Dataset);
+            string[] labels = config.Labels.Split(',');
+            string feature = config.FeatureLabel;
+            IReader _reader = new CSVReader(config.Dataset, labels, feature);
 
             // Instantiate the clusterer
             IClusterer clusterer = new KMeansClustering();
 
             model.GetData(_reader);
-
-            // Get the labels
-            string[] labels = config.Labels.Split(',');
-
-            foreach (var label in labels)
-            {
-                model.Dataset.SetLabel(label);
-            }
 
             // Set the feature label
             model.FeatureLabel = config.FeatureLabel;
@@ -135,8 +133,8 @@ namespace Sandbox
         public static void Program2(string[] args)
         {
             string filePath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\som_experiment\config.json";
-            
-            FREQUENCY = 100;
+
+            FREQUENCY = 1000;
             IS_PRINT_MODEL = false;
 
             if (args.Length > 0)
@@ -149,22 +147,15 @@ namespace Sandbox
             var config = ReadToObject(content);
 
             OUTPUT_LOCATION = config.Export;
+            IFileHelper fileHelper = new FileHelper();
+            fileHelper.DeleteFile(string.Format("{0}disorder-measure.txt", OUTPUT_LOCATION));
 
             // Build the Model
-            //SOM model = new SOM(config.Width, config.Height, config.ConstantLearningRate, config.Epoch, config.GlobalEpoch, config.LocalEpoch, config.K);
-            //model.MapRadius = config.Neighborhood;
-            
-            //model.LearningRateCalculator = learningRate;
-            
-            //model.NeighborhoodRadiusCalculator = neighborhoodRadius;
-            
-            //model.NeighborFunctionCalculator = kernel;
-
             var learningRate = new LinearLearningRate(config.ConstantLearningRate, config.FinalLearningRate);
             var neighborhoodRadius = new LinearDecayNeighborhoodRadius(config.Neighborhood, config.FinalNeighborhoodRadius);
             var kernel = new GaussianKernel();
 
-            SSOMBuilder builder = new SSOMBuilder()
+            SOMBuilder builder = new SOMBuilder()
                                     .SetWidth(config.Width)
                                     .SetHeight(config.Height)
                                     .SetInitialLearningRate(config.ConstantLearningRate)
@@ -175,7 +166,6 @@ namespace Sandbox
                                     .SetGlobalEpoch(config.GlobalEpoch)
                                     .SetClusters(config.Clusters)
                                     .SetKNeighbor(config.K)
-                                    .SetRegions(config.Regions)
                                     .SetLearningRateCalculator(learningRate)
                                     .SetNeighborhoodFunctionCalculator(kernel)
                                     .SetNeighborhoodRadiusCalculator(neighborhoodRadius);
@@ -190,21 +180,20 @@ namespace Sandbox
             model.Training += _model_Training;
 
             // Instantiate the reader 
-            IReader _reader = new CSVReader(config.Dataset);
+            string[] ignoreColumns = config.Labels.Split(',');
+            if (string.IsNullOrWhiteSpace(config.Labels))
+            {
+                ignoreColumns = new string[0];
+            }
+
+            string label = config.FeatureLabel;
+            IReader _reader = new CSVReader(config.Dataset, ignoreColumns, label);
 
             // Instantiate the clusterer
             IClusterer clusterer = new KMeansClustering();
 
             model.GetData(_reader);
-
-            // Get the labels
-            string[] labels = config.Labels.Split(',');
-
-            foreach(var label in labels)
-            {
-                model.Dataset.SetLabel(label);
-            }
-
+          
             // Set the feature label
             model.FeatureLabel = config.FeatureLabel;
 
@@ -232,14 +221,20 @@ namespace Sandbox
             //Console.WriteLine("Completed labelling node...");
             //Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
 
-            //if(config.Clusters > 0)
+            //if (config.Clusters > 0)
             //{
             //    Console.WriteLine("Start clustering nodes...");
+
             //    stopwatch.Restart();
+            //    IClusterMeasure clusterMetric = new DaviesBouldinIndex();
             //    var flattenedMap = ArrayHelper<Node>.FlattenMap(model.Map);
             //    var clusteredNodes = clusterer.Cluster(flattenedMap, config.Clusters);
 
-            //    foreach(var node in clusteredNodes)
+            //    double dbi = clusterMetric.MeasureScore(clusteredNodes.ToList(), clusterer.Centroids.ToList());
+
+            //    Console.WriteLine("Davies Bouldin Index: {0}", dbi);
+
+            //    foreach (var node in clusteredNodes)
             //    {
             //        model.Map[node.Coordinate.X, node.Coordinate.Y].ClusterGroup = node.ClusterGroup;
             //    }
@@ -251,7 +246,7 @@ namespace Sandbox
             //    model.AssignClusterLabel();
             //}
 
-            // Export the model
+            //// Export the model
             //Console.WriteLine("Exporting model...");
             //var guid = Guid.NewGuid();
             //model.MapId = guid;
@@ -263,9 +258,9 @@ namespace Sandbox
 
             //System.IO.File.WriteAllText(exportFileName, serializeObject);
 
-            Console.WriteLine("Training completed...");
+            //Console.WriteLine("Training completed...");
 
-            Console.ReadLine();
+            //Console.ReadLine();
 
         }
 
@@ -284,7 +279,7 @@ namespace Sandbox
             var jsonContent = System.IO.File.ReadAllText(trainedModelFile);
             SSOM _model = JsonConvert.DeserializeObject<SSOM>(jsonContent);
             _model.AssignClusterLabel();
-            _model.Training += _model_Training; 
+            _model.Training += _model_Training;
             Console.WriteLine("Model loaded.");
 
 
@@ -301,21 +296,18 @@ namespace Sandbox
             stopwatch.Restart();
 
             string[] labels = { "USER", "SEG", "CLASS_PLEASANTNESS" };
+            string feature = "CLASS_PLEASANTNESS";
 
             foreach (var file in Directory.EnumerateFiles(trainingPath))
             {
                 TrajectoryMapper trajectoryMapper = new TrajectoryMapper(_model);
-                IReader trajectoryReader = new CSVReader(file);
+                IReader trajectoryReader = new CSVReader(file, labels, feature);
 
                 trajectoryMapper.GetData(trajectoryReader);
-                foreach (var label in labels)
-                {
-                    trajectoryMapper.SetLabel(label);
-                }
                 trajectoryMapper.PlotTrajectory();
 
                 dbTrajectories.Add(trajectoryMapper);
-                
+
             }
 
             stopwatch.Stop();
@@ -327,21 +319,103 @@ namespace Sandbox
 
             ICompression compress = new RunLengthCompression();
             TrajectoryMapper testMapper = new TrajectoryMapper(_model);
-            IReader trajectoryDataReader = new CSVReader(testingPath);
+            IReader trajectoryDataReader = new CSVReader(testingPath, labels, feature);
 
             testMapper.GetData(trajectoryDataReader);
-
-            foreach (var label in labels)
-            {
-                testMapper.SetLabel(label);
-            }
 
             testMapper.PlotTrajectory();
             Console.WriteLine("Unknown Trajectory: {0}", compress.Compress(testMapper.ToString()));
             var unknownTrajectory = testMapper.Trajectories;
 
+            IPredict directPrediction = new DirectPrediction(_model, dbTrajectories);
+
+            directPrediction.Predict(testMapper);
+
+            //IFileHelper fileHelper = new FileHelper();
+            //ISimilarityMeasure similarityMeasure = new PairwiseDistanceMeasure();
+
+            //Console.WriteLine("Computing similarity measure using {0}", similarityMeasure.GetType().Name);
+
+            //var scores = new List<Tuple<string, double, int, string>>();
+            //foreach (var trajectory in dbTrajectories)
+            //{
+            //    var currentTrajectory = trajectory.Trajectories;
+
+            //    var score = similarityMeasure.MeasureSimilarity(currentTrajectory, unknownTrajectory);
+            //    scores.Add(new Tuple<string, double, int, string>(trajectory.FileName, score, trajectory.Trajectories.Count, trajectory.ToString()));
+            //    Console.WriteLine("{0}:{1}:{2}", trajectory.FileName, score, trajectory.Trajectories.Count);
+            //}
+
+
+            //var topNScores = scores.OrderBy(x => x.Item2);
+
+            //Console.WriteLine();
+            //Console.WriteLine("Trajectories...");
+
+            //string header = "Trajectory,Score,TrajectoryCount\n";
+
+            //string fileResultLocation = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\experiment_3\trajectory-results.csv";
+            //fileHelper.WriteToTextFile(header, fileResultLocation);
+
+            //foreach (var item in topNScores)
+            //{
+            //    string result = string.Format("{0},{1},{2},{3}\n", item.Item1, item.Item2, item.Item3, compress.Compress(item.Item4));
+            //    fileHelper.WriteToTextFile(result, fileResultLocation);
+            //    Console.WriteLine("{0}:{1}:{2}:{3}", item.Item1, item.Item2, item.Item3, compress.Compress(item.Item4));
+            //}
+
+            Console.WriteLine("Training completed...");
+
+            Console.ReadLine();
+        }
+
+        /// <summary>
+        /// Experiments for SOMphony
+        /// </summary>
+        /// <param name="args"></param>
+        public static void Program5(string[] args)
+        {
+            // Load model
+            string trainedModelFile = @"C:\Users\Vilson\Desktop\Datasets\Music-Dataset\map_somphony.json";
+
+            Console.WriteLine("Loading model...");
+            var jsonContent = System.IO.File.ReadAllText(trainedModelFile);
+            SOM _model = JsonConvert.DeserializeObject<SOM>(jsonContent);
+            _model.AssignClusterLabel();
+            _model.Training += _model_Training;
+            Console.WriteLine("Model loaded.");
+
+            string trajectoryPath = @"C:\Users\Vilson\Desktop\Datasets\Music-Dataset\trajectories";
+            List<TrajectoryMapper> dbTrajectories = new List<TrajectoryMapper>();
+
+            // Plot the trajectories
+            foreach (var file in Directory.EnumerateFiles(trajectoryPath))
+            {
+                TrajectoryMapper trajectoryMapper = new TrajectoryMapper(_model);
+                IReader csvReader = new CSVReader(file);
+                List<Trajectory> trajectory = ReadMusicTrajectory(file, _model);
+
+                //trajectoryMapper.SetTrajectory(trajectory, csvReader.FileName);
+
+                dbTrajectories.Add(trajectoryMapper);
+            }
+
+            // Setup unknown trajectory
+            string testingPath = @"C:\Users\Vilson\Desktop\Datasets\Music-Dataset\unknown_trajectory\music_12.csv";
+
+            ICompression compress = new RunLengthCompression();
+            TrajectoryMapper testMapper = new TrajectoryMapper(_model);
+            IReader trajectoryDataReader = new CSVReader(testingPath);
+
+            var unknownMapper = ReadMusicTrajectory(testingPath, _model);
+            //testMapper.SetTrajectory(unknownMapper, trajectoryDataReader.FileName);
+
+            Console.WriteLine("Unknown Trajectory: {0}", compress.Compress(testMapper.ToString()));
+            var unknownTrajectory = testMapper.Trajectories;
+
+            // Measure Similarity
             IFileHelper fileHelper = new FileHelper();
-            ISimilarityMeasure similarityMeasure = new PairwiseDistanceMeasure();
+            ISimilarityMeasure similarityMeasure = new EditDistanceMeasure();
 
             Console.WriteLine("Computing similarity measure using {0}", similarityMeasure.GetType().Name);
 
@@ -355,22 +429,21 @@ namespace Sandbox
                 Console.WriteLine("{0}:{1}:{2}", trajectory.FileName, score, trajectory.Trajectories.Count);
             }
 
-
+            // Print Scores
             var topNScores = scores.OrderBy(x => x.Item2);
-
-   
 
             Console.WriteLine();
             Console.WriteLine("Trajectories...");
 
             string header = "Trajectory,Score,TrajectoryCount\n";
 
-            string fileResultLocation = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\experiment_3\trajectory-results.csv";
+            // Export Scores
+            string fileResultLocation = @"C:\Users\Vilson\Desktop\Datasets\Music-Dataset\trajectory-results.csv";
             fileHelper.WriteToTextFile(header, fileResultLocation);
 
-            foreach(var item in topNScores)
+            foreach (var item in topNScores)
             {
-                string result = string.Format("{0},{1},{2},{3}\n", item.Item1, item.Item2, item.Item3, compress.Compress(item.Item4) );
+                string result = string.Format("{0},{1},{2},{3}\n", item.Item1, item.Item2, item.Item3, compress.Compress(item.Item4));
                 fileHelper.WriteToTextFile(result, fileResultLocation);
                 Console.WriteLine("{0}:{1}:{2}:{3}", item.Item1, item.Item2, item.Item3, compress.Compress(item.Item4));
             }
@@ -378,8 +451,44 @@ namespace Sandbox
             Console.WriteLine("Training completed...");
 
             Console.ReadLine();
+
         }
 
+        /// <summary>
+        /// Experiment for DBI
+        /// </summary>
+        /// <param name="args"></param>
+        public static void Program6(string[] args)
+        {
+            string trainedModelFile = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\cluster_experiment\map_dbi.json";
+
+            SOM model = LoadModel(trainedModelFile);
+
+            int maxCluster = 30;
+           
+            Console.WriteLine("Start clustering nodes...");
+
+            IClusterer clusterer = new KMeansClustering();
+            IClusterMeasure clusterMetric = new DaviesBouldinIndex();
+
+
+            for (int i = 2; i <= maxCluster; i++)
+            {
+                var flattenedMap = ArrayHelper<Node>.FlattenMap(model.Map);
+                var clusteredNodes = clusterer.Cluster(flattenedMap, i);
+
+                double dbi = clusterMetric.MeasureScore(clusteredNodes.ToList(), clusterer.Centroids.ToList());
+
+                Console.WriteLine("{0},{1}", i, dbi);
+            }
+            
+
+            Console.ReadLine();
+
+
+        }
+
+        #region Helpers
         private static void _model_Training(object sender, OnTrainingEventArgs args)
         {
             //ClearLastLine();
@@ -388,7 +497,7 @@ namespace Sandbox
 
             var model = sender as SOM;
 
-            if(model == null)
+            if (model == null)
             {
                 return;
             }
@@ -396,12 +505,12 @@ namespace Sandbox
             IFileHelper fileHelper = new FileHelper();
 
             IMetric disorderMetric = new DisorderMeasure();
-            if(currentIteration % FREQUENCY == 0)
+            if (currentIteration % FREQUENCY == 0)
             {
                 var score = disorderMetric.Measure(model);
                 string record = string.Format("{0},{1},{2},{3}\n", currentIteration, score, model.LearningRateDisplay, model.RadiusDisplay);
                 string outputFile = string.Format("{0}disorder-measure.txt", OUTPUT_LOCATION);
-              
+
                 Console.WriteLine(string.Format("Iteration {0}: {1}, Learning Rate: {2}, Radius: {3}", currentIteration, score, model.LearningRateDisplay, model.RadiusDisplay));
                 fileHelper.WriteToTextFile(record, outputFile);
 
@@ -411,9 +520,9 @@ namespace Sandbox
                     string mapName = string.Format("{0}map_iteration_{1}.json", OUTPUT_LOCATION, currentIteration);
                     fileHelper.WriteToTextFile(mapJson, mapName);
                 }
-  
+
             }
-            
+
         }
 
         private static List<Node> GetFlattenedMap(SOM mSom)
@@ -437,10 +546,138 @@ namespace Sandbox
             Console.SetCursorPosition(0, Console.CursorTop - 1);
         }
 
+        public static SOM LoadModel(string file)
+        {
+            Console.WriteLine("Loading model...");
+            var jsonContent = System.IO.File.ReadAllText(file);
+            SSOM _model = JsonConvert.DeserializeObject<SSOM>(jsonContent);
+            Console.WriteLine("Model loaded.");
+
+            return _model;
+
+        }
+
         public static Config ReadToObject(string json)
         {
             var config = Newtonsoft.Json.JsonConvert.DeserializeObject<Config>(json);
             return config;
         }
+
+        public static SOM ReadSomphony(string filePath)
+        {
+            SOM som = new SOM();
+            Node[,] map = new Node[16, 16];
+
+
+            string[] headers;
+            using (var csv = new CsvReader(new StreamReader(filePath), true))
+            {
+                headers = csv.GetFieldHeaders();
+
+                int fieldCount = csv.FieldCount;
+
+                while (csv.ReadNextRecord())
+                {
+                    int x = Int32.Parse(csv[0]);
+                    int y = Int32.Parse(csv[1]);
+                    int clusters = Int32.Parse(csv[2]);
+                    string label = csv[2];
+
+                    Node node = new Node(null, x, y);
+                    node.ClusterGroup = clusters;
+                    node.Label = label;
+
+                    map[x, y] = node;
+                }
+            }
+
+            som.Map = map;
+
+            return som;
+        }
+
+        public static List<Trajectory> ReadMusicTrajectory(string filePath, SOM model)
+        {
+            List<Trajectory> trajectories = new List<Trajectory>();
+            using (var csv = new CsvReader(new StreamReader(filePath), true))
+            {
+                int fieldCount = csv.FieldCount;
+
+                while (csv.ReadNextRecord())
+                {
+                    int x = Int32.Parse(csv[3]);
+                    int y = Int32.Parse(csv[4]);
+
+                    Node node = model.Map[y, x];
+
+                    Trajectory trajectory = new Trajectory()
+                    {
+                        Node = node
+                    };
+
+                    trajectories.Add(trajectory);
+                }
+            }
+
+            return trajectories;
+        }
+
+        private static void CreateSyntheticDataset()
+        {
+            IFileHelper fileHelper = new FileHelper();
+
+            string outputPath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\som_experiment\synthetic_xy.csv";
+
+            fileHelper.WriteToTextFile("x,y\n", outputPath);
+
+            // Region 1
+            Random rndx1 = new Random();
+            Random rndy1= new Random();
+
+            for(int i = 0; i < 2500; i++)
+            {
+                double x = rndx1.NextDouble() * 0.25;
+                double y = rndy1.NextDouble() * 0.40;
+                string record = string.Format("{0},{1}\n", x, y);
+                fileHelper.WriteToTextFile(record, outputPath);
+            }
+
+            // Region 2
+            Random rndx2 = new Random();
+            Random rndy2 = new Random();
+
+            for (int i = 0; i < 2500; i++)
+            {
+                double x = rndx2.NextDouble() * 0.25;
+                double y = rndy2.NextDouble() * 0.40 + 0.80;
+                string record = string.Format("{0},{1}\n", x, y);
+                fileHelper.WriteToTextFile(record, outputPath);
+            }
+
+            // Region 3
+            Random rndx3 = new Random();
+            Random rndy3 = new Random();
+
+            for (int i = 0; i < 2500; i++)
+            {
+                double x = rndx3.NextDouble() * 0.25 + 0.75;
+                double y = rndy3.NextDouble() * 0.40;
+                string record = string.Format("{0},{1}\n", x, y);
+                fileHelper.WriteToTextFile(record, outputPath);
+            }
+
+            // Region 4
+            Random rndx4 = new Random();
+            Random rndy4 = new Random();
+
+            for (int i = 0; i < 2500; i++)
+            {
+                double x = rndx4.NextDouble() * 0.25 + 0.75;
+                double y = rndy4.NextDouble() * 0.40 + 0.80;
+                string record = string.Format("{0},{1}\n", x, y);
+                fileHelper.WriteToTextFile(record, outputPath);
+            }
+        }
+        #endregion
     }
 }

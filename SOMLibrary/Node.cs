@@ -36,7 +36,7 @@ namespace SOMLibrary
             Coordinate = new Coordinate(x, y);
             Count = 0;
 
-            _distanceMeasure = new EuclideanDistance();
+            _distanceMeasure = new CosineSimilarityMeasure();
         }
 
         /// <summary>

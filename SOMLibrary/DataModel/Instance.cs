@@ -5,7 +5,8 @@ namespace SOMLibrary.DataModel
     public class Instance
     {
         public int OrderNo { get; set; }
-        public object[] Values { get; set; }
+        public double[] Values { get; set; }
+        public string Label { get; set; }
 
         public override string ToString()
         {
