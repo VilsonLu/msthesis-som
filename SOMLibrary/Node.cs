@@ -36,14 +36,14 @@ namespace SOMLibrary
             Coordinate = new Coordinate(x, y);
             Count = 0;
 
-            _distanceMeasure = new CosineSimilarityMeasure();
+            _distanceMeasure = new EuclideanDistance();
         }
 
         /// <summary>
-        /// Calculates the Euclidean distance between the weight vector and input vector
+        /// Calculates the distance between weight vectors
         /// </summary>
         /// <param name="inputVectors"></param>
-        /// <returns>double - Euclidean distance</returns>
+        /// <returns>double - distance</returns>
         public double GetDistance(double[] inputVectors)
         {
             return _distanceMeasure.GetDistance(Weights, inputVectors);
@@ -65,8 +65,6 @@ namespace SOMLibrary
         {
             Count++;
         }
-
-
 
         public override string ToString()
         {

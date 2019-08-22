@@ -63,7 +63,7 @@ namespace SOMLibrary
         /// Initial neighborhood radius
         /// </summary>
         public double MapRadius { get; set; }
-        
+
         public double FinalMapRadius { get; set; }
 
         #endregion
@@ -260,7 +260,7 @@ namespace SOMLibrary
             int instanceCount = base.Dataset.Instances.Length;
             var instances = base.Dataset.Instances;
 
-            int t = 1; // iteration
+            int t = 0; // iteration
             for (int i = 0; i < Epoch; i++)
             {
                 // Randomize the order of the instance after every epoch
@@ -273,7 +273,7 @@ namespace SOMLibrary
 
                     // Find the BMU (Best Matching Unit)
                     Node winningNode = FindBestMatchingUnit(instance);
-
+                    winningNode.IncrementCount();
                     // Adjust the weights of the BMU and neighbor
                     UpdateNeighborhood(winningNode, instance, t);
 
@@ -296,7 +296,7 @@ namespace SOMLibrary
         /// <returns></returns>
         public virtual Node FindBestMatchingUnit(Instance instance)
         {
-            double bestDistance = double.MinValue;
+            double bestDistance = double.MaxValue;
             Node bestNode = null;
 
             for (int row = 0; row < Width; row++)
@@ -306,7 +306,7 @@ namespace SOMLibrary
                     Node currentNode = Map[row, col];
                     double currentDistance = currentNode.GetDistance(instance.Values);
 
-                    if (currentDistance > bestDistance)
+                    if (currentDistance < bestDistance)
                     {
                         bestDistance = currentDistance;
                         bestNode = currentNode;
@@ -314,7 +314,8 @@ namespace SOMLibrary
 
                 }
             }
-
+            
+    
             return bestNode;
         }
 
@@ -332,11 +333,14 @@ namespace SOMLibrary
                 {
                     var currentNode = Map[row, col];
                     var distanceToWinningNode = Math.Sqrt(winningNode.GetGridDistance(currentNode));
-                    double neighborhoodRadius = NeighborhoodRadius(iteration);
+                    double learningRate = GetLearningRate(iteration);
+                    double neighborhoodRadius = GetNeighborhoodRadius(iteration);
+
+                    LearningRateDisplay = learningRate;
                     RadiusDisplay = neighborhoodRadius;
                     if (distanceToWinningNode <= neighborhoodRadius)
                     {
-                        currentNode.Weights = AdjustWeights(currentNode, distanceToWinningNode, rowInstance.Values, iteration, neighborhoodRadius);
+                        Map[row, col].Weights = AdjustWeights(currentNode, rowInstance.Values, learningRate);
                     }
                 }
             }
@@ -345,24 +349,17 @@ namespace SOMLibrary
         /// <summary>
         /// Adjust the weights of the affected nodes
         /// </summary>
-        /// <param name="winningNode"></param>
         /// <param name="currentNode"></param>
         /// <param name="instance"></param>
-        /// <param name="iteration"></param>
-        /// <param name="radius"></param>
+        /// <param name="learningRate></param>
         /// <returns></returns>
-        protected double[] AdjustWeights(Node currentNode, double distance, double[] instance, int iteration, double radius)
+        protected double[] AdjustWeights(Node currentNode, double[] instance, double learningRate)
         {
             var currentWeight = currentNode.Weights;
 
-            double learningRate = LearningRateDecay(iteration);
-            double influence = Influence(distance, radius);
-
-            LearningRateDisplay = learningRate;
-
             for (int i = 0; i < currentWeight.Length; i++)
             {
-                double newWeight = currentWeight[i] + (learningRate * influence * (instance[i] - currentWeight[i]));
+                double newWeight = currentWeight[i] + (learningRate * (instance[i] - currentWeight[i]));
                 currentWeight[i] = newWeight;
             }
 
@@ -374,7 +371,7 @@ namespace SOMLibrary
         /// </summary>
         /// <param name="iteration"></param>
         /// <returns></returns>
-        protected double LearningRateDecay(int iteration)
+        protected double GetLearningRate(int iteration)
         {
             double learningRate = _learningRate.CalculateLearningRate(iteration, TotalGlobalIteration);
             return learningRate;
@@ -384,22 +381,22 @@ namespace SOMLibrary
         /// Neighborhood Radius: The neighborhood shrinks as time passes by
         /// </summary>
         /// <returns></returns>
-        protected double NeighborhoodRadius(int iteration)
+        protected double GetNeighborhoodRadius(int iteration)
         {
             return _neighborhoodRadius.CalculateRadius(iteration, TotalGlobalIteration);
         }
 
         /// <summary>
-        /// Influence: Rate of change around the winning node
+        /// Neighborhood Function: Rate of change around the winning node
         /// </summary>
         /// <param name="distance"></param>
         /// <param name="neighborhoodRadius"></param>
         /// <returns></returns>
-        protected double Influence(double distance, double neighborhoodRadius)
+        protected double GetNeighborhoodFunction(double distance, double neighborhoodRadius)
         {
             return _neighborhoodKernel.CalculateNeighborhoodFunction(distance, neighborhoodRadius);
         }
-        
+
         #endregion
 
         #region Others

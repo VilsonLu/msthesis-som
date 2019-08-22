@@ -148,7 +148,10 @@ namespace Sandbox
 
             OUTPUT_LOCATION = config.Export;
             IFileHelper fileHelper = new FileHelper();
-            fileHelper.DeleteFile(string.Format("{0}disorder-measure.txt", OUTPUT_LOCATION));
+            string exportFile = string.Format("{0}disorder-measure.csv", OUTPUT_LOCATION);
+            fileHelper.DeleteFile(exportFile);
+
+            fileHelper.WriteToTextFile("Iteration,Disorder Measure,Learning Rate,Radius\n", exportFile);
 
             // Build the Model
             var learningRate = new LinearLearningRate(config.ConstantLearningRate, config.FinalLearningRate);
@@ -214,6 +217,8 @@ namespace Sandbox
             Console.WriteLine("Completed training model...");
             Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
 
+            DisplayWinningNodeCount(model);
+
             //Console.WriteLine("Start labelling node...");
             //stopwatch.Restart();
             //model.LabelNodes();
@@ -246,21 +251,21 @@ namespace Sandbox
             //    model.AssignClusterLabel();
             //}
 
-            //// Export the model
-            //Console.WriteLine("Exporting model...");
-            //var guid = Guid.NewGuid();
-            //model.MapId = guid;
-            //model.Dataset = null;
+            // Export the model
+            Console.WriteLine("Exporting model...");
+            var guid = Guid.NewGuid();
+            model.MapId = guid;
+            model.Dataset = null;
 
-            //var serializeObject = JsonConvert.SerializeObject(model, Formatting.Indented);
+            var serializeObject = JsonConvert.SerializeObject(model, Formatting.Indented);
 
-            //string exportFileName = string.Format("{0}Map_{1}.json", config.Export, guid);
+            string exportFileName = string.Format("{0}Map_{1}.json", config.Export, guid);
 
-            //System.IO.File.WriteAllText(exportFileName, serializeObject);
+            System.IO.File.WriteAllText(exportFileName, serializeObject);
 
-            //Console.WriteLine("Training completed...");
+            Console.WriteLine("Training completed...");
 
-            //Console.ReadLine();
+            Console.ReadLine();
 
         }
 
@@ -509,7 +514,7 @@ namespace Sandbox
             {
                 var score = disorderMetric.Measure(model);
                 string record = string.Format("{0},{1},{2},{3}\n", currentIteration, score, model.LearningRateDisplay, model.RadiusDisplay);
-                string outputFile = string.Format("{0}disorder-measure.txt", OUTPUT_LOCATION);
+                string outputFile = string.Format("{0}disorder-measure.csv", OUTPUT_LOCATION);
 
                 Console.WriteLine(string.Format("Iteration {0}: {1}, Learning Rate: {2}, Radius: {3}", currentIteration, score, model.LearningRateDisplay, model.RadiusDisplay));
                 fileHelper.WriteToTextFile(record, outputFile);
@@ -620,6 +625,21 @@ namespace Sandbox
             }
 
             return trajectories;
+        }
+
+        private static void DisplayWinningNodeCount(SOM model)
+        {
+            for(int i = 0; i < model.Width; i++)
+            {
+                for(int j = 0; j < model.Height; j++)
+                {
+                    var node = model.Map[i, j].Count;
+                    Console.Write(string.Format("{0}\t", node));
+                }
+
+                Console.WriteLine();
+            }
+
         }
 
         private static void CreateSyntheticDataset()

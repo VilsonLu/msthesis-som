@@ -73,15 +73,15 @@ namespace SOMLibrary.Implementation
             {
                 string fieldHeader = fieldHeaders[i];
 
-                if (_ignoreColumns.Any(x => x == fieldHeader))
+                if (fieldHeader == _label)
                 {
-                    _ignoreColumnDictionary.Add(i, fieldHeader);
+                    _labelIndex = i;
                     continue;
                 }
 
-                if(fieldHeader == _label)
+                if (_ignoreColumns.Any(x => x == fieldHeader))
                 {
-                    _labelIndex = i;
+                    _ignoreColumnDictionary.Add(i, fieldHeader);
                     continue;
                 }
 
@@ -107,17 +107,23 @@ namespace SOMLibrary.Implementation
         private Instance[] GetInstances(CsvReader csv)
         {
             List<Instance> instances = new List<Instance>();
-            int fieldCount = csv.FieldCount - _ignoreColumns.Length;
-
+            int fieldCount = csv.FieldCount;
+            int weightCount = fieldCount - _ignoreColumns.Length;
             int rowNumber = 0;
             
             while (csv.ReadNextRecord())
             {
-                double[] values = new double[fieldCount];
+                double[] values = new double[weightCount];
                 string label = string.Empty;
                 int currentColumn = 0;
                 for (int i = 0; i < fieldCount; i++)
                 {
+                    if (_labelIndex == i)
+                    {
+                        label = csv[i];
+                        continue;
+                    }
+
                     // check if the column is in ignore columns
                     // if in ignore columns don't add the value
                     if (_ignoreColumnDictionary.ContainsKey(i))
@@ -126,15 +132,8 @@ namespace SOMLibrary.Implementation
                     }
 
                     // Check if the index is the label
-                    if(_labelIndex == i)
-                    {
-                        label = csv[i];
-                    }
-                    else
-                    {
-                        values[currentColumn] = Double.Parse(csv[i]);
-                        currentColumn++;
-                    }  
+                    values[currentColumn] = Double.Parse(csv[i]);
+                    currentColumn++;
                 }
 
                 Instance instance = new Instance()

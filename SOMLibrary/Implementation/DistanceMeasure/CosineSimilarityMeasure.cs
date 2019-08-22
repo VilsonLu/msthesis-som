@@ -16,20 +16,31 @@ namespace SOMLibrary.Implementation.DistanceMeasure
             double bSum = 0.0;
             int length = a.Length;
 
-            object locker = new object();
+            //object locker = new object();
 
-            Parallel.For(0, length, (i) =>
+            //Parallel.For(0, length, (i) =>
+            //{
+            //    double tempSum = a[i] * b[i];
+            //    double tempASum = a[i] * a[i];
+            //    double tempBSum = b[i] * b[i];
+            //    lock (locker)
+            //    {
+            //        sum += tempSum;
+            //        aSum += tempASum;
+            //        bSum += tempBSum;
+            //    }
+            //});
+
+            for (int i = 0; i < length; i++)
             {
                 double tempSum = a[i] * b[i];
                 double tempASum = a[i] * a[i];
                 double tempBSum = b[i] * b[i];
-                lock (locker)
-                {
-                    sum += tempSum;
-                    aSum += tempASum;
-                    bSum += tempBSum;
-                }
-            });
+
+                sum += tempSum;
+                aSum += tempASum;
+                bSum += tempBSum;
+            }
 
             double den = Math.Sqrt(aSum) + Math.Sqrt(bSum);
             double distance = sum / (den);
