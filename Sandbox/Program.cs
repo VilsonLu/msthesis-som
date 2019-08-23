@@ -42,8 +42,8 @@ namespace Sandbox
 
         public static void Main(string[] args)
         {
+            //Program1(args);
             Program2(args);
-            //Program2(args);
             //Program5(args);
             //Program1(args);
             //CreateSyntheticDataset();
@@ -71,7 +71,7 @@ namespace Sandbox
 
             // Build the Model
             SOM model = new SOM(config.Width, config.Height, config.ConstantLearningRate, config.Epoch, config.K);
-            model.MapRadius = config.Neighborhood;
+            model.InitialMapRadius = config.Neighborhood;
             //model.Regions = config.Regions;
             model.LearningRateCalculator = new FixedLearningRate(config.ConstantLearningRate);
 
@@ -132,9 +132,9 @@ namespace Sandbox
         /// <param name="args"></param>
         public static void Program2(string[] args)
         {
-            string filePath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\som_experiment\config.json";
+            string filePath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\som_experiment\config_animal.json";
 
-            FREQUENCY = 1000;
+            FREQUENCY = 100;
             IS_PRINT_MODEL = false;
 
             if (args.Length > 0)
@@ -217,14 +217,12 @@ namespace Sandbox
             Console.WriteLine("Completed training model...");
             Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
 
-            DisplayWinningNodeCount(model);
-
-            //Console.WriteLine("Start labelling node...");
-            //stopwatch.Restart();
-            //model.LabelNodes();
-            //stopwatch.Stop();
-            //Console.WriteLine("Completed labelling node...");
-            //Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
+            Console.WriteLine("Start labelling node...");
+            stopwatch.Restart();
+            model.LabelNodes();
+            stopwatch.Stop();
+            Console.WriteLine("Completed labelling node...");
+            Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
 
             //if (config.Clusters > 0)
             //{
@@ -320,7 +318,7 @@ namespace Sandbox
             Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
 
 
-            string testingPath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\experiment_3\unknown_trajectory\m_pleasant_14_23.csv";
+            string testingPath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\experiment_3\unknown_trajectory\unknown_trajectory_14_23.csv";
 
             ICompression compress = new RunLengthCompression();
             TrajectoryMapper testMapper = new TrajectoryMapper(_model);
@@ -333,7 +331,6 @@ namespace Sandbox
             var unknownTrajectory = testMapper.Trajectories;
 
             IPredict directPrediction = new DirectPrediction(_model, dbTrajectories);
-
             directPrediction.Predict(testMapper);
 
             //IFileHelper fileHelper = new FileHelper();

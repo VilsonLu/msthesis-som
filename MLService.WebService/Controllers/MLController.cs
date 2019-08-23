@@ -217,12 +217,6 @@ namespace MLService.WebService.Controllers
             IReader reader = new CSVReader(System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Iris.csv"));
 
             model.GetData(reader);
-
-            foreach (var item in request.Labels)
-            {
-                model.Dataset.SetLabel(item);
-            }
-
             model.FeatureLabel = request.FeatureLabel;
             model.InitializeMap();
             model.Train();

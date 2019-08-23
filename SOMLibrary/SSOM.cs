@@ -24,7 +24,7 @@ namespace SOMLibrary
         {
             Width = 0;
             Height = 0;
-            ConstantLearningRate = 0;
+            InitialLearningRate = 0;
             Epoch = 1;
             Map = new Node[Width, Height];
             Regions = new List<Region>();
@@ -39,11 +39,11 @@ namespace SOMLibrary
             Map = new Node[Width, Height];
 
             // Learning Rate
-            ConstantLearningRate = builder.InitialLearningRate;
+            InitialLearningRate = builder.InitialLearningRate;
             FinalLearningRate = builder.FinalLearningRate;
 
             // Neighborhood Radius
-            MapRadius = builder.InitialRadius;
+            InitialMapRadius = builder.InitialRadius;
             FinalMapRadius = builder.FinalRadius;
 
             // Training Parameters
@@ -71,7 +71,7 @@ namespace SOMLibrary
         public SSOM(int x, int y, double learningRate) : base(x, y, learningRate)
         {
             Regions = new List<Region>();
-            ConstantLearningRate = learningRate;
+            InitialLearningRate = learningRate;
         }
 
         public SSOM(int x, int y, double learningRate, int epoch) : base(x, y, learningRate, epoch)

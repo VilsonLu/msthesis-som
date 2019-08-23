@@ -21,12 +21,18 @@ namespace SOMLibrary
         public Guid MapId { get; set; }
 
         /// <summary>
-        /// Learning Rate
+        /// Initial Learning Rate
         /// </summary>
-        public double ConstantLearningRate { get; set; }
+        public double InitialLearningRate { get; set; }
 
+        /// <summary>
+        /// Final Learning Rate
+        /// </summary>
         public double FinalLearningRate { get; set; }
 
+        /// <summary>
+        /// Map of neurons
+        /// </summary>
         public Node[,] Map { get; set; }
 
         /// <summary>
@@ -44,6 +50,9 @@ namespace SOMLibrary
         /// </summary>
         public int Epoch { get; set; }
 
+        /// <summary>
+        /// Number of iterations for training
+        /// </summary>
         public int TotalIteration { get; set; }
 
         public string FeatureLabel { get; set; }
@@ -53,18 +62,27 @@ namespace SOMLibrary
         /// </summary>
         public int K { get; set; } = 3;
 
+        /// <summary>
+        /// Number of epoch for global training
+        /// </summary>
         public int GlobalEpoch { get; set; }
 
+        /// <summary>
+        /// Number of iterations for global training
+        /// </summary>
         public int TotalGlobalIteration { get; set; }
-
-        public int LocalEpoch { get; set; }
 
         /// <summary>
         /// Initial neighborhood radius
         /// </summary>
-        public double MapRadius { get; set; }
+        public double InitialMapRadius { get; set; }
 
+        /// <summary>
+        /// Final map radius
+        /// </summary>
         public double FinalMapRadius { get; set; }
+
+        public int LocalEpoch { get; set; }
 
         #endregion
 
@@ -134,11 +152,11 @@ namespace SOMLibrary
             Map = new Node[Width, Height];
 
             // Learning Rate
-            ConstantLearningRate = builder.InitialLearningRate;
+            InitialLearningRate = builder.InitialLearningRate;
             FinalLearningRate = builder.FinalLearningRate;
 
             // Neighborhood Radius
-            MapRadius = builder.InitialRadius;
+            InitialMapRadius = builder.InitialRadius;
             FinalMapRadius = builder.FinalRadius;
 
             // Training Parameters
@@ -154,34 +172,34 @@ namespace SOMLibrary
             LearningRateCalculator = builder.LearningRateCalculator;
             NeighborFunctionCalculator = builder.NeighborhoodFunctionCalculator;
         }
+
         public SOM()
         {
             Width = 0;
             Height = 0;
-            ConstantLearningRate = 0;
+            InitialLearningRate = 0;
             Epoch = 1;
             Map = new Node[Width, Height];
-            _learningRate = new PowerSeriesLearningRate(ConstantLearningRate);
-            _neighborhoodRadius = new DecayNeighborhoodRadius(MapRadius);
-
+            _learningRate = new PowerSeriesLearningRate(InitialLearningRate);
+            _neighborhoodRadius = new DecayNeighborhoodRadius(InitialMapRadius);
         }
 
         public SOM(int x, int y)
         {
             Width = x;
             Height = y;
-            ConstantLearningRate = 0.5;
+            InitialLearningRate = 0.5;
             Epoch = 1;
             Map = new Node[x, y];
-            _learningRate = new PowerSeriesLearningRate(ConstantLearningRate);
-            _neighborhoodRadius = new DecayNeighborhoodRadius(MapRadius);
+            _learningRate = new PowerSeriesLearningRate(InitialLearningRate);
+            _neighborhoodRadius = new DecayNeighborhoodRadius(InitialMapRadius);
         }
 
         public SOM(int x, int y, double learningRate) : this(x, y)
         {
-            ConstantLearningRate = learningRate;
-            _learningRate = new PowerSeriesLearningRate(ConstantLearningRate);
-            _neighborhoodRadius = new DecayNeighborhoodRadius(MapRadius);
+            InitialLearningRate = learningRate;
+            _learningRate = new PowerSeriesLearningRate(InitialLearningRate);
+            _neighborhoodRadius = new DecayNeighborhoodRadius(InitialMapRadius);
             Epoch = 1;
         }
 

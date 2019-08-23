@@ -7,7 +7,7 @@
         $scope.ShowError = false;
         var nodes = [];
         var n = 20;
-        var sen = 50;
+        var sen = 70;
 
         var svg = {};
 
@@ -20,6 +20,11 @@
         function getClusters(nodes) {
             return nodes.map(item => item.ClusterGroup)
                 .filter((value, index, self) => self.indexOf(value) === index);
+        }
+
+        function getColor(weight) {
+            color = Math.floor(255 * weight);
+            return "rgb(" + color + "," + color + "," + color + ")";
         }
 
         var visualizeSOM = function () {
@@ -50,7 +55,7 @@
                 .attr("height", sen)
                 .style("fill",
                 function (node) {
-                    return rgb(dictColor[node.Label]);
+                    return getColor(node.Weights[11]);
                 });
             //.on("mouseover",
             //function (node) {
@@ -74,18 +79,27 @@
                 .append("text");
 
             var textLabels = text
-                .attr("x", function (node) { return coordinateMapper(node.Coordinate.Y); })
-                .attr("y", function (node) { return coordinateMapper(node.Coordinate.X); })
+                .attr("x", function (node) { return coordinateMapperX(node.Coordinate.Y); })
+                .attr("y", function (node) { return coordinateMapperY(node.Coordinate.X); })
                 .text(function (node) { return node.Label; })
                 .attr("font-family", "sans-serif")
-                .attr("font-size", "15px")
-                .attr("fill", "black");
+                .attr("font-size", "12px")
+                .attr("align", "center")
+                .attr("fill", "blue");
 
         };
 
+
         var coordinateMapper = function (d) {
-            return d * sen + 0.5 * sen;
-        }
+            return d * sen + 0.30 * sen;
+        };
+        var coordinateMapperX = function (d) {
+            return d * sen + 0.10 * sen;
+        };
+
+        var coordinateMapperY = function (d) {
+            return d * sen + 0.60 * sen;
+        };
 
         var plotTrajectory = function () {
 
@@ -99,17 +113,17 @@
 
             var interpolator = function (d) {
                 return d / dataLength;
-            }
+            };
 
             var timeInterpolator = function (d) {
                 var interpolatedNum = interpolator(d);
                 var color = d3.interpolateLab("yellow", "red")(interpolatedNum);
                 console.log(`${d} : ${interpolatedNum} : ${color} `);
                 return color;
-            }
+            };
 
 
-            
+
 
             var lineFunction = d3.line()
                 .x(function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
@@ -132,7 +146,7 @@
                 .attr("r", "6px")
                 .attr("fill", p => timeInterpolator(p.Instance.OrderNo));
 
-        }
+        };
 
         var visualizeCluster = function () {
             d3.select("svg").remove();
@@ -157,11 +171,11 @@
                 .attr("y", function (node) { return node.Coordinate.Y * sen; })
                 .attr("width", sen)
                 .attr("height", sen)
-                .attr("text", function (node) { return node.Label })
+                .attr("text", function (node) { return node.Label; })
                 .style("fill",
-                function (node) {
-                    return rgb(dictColor[node.ClusterGroup]);
-                });
+                    function (node) {
+                        return rgb(dictColor[node.ClusterGroup]);
+                    });
 
 
             var text = rgb_nodes.selectAll("text")
@@ -192,7 +206,7 @@
             //    mout();
             //    return tooltip.style("visibility", "hidden");
             //});
-        }
+        };
 
 
         // Shows the cluster group
