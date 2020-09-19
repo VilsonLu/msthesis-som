@@ -27,8 +27,6 @@ namespace SOMClient.Controllers
             _reader = new CSVReader(filepath);
 
             _model.GetData(_reader);
-            _model.Dataset.SetLabel("Patient");
-            _model.Dataset.SetLabel("y");
 
             _model.FeatureLabel = "y";
 

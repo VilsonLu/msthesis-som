@@ -28,7 +28,7 @@ namespace Sandbox
         /// <summary>
         /// Configuration for the location to save the text files
         /// </summary>
-        private static string OUTPUT_LOCATION = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\som_experiment\";
+        private static string OUTPUT_LOCATION = @"D:\School\Masters\Thesis\Datasets\Kalaw-Dataset\som_experiment\";
 
         /// <summary>
         /// Configuration for the frequency to calculate the disorder measure
@@ -42,8 +42,8 @@ namespace Sandbox
 
         public static void Main(string[] args)
         {
-            //Program1(args);
-            Program2(args);
+            Program1(args);
+            //Program2(args);
             //Program5(args);
             //Program1(args);
             //CreateSyntheticDataset();
@@ -132,7 +132,7 @@ namespace Sandbox
         /// <param name="args"></param>
         public static void Program2(string[] args)
         {
-            string filePath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\som_experiment\config_animal.json";
+            string filePath = @"D:\School\Masters\Thesis\Datasets\Kalaw-Dataset\som_experiment\config_animal.json";
 
             FREQUENCY = 100;
             IS_PRINT_MODEL = false;
@@ -203,13 +203,6 @@ namespace Sandbox
             // Initialize the training
             Stopwatch stopwatch = new Stopwatch();
 
-            Console.WriteLine("Start initializing map...");
-            stopwatch.Start();
-            model.InitializeMap();
-            stopwatch.Stop();
-            Console.WriteLine("Completed initialization...");
-            Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
-
             Console.WriteLine("Start training model...");
             stopwatch.Restart();
             model.Train();
@@ -276,7 +269,7 @@ namespace Sandbox
 
             Stopwatch stopwatch = new Stopwatch();
 
-            string trainedModelFile = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\experiment_3\Map_experiment_3.json";
+            string trainedModelFile = @"C:\Users\User\Desktop\experiment3\som\Map_experiment_3.json";
 
             Console.WriteLine("Loading model...");
             var jsonContent = System.IO.File.ReadAllText(trainedModelFile);
@@ -292,7 +285,7 @@ namespace Sandbox
             Console.WriteLine("Disorder Score: {0}", disorderScore);
 
 
-            string trainingPath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\male_pleasant_trajectories";
+            string trainingPath = @"C:\Users\User\Desktop\experiment3\male_pleasant_trajectories";
             List<TrajectoryMapper> dbTrajectories = new List<TrajectoryMapper>();
 
             Console.WriteLine("Start plotting trajectories...");
@@ -317,8 +310,7 @@ namespace Sandbox
             Console.WriteLine("Completed plotting trajectories...");
             Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
 
-
-            string testingPath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\experiment_3\unknown_trajectory\unknown_trajectory_14_23.csv";
+            string testingPath = @"C:\Users\User\Desktop\experiment3\unknown_trajectory\m_pleasant_22_43.csv";
 
             ICompression compress = new RunLengthCompression();
             TrajectoryMapper testMapper = new TrajectoryMapper(_model);
@@ -330,41 +322,38 @@ namespace Sandbox
             Console.WriteLine("Unknown Trajectory: {0}", compress.Compress(testMapper.ToString()));
             var unknownTrajectory = testMapper.Trajectories;
 
-            IPredict directPrediction = new DirectPrediction(_model, dbTrajectories);
-            directPrediction.Predict(testMapper);
+            IFileHelper fileHelper = new FileHelper();
+            ISimilarityMeasure similarityMeasure = new EditDistanceMeasure();
 
-            //IFileHelper fileHelper = new FileHelper();
-            //ISimilarityMeasure similarityMeasure = new PairwiseDistanceMeasure();
+            Console.WriteLine("Computing similarity measure using {0}", similarityMeasure.GetType().Name);
 
-            //Console.WriteLine("Computing similarity measure using {0}", similarityMeasure.GetType().Name);
+            var scores = new List<Tuple<string, double, int, string>>();
+            foreach (var trajectory in dbTrajectories)
+            {
+                var currentTrajectory = trajectory.Trajectories;
 
-            //var scores = new List<Tuple<string, double, int, string>>();
-            //foreach (var trajectory in dbTrajectories)
-            //{
-            //    var currentTrajectory = trajectory.Trajectories;
-
-            //    var score = similarityMeasure.MeasureSimilarity(currentTrajectory, unknownTrajectory);
-            //    scores.Add(new Tuple<string, double, int, string>(trajectory.FileName, score, trajectory.Trajectories.Count, trajectory.ToString()));
-            //    Console.WriteLine("{0}:{1}:{2}", trajectory.FileName, score, trajectory.Trajectories.Count);
-            //}
+                var score = similarityMeasure.MeasureSimilarity(currentTrajectory, unknownTrajectory);
+                scores.Add(new Tuple<string, double, int, string>(trajectory.FileName, score, trajectory.Trajectories.Count, trajectory.ToString()));
+                Console.WriteLine("{0}:{1}:{2}", trajectory.FileName, score, trajectory.Trajectories.Count);
+            }
 
 
-            //var topNScores = scores.OrderBy(x => x.Item2);
+            var topNScores = scores.OrderBy(x => x.Item2);
 
-            //Console.WriteLine();
-            //Console.WriteLine("Trajectories...");
+            Console.WriteLine();
+            Console.WriteLine("Trajectories...");
 
-            //string header = "Trajectory,Score,TrajectoryCount\n";
+            string header = "Trajectory,Score,TrajectoryCount\n";
 
-            //string fileResultLocation = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\experiment_3\trajectory-results.csv";
-            //fileHelper.WriteToTextFile(header, fileResultLocation);
+            string fileResultLocation = @"C:\Users\User\Desktop\experiment3\results\trajectory-results.csv";
+            fileHelper.WriteToTextFile(header, fileResultLocation);
 
-            //foreach (var item in topNScores)
-            //{
-            //    string result = string.Format("{0},{1},{2},{3}\n", item.Item1, item.Item2, item.Item3, compress.Compress(item.Item4));
-            //    fileHelper.WriteToTextFile(result, fileResultLocation);
-            //    Console.WriteLine("{0}:{1}:{2}:{3}", item.Item1, item.Item2, item.Item3, compress.Compress(item.Item4));
-            //}
+            foreach (var item in topNScores)
+            {
+                string result = string.Format("{0},{1},{2},{3}\n", item.Item1, item.Item2, item.Item3, compress.Compress(item.Item4));
+                fileHelper.WriteToTextFile(result, fileResultLocation);
+                Console.WriteLine("{0}:{1}:{2}:{3}", item.Item1, item.Item2, item.Item3, compress.Compress(item.Item4));
+            }
 
             Console.WriteLine("Training completed...");
 
@@ -437,7 +426,7 @@ namespace Sandbox
             Console.WriteLine();
             Console.WriteLine("Trajectories...");
 
-            string header = "Trajectory,Score,TrajectoryCount\n";
+            string header = "Trajectory,Score,TrajectoryCount,SimplifiedSequence\n";
 
             // Export Scores
             string fileResultLocation = @"C:\Users\Vilson\Desktop\Datasets\Music-Dataset\trajectory-results.csv";

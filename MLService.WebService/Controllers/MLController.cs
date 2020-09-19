@@ -143,25 +143,29 @@ namespace MLService.WebService.Controllers
                
                 string file = provider.FileData.Last().LocalFileName;
 
-                IReader reader = new CSVReader(file);
+                //IReader reader = new CSVReader(file);
 
+                //var musicTrajectory = ReadMusicTrajectory(file, som);
+                string[] labels = { "USER", "SEG", "CLASS_PLEASANTNESS" };
+                string feature = "CLASS_PLEASANTNESS";
+
+                IReader trajectoryReader = new CSVReader(file, labels, feature);
                 TrajectoryMapper trajectoryMapper = new TrajectoryMapper(som);
-                trajectoryMapper.GetData(reader);
+                trajectoryMapper.GetData(trajectoryReader);
 
 
-                var musicTrajectory = ReadMusicTrajectory(file, som);
-                //string[] labels = { "USER", "SEG", "CLASS_PLEASANTNESS" };
-
+                
                 //foreach (var item in labels)
                 //{
                 //    trajectoryMapper.SetLabel(item);
+                //    trajectoryMapper.
                 //}
 
-                //trajectoryMapper.PlotTrajectory();
+                trajectoryMapper.PlotTrajectory();
 
                 TrajectoryResponse trajectoryResponse = new TrajectoryResponse()
                 {
-                    Trajectories =  musicTrajectory.ToArray()
+                    Trajectories = trajectoryMapper.Trajectories.ToArray()
                 };
 
                 File.Delete(result.FileData.First().LocalFileName);

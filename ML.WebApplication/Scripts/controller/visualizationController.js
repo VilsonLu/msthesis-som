@@ -55,7 +55,7 @@
                 .attr("height", sen)
                 .style("fill",
                 function (node) {
-                    return getColor(node.Weights[11]);
+                    return rgb(dictColor[node.Label]);
                 });
             //.on("mouseover",
             //function (node) {
@@ -126,8 +126,8 @@
 
 
             var lineFunction = d3.line()
-                .x(function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
-                .y(function (d) { return coordinateMapper(d.Node.Coordinate.X); })
+                .x(function (d) { return coordinateMapper(d.Node.Coordinate.X); })
+                .y(function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
                 .curve(d3.curveLinear);
 
             //The line SVG Path we draw
@@ -141,8 +141,8 @@
             svg.selectAll("circle")
                 .data(data).enter()
                 .append("circle")
-                .attr("cx", function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
-                .attr("cy", function (d) { return coordinateMapper(d.Node.Coordinate.X); })
+                .attr("cx", function (d) { return coordinateMapper(d.Node.Coordinate.X); })
+                .attr("cy", function (d) { return coordinateMapper(d.Node.Coordinate.Y); })
                 .attr("r", "6px")
                 .attr("fill", p => timeInterpolator(p.Instance.OrderNo));
 
