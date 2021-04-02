@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Implementation\CompressionDissimilarityMeasure.cs" />
+    <Compile Include="Implementation\LevenshteinDistanceMeasure.cs" />
     <Compile Include="Implementation\EditDistanceMeasure.cs" />
     <Compile Include="Implementation\ITrajectoryMapper.cs" />
     <Compile Include="Implementation\PairwiseDistanceMeasure.cs" />

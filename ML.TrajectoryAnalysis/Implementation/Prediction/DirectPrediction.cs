@@ -21,21 +21,29 @@ namespace ML.TrajectoryAnalysis.Implementation.Prediction
         /// Number of similar trajectories to consider
         /// </summary>
         public int K { get; set; }
+
+        /// <summary>
+        /// Contains the database of trajectories 
+        /// </summary>
         public List<TrajectoryMapper> TrajectoryDb { get; set; }
 
+        /// <summary>
+        /// Similarity Measure used to get the most similar trajectories
+        /// </summary>
         public ISimilarityMeasure SimilarityMeasure { get; set; }
 
         public SOM Model { get; set; }
+
 
         /// <summary>
         /// Default Settings
         /// </summary>
         public DirectPrediction()
         {
-            WindowSize = 10;
+            WindowSize = 5;
             Steps = 5;
             SimilarityMeasure = new EditDistanceMeasure();
-            K = 5;
+            K = 3;
         }
 
         public DirectPrediction(SOM model, List<TrajectoryMapper> dbTrajectory) : this()
@@ -47,35 +55,44 @@ namespace ML.TrajectoryAnalysis.Implementation.Prediction
         public TrajectoryMapper Predict(TrajectoryMapper currentTrajectory)
         {
 
-            var lastIndex = currentTrajectory.Trajectories.Count - 1;
 
             // Step 1: Get the last n node of the trajectory that you want to predict (n = window size)
-            var partialTrajectory = GetLastTrajectory(currentTrajectory, WindowSize);
+            currentTrajectory.PredictedTrajectories = GetFirstTrajectory(currentTrajectory, WindowSize);
+            var lastIndex = currentTrajectory.PredictedTrajectories.Count - 1;
 
             // Step 2: Get the most similar trajectory based on the partial trajectory
-            var similarTrajectories = GetSimilarTrajectory(TrajectoryDb, partialTrajectory, K);
 
-            for (int i = 0; i < Steps; i++)
+            var similarTrajectories = GetSimilarTrajectory(TrajectoryDb, currentTrajectory.PredictedTrajectories, K);
+
+            // Step 3: Based on the similar trajectory, get the majority of the state (that will be label of the predicted node)
+            // Step 4: Repeat step 3 until number of steps (prediction) has been achieved.
+
+            int numOfSteps = this.Steps;
+            for (int i = 0; i < numOfSteps; i++)
             {
-                List<Trajectory> nodes = new List<Trajectory>();
+                List<string> labels = new List<string>();
                 foreach(var trajectory in similarTrajectories)
                 {
                     var node = GetNodeAtIndex(trajectory, lastIndex);
                     if(node != null)
                     {
-                        nodes.Add(node);
+                        labels.Add(node.Node.ClusterLabel);
                     }
                 }
 
-
+                // get the majority of the labels for that step
+                if(labels.Count > 0)
+                {
+                    var winner = labels.GroupBy(x => x).OrderByDescending(x => x.Count()).First().Key;
+                    Node predictedNode = new Node(winner);
+                    currentTrajectory.AddPredictedTrajectory(predictedNode);
+                }
+               
+                lastIndex++;
+    
             }
 
-            // Step 3: Based on the similar trajectory, get the majority of the state (that will be label of the predicted node)
-            // Step 4: Get the weights by averaging the weights of the nodes.
-            // Step 5: Find the BMU on the model based on the predicted node. The BMU will then be the predicted node
-            // Step 5: Repeat step 3-5 until number of steps (prediction) has been achieved.
-
-            throw new NotImplementedException();
+            return currentTrajectory;
         }
 
 
@@ -90,6 +107,20 @@ namespace ML.TrajectoryAnalysis.Implementation.Prediction
             var predictTrajectory = trajectory.Trajectories;
             int range = predictTrajectory.Count - n;
             var partialTrajectory = predictTrajectory.GetRange(range, n);
+
+            return partialTrajectory;
+        }
+
+        /// <summary>
+        /// Get the first n elements of the trajectory
+        /// </summary>
+        /// <param name="trajectory"></param>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        private List<Trajectory> GetFirstTrajectory(TrajectoryMapper trajectory, int n)
+        {
+            var predictTrajectory = trajectory.Trajectories;
+            var partialTrajectory = predictTrajectory.GetRange(0, n);
 
             return partialTrajectory;
         }
@@ -127,7 +158,7 @@ namespace ML.TrajectoryAnalysis.Implementation.Prediction
 
         private Trajectory GetNodeAtIndex(TrajectoryMapper trajectory, int index)
         {
-            var count = trajectory.Trajectories.Count;
+            var count = trajectory.Trajectories.Count - 1;
 
             if(index > count)
             {

@@ -15,6 +15,8 @@ namespace ML.TrajectoryAnalysis
 
         public List<Trajectory> Trajectories { get; }
 
+        public List<Trajectory> PredictedTrajectories { get; set; }
+
         public string FeatureLabel { get; set; }
 
         private string _fileName;
@@ -48,6 +50,13 @@ namespace ML.TrajectoryAnalysis
         }
 
 
+        public void AddPredictedTrajectory(Node node)
+        {
+            PredictedTrajectories.Add(new Trajectory()
+            {
+                Node = node
+            });
+        }
 
         public Node FindBestMatchingUnit(Instance instance)
         {
@@ -93,6 +102,18 @@ namespace ML.TrajectoryAnalysis
         {
             StringBuilder builder = new StringBuilder();
             foreach(var item in Trajectories)
+            {
+                builder.Append(item.Node.ClusterLabel);
+            }
+
+            return builder.ToString();
+
+        }
+
+        public string GetPredictedString()
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach (var item in PredictedTrajectories)
             {
                 builder.Append(item.Node.ClusterLabel);
             }

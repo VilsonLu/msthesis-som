@@ -42,7 +42,7 @@ namespace Sandbox
 
         public static void Main(string[] args)
         {
-            Program1(args);
+            Program7(args);
             //Program2(args);
             //Program5(args);
             //Program1(args);
@@ -477,6 +477,87 @@ namespace Sandbox
             Console.ReadLine();
 
 
+        }
+
+
+        /// <summary>
+        /// Experiment for Trajectory Prediction
+        /// </summary>
+        /// <param name="args"></param>
+        public static void Program7(string[] args)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+
+            string trainedModelFile = @"C:\Users\User\Desktop\experiment3\som\Map_experiment_3.json";
+
+            Console.WriteLine("Loading model...");
+            var jsonContent = System.IO.File.ReadAllText(trainedModelFile);
+            SSOM _model = JsonConvert.DeserializeObject<SSOM>(jsonContent);
+            _model.AssignClusterLabel();
+            _model.Training += _model_Training;
+            Console.WriteLine("Model loaded.");
+
+            string trainingPath = @"C:\Users\User\Desktop\experiment3\male_pleasant_trajectories";
+            List<TrajectoryMapper> dbTrajectories = new List<TrajectoryMapper>();
+
+            Console.WriteLine("Start plotting trajectories...");
+            stopwatch.Restart();
+
+            string[] labels = { "USER", "SEG", "CLASS_PLEASANTNESS" };
+            string feature = "CLASS_PLEASANTNESS";
+
+            foreach (var file in Directory.EnumerateFiles(trainingPath))
+            {
+                TrajectoryMapper trajectoryMapper = new TrajectoryMapper(_model);
+                IReader trajectoryReader = new CSVReader(file, labels, feature);
+
+                trajectoryMapper.GetData(trajectoryReader);
+                trajectoryMapper.PlotTrajectory();
+
+                dbTrajectories.Add(trajectoryMapper);
+
+            }
+
+            stopwatch.Stop();
+            Console.WriteLine("Completed plotting trajectories...");
+            Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
+
+            IPredict predictionModel = new DirectPrediction(_model, dbTrajectories);
+            predictionModel.WindowSize = 5;
+            predictionModel.K = 3;
+            predictionModel.Steps = 5;
+            
+            string testingPath = @"C:\Users\User\Desktop\experiment3\unknown_trajectory";
+
+            foreach(var file in Directory.EnumerateFiles(testingPath))
+            {
+                var unknownTrajectory = new TrajectoryMapper(_model);
+                IReader unknownData = new CSVReader(file);
+                unknownTrajectory.GetData(unknownData);
+                unknownTrajectory.PlotTrajectory();
+
+                string expectedResult = unknownTrajectory.ToString();
+
+                Console.WriteLine($"Expected Result: { expectedResult }");
+
+                var result = predictionModel.Predict(unknownTrajectory);
+
+                Console.WriteLine($"Actual Result: { result.GetPredictedString() }");
+
+                ISimilarityMeasure scorer = new LevenshteinDistanceMeasure();
+
+                var expectedPred = result.Trajectories.Skip(predictionModel.WindowSize).ToList();
+                var actualPred = result.PredictedTrajectories.Skip(predictionModel.WindowSize).ToList();
+
+                var score = scorer.MeasureSimilarity(expectedPred, actualPred);
+
+                Console.WriteLine($"Similarity Measure Score: { score }");
+            }
+
+           
+
+
+            Console.ReadLine();
         }
 
         #region Helpers

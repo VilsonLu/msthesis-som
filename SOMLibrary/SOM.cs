@@ -333,7 +333,6 @@ namespace SOMLibrary
                 }
             }
             
-    
             return bestNode;
         }
 

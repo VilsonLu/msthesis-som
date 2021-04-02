@@ -1,4 +1,5 @@
-﻿using SOMLibrary.Implementation.DistanceMeasure;
+﻿using Newtonsoft.Json;
+using SOMLibrary.Implementation.DistanceMeasure;
 using SOMLibrary.Interface;
 using System;
 using System.Collections.Generic;
@@ -19,9 +20,12 @@ namespace SOMLibrary
         public string Label { get; set; }
 
         public int ClusterGroup { get; set; }
+
         public string ClusterLabel { get; set; }
 
         public int Count { get; set; }
+
+        public bool IsPredicted { get; set; }
 
 
         /// <summary>
@@ -29,7 +33,7 @@ namespace SOMLibrary
         /// </summary>
         public string NodeId { get; set; }
 
-
+        [JsonConstructor]
         public Node(double[] weights, int x, int y)
         {
             Weights = weights;
@@ -37,6 +41,12 @@ namespace SOMLibrary
             Count = 0;
 
             _distanceMeasure = new EuclideanDistance();
+        }
+
+        public Node(string label)
+        {
+            ClusterLabel = label;
+            IsPredicted = true;
         }
 
         /// <summary>
