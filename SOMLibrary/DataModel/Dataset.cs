@@ -9,6 +9,7 @@ namespace SOMLibrary.DataModel
 {
     public class Dataset
     {
+        public string File { get; set; }
         public Feature[] Features { get; set; }
 
         public Instance[] Instances { get; set; }

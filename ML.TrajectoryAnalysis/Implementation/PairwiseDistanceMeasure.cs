@@ -10,7 +10,7 @@ namespace ML.TrajectoryAnalysis.Implementation
     {
         public bool IsLowest => false;
 
-        public double MeasureSimilarity(List<Trajectory> a, List<Trajectory> b)
+        public double MeasureSimilarity(List<TrajectoryPoint> a, List<TrajectoryPoint> b)
         {
             int length = a.Count <= b.Count ? a.Count : b.Count;
 

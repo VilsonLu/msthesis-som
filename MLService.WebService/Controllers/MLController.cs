@@ -180,9 +180,9 @@ namespace MLService.WebService.Controllers
 
         }
 
-        private List<Trajectory> ReadMusicTrajectory(string filePath, SOM model)
+        private List<TrajectoryPoint> ReadMusicTrajectory(string filePath, SOM model)
         {
-            List<Trajectory> trajectories = new List<Trajectory>();
+            List<TrajectoryPoint> trajectories = new List<TrajectoryPoint>();
             int i = 1;
             using (var csv = new CsvReader(new StreamReader(filePath), true))
             {
@@ -196,7 +196,7 @@ namespace MLService.WebService.Controllers
                     Node node = model.Map[y, x];
 
 
-                    Trajectory trajectory = new Trajectory()
+                    TrajectoryPoint trajectory = new TrajectoryPoint()
                     {
                         Node = node,
                         Instance = new Instance()

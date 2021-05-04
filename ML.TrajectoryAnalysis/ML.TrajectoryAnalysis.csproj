@@ -55,7 +55,7 @@
     <Compile Include="Implementation\Prediction\DirectPrediction.cs" />
     <Compile Include="IPredict.cs" />
     <Compile Include="ISimilarityMeasure.cs" />
-    <Compile Include="Trajectory.cs" />
+    <Compile Include="TrajectoryPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TrajectoryMapper.cs" />
   </ItemGroup>

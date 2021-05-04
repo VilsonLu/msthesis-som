@@ -20,7 +20,7 @@ namespace ML.TrajectoryAnalysis.Implementation
 
         public bool IsLowest => true;
 
-        public double MeasureSimilarity(List<Trajectory> a, List<Trajectory> b)
+        public double MeasureSimilarity(List<TrajectoryPoint> a, List<TrajectoryPoint> b)
         {
             string directoryPath = _fileHelper.GetCurrentDirectory();
 
@@ -55,7 +55,7 @@ namespace ML.TrajectoryAnalysis.Implementation
             long sizeB = _fileHelper.GetFileSize(zipPathB);
 
 
-            List<Trajectory> combinedList = a.Concat(b).ToList();
+            List<TrajectoryPoint> combinedList = a.Concat(b).ToList();
 
             StringBuilder contentAB = new StringBuilder();
             string fileNameAB = "FileAB";

@@ -63,6 +63,7 @@
     <Compile Include="Coordinate.cs" />
     <Compile Include="DataModel\Dataset.cs" />
     <Compile Include="DataModel\Instance.cs" />
+    <Compile Include="DataModel\SyntheticDataset.cs" />
     <Compile Include="Extensions\Extension.cs" />
     <Compile Include="IClusterer.cs" />
     <Compile Include="Implementation\Builder\SOMBuilder.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Implementation\DistanceMeasure\CosineSimilarityMeasure.cs" />
     <Compile Include="Implementation\DistanceMeasure\EuclideanDistance.cs" />
     <Compile Include="Implementation\DistanceMeasure\EuclideanDistanceFast.cs" />
+    <Compile Include="Implementation\SyntheticDataReader.cs" />
     <Compile Include="Interface\IKernel.cs" />
     <Compile Include="Implementation\LearningRate\FastLearningRateDecay.cs" />
     <Compile Include="Implementation\LearningRate\FixedLearningRate.cs" />

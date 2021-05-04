@@ -13,9 +13,9 @@ namespace ML.TrajectoryAnalysis
 
         private Dataset _dataset;
 
-        public List<Trajectory> Trajectories { get; }
+        public List<TrajectoryPoint> Trajectories { get; }
 
-        public List<Trajectory> PredictedTrajectories { get; set; }
+        public List<TrajectoryPoint> PredictedTrajectories { get; set; }
 
         public string FeatureLabel { get; set; }
 
@@ -36,7 +36,7 @@ namespace ML.TrajectoryAnalysis
         public TrajectoryMapper(SOM som)
         {
             _som = som;
-            Trajectories = new List<Trajectory>();
+            Trajectories = new List<TrajectoryPoint>();
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace ML.TrajectoryAnalysis
 
         public void AddPredictedTrajectory(Node node)
         {
-            PredictedTrajectories.Add(new Trajectory()
+            PredictedTrajectories.Add(new TrajectoryPoint()
             {
                 Node = node
             });
@@ -90,7 +90,7 @@ namespace ML.TrajectoryAnalysis
             {
                 var node = FindBestMatchingUnit(instance);
 
-                Trajectories.Add(new Trajectory()
+                Trajectories.Add(new TrajectoryPoint()
                 {
                     Instance = instance,
                     Node = node

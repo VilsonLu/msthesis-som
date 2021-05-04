@@ -335,9 +335,9 @@ namespace MSThesisTest
             ISimilarityMeasure similarityMeasure = new EditDistanceMeasure();
 
             var weights = new double[] { 0.1, 0.4, 0.5 };
-            var trajectoryA = new List<Trajectory>()
+            var trajectoryA = new List<TrajectoryPoint>()
             {
-                new Trajectory()
+                new TrajectoryPoint()
                 {
                     Node = new Node(weights, 1, 1)
                     {
@@ -346,9 +346,9 @@ namespace MSThesisTest
                 }
             };
 
-            var trajectoryB = new List<Trajectory>()
+            var trajectoryB = new List<TrajectoryPoint>()
             {
-                new Trajectory()
+                new TrajectoryPoint()
                 {
                     Node = new Node(weights, 1, 1)
                     {
@@ -371,9 +371,9 @@ namespace MSThesisTest
             ISimilarityMeasure similarityMeasure = new EditDistanceMeasure();
 
             var weights = new double[] { 0.1, 0.4, 0.5 };
-            var trajectoryA = new List<Trajectory>()
+            var trajectoryA = new List<TrajectoryPoint>()
             {
-                new Trajectory()
+                new TrajectoryPoint()
                 {
                     Node = new Node(weights, 1, 1)
                     {
@@ -382,9 +382,9 @@ namespace MSThesisTest
                 }
             };
 
-            var trajectoryB = new List<Trajectory>()
+            var trajectoryB = new List<TrajectoryPoint>()
             {
-                new Trajectory()
+                new TrajectoryPoint()
                 {
                     Node = new Node(weights, 1, 1)
                     {
@@ -407,9 +407,9 @@ namespace MSThesisTest
             ISimilarityMeasure similarityMeasure = new EditDistanceMeasure();
 
             var weights = new double[] { 0.1, 0.4, 0.5 };
-            var trajectoryA = new List<Trajectory>()
+            var trajectoryA = new List<TrajectoryPoint>()
             {
-                new Trajectory()
+                new TrajectoryPoint()
                 {
                     Node = new Node(weights, 1, 1)
                     {
@@ -418,9 +418,9 @@ namespace MSThesisTest
                 }
             };
 
-            var trajectoryB = new List<Trajectory>()
+            var trajectoryB = new List<TrajectoryPoint>()
             {
-                new Trajectory()
+                new TrajectoryPoint()
                 {
                     Node = new Node(weights, 1, 1)
                     {
@@ -443,9 +443,9 @@ namespace MSThesisTest
             ISimilarityMeasure similarityMeasure = new EditDistanceMeasure();
 
             var weights = new double[] { 0.1, 0.4, 0.5 };
-            var trajectoryA = new List<Trajectory>()
+            var trajectoryA = new List<TrajectoryPoint>()
             {
-                new Trajectory()
+                new TrajectoryPoint()
                 {
                     Node = new Node(weights, 1, 1)
                     {
@@ -454,9 +454,9 @@ namespace MSThesisTest
                 }
             };
 
-            var trajectoryB = new List<Trajectory>()
+            var trajectoryB = new List<TrajectoryPoint>()
             {
-                new Trajectory()
+                new TrajectoryPoint()
                 {
                     Node = new Node(weights, 1, 1)
                     {

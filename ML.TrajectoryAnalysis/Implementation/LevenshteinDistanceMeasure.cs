@@ -16,7 +16,7 @@ namespace ML.TrajectoryAnalysis.Implementation
 
         public bool IsLowest => true;
 
-        public double MeasureSimilarity(List<Trajectory> a, List<Trajectory> b)
+        public double MeasureSimilarity(List<TrajectoryPoint> a, List<TrajectoryPoint> b)
         {
             // Concatenate the cluster group of the trajectories
             string processA = Concatenate(a);
@@ -26,7 +26,7 @@ namespace ML.TrajectoryAnalysis.Implementation
             return (double) Levenshtein.CalculateDistance(processA, processB, 2);
         }
 
-        private string Concatenate(List<Trajectory> trajectory)
+        private string Concatenate(List<TrajectoryPoint> trajectory)
         {
             StringBuilder builder = new StringBuilder();
             foreach(var item in trajectory)

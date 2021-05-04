@@ -13,5 +13,7 @@ namespace ML.Common
         void WriteToTextFile(string content, string fileName);
         void DeleteFile(string filePath);
         void CompressFile(string sourcePath, string destinationPath, string entryName);
+        void Close(string fileName);
+        bool IsFileExists(string fileName);
     }
 }

@@ -8,7 +8,7 @@ using SOMLibrary.DataModel;
 
 namespace ML.TrajectoryAnalysis
 {
-    public class Trajectory
+    public class TrajectoryPoint
     {
         public Node Node { get; set; }
         public Instance Instance { get; set; }

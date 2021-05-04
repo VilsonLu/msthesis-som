@@ -55,6 +55,14 @@ namespace ML.Common.Implementation
 
         }
 
+        public void Close(string fileName)
+        {
+            File.Create(fileName).Close();
+        }
 
+        public bool IsFileExists(string fileName)
+        {
+            return File.Exists(fileName);
+        }
     }
 }

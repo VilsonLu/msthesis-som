@@ -42,7 +42,8 @@ namespace Sandbox
 
         public static void Main(string[] args)
         {
-            Program7(args);
+            Program8(args);
+            //Program7(args);
             //Program2(args);
             //Program5(args);
             //Program1(args);
@@ -384,7 +385,7 @@ namespace Sandbox
             {
                 TrajectoryMapper trajectoryMapper = new TrajectoryMapper(_model);
                 IReader csvReader = new CSVReader(file);
-                List<Trajectory> trajectory = ReadMusicTrajectory(file, _model);
+                List<TrajectoryPoint> trajectory = ReadMusicTrajectory(file, _model);
 
                 //trajectoryMapper.SetTrajectory(trajectory, csvReader.FileName);
 
@@ -497,65 +498,108 @@ namespace Sandbox
             _model.Training += _model_Training;
             Console.WriteLine("Model loaded.");
 
-            string trainingPath = @"C:\Users\User\Desktop\experiment3\male_pleasant_trajectories";
-            List<TrajectoryMapper> dbTrajectories = new List<TrajectoryMapper>();
 
-            Console.WriteLine("Start plotting trajectories...");
-            stopwatch.Restart();
+            string[] users = { "9", "10", "11", "14", "18", "22", "23", "25", "28" };
 
-            string[] labels = { "USER", "SEG", "CLASS_PLEASANTNESS" };
-            string feature = "CLASS_PLEASANTNESS";
-
-            foreach (var file in Directory.EnumerateFiles(trainingPath))
+            foreach(var user in users)
             {
-                TrajectoryMapper trajectoryMapper = new TrajectoryMapper(_model);
-                IReader trajectoryReader = new CSVReader(file, labels, feature);
+                string trainingPath = string.Format(@"C:\Users\User\Desktop\experiment3\m_pleasant_user{0}", user);
+                List<TrajectoryMapper> dbTrajectories = new List<TrajectoryMapper>();
 
-                trajectoryMapper.GetData(trajectoryReader);
-                trajectoryMapper.PlotTrajectory();
+                Console.WriteLine($"User: { user }");
+                Console.WriteLine("Start plotting trajectories...");
+                stopwatch.Restart();
 
-                dbTrajectories.Add(trajectoryMapper);
+                string[] labels = { "USER", "SEG", "CLASS_PLEASANTNESS" };
+                string feature = "CLASS_PLEASANTNESS";
 
+                foreach (var file in Directory.EnumerateFiles(trainingPath))
+                {
+                    TrajectoryMapper trajectoryMapper = new TrajectoryMapper(_model);
+                    IReader trajectoryReader = new CSVReader(file, labels, feature);
+
+                    trajectoryMapper.GetData(trajectoryReader);
+                    trajectoryMapper.PlotTrajectory();
+
+                    dbTrajectories.Add(trajectoryMapper);
+                }
+
+                stopwatch.Stop();
+                Console.WriteLine("Completed plotting trajectories...");
+                Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
+
+                int[] k = { 1, 3, 5, 7, 9, 11 };
+                string experiment = "Window Size";
+
+                string fileResultLocation = @"C:\Users\User\Desktop\experiment3\results\prediction-results-intrapersonal.csv";
+
+                IFileHelper fileHelper = new FileHelper();
+
+                foreach (var item in k)
+                {
+                    Console.WriteLine($"Similarity Measure = { item }");
+                    IPredict predictionModel = new DirectPrediction(_model, dbTrajectories);
+                    predictionModel.WindowSize = item;
+                    predictionModel.K = 3;
+                    predictionModel.Steps = 3;
+
+                    int numberofNodes = predictionModel.WindowSize + predictionModel.Steps;
+
+                    string testingPath = trainingPath;
+
+                    if (!fileHelper.IsFileExists(fileResultLocation))
+                    {
+                        string header = "Trajectory,Expected Prediction,Actual Prediction,K,Steps,Window Size,Score\n";
+                        fileHelper.WriteToTextFile(header, fileResultLocation);
+                    }
+
+                    foreach (var file in Directory.EnumerateFiles(testingPath))
+                    {
+                        var unknownTrajectory = new TrajectoryMapper(_model);
+                        IReader unknownData = new CSVReader(file);
+                        unknownTrajectory.GetData(unknownData);
+                        unknownTrajectory.PlotTrajectory();
+
+                        string expectedResult = unknownTrajectory.ToString();
+                        string logExpectedResult = string.Concat(expectedResult.Take(numberofNodes));
+
+                        //Console.WriteLine($"Expected Result: { expectedResult }");
+
+                        var result = predictionModel.Predict(unknownTrajectory);
+
+                        //Console.WriteLine($"Actual Result: { result.GetPredictedString() }");
+
+                        ISimilarityMeasure scorer = new LevenshteinDistanceMeasure();
+
+                        var expectedPred = result.Trajectories.Take(numberofNodes).ToList();
+                        var actualPred = result.PredictedTrajectories.Take(numberofNodes).ToList();
+
+                        var score = scorer.MeasureSimilarity(expectedPred, actualPred);
+
+                        //Console.WriteLine($"Similarity Measure Score: { score }");
+
+                        string logs = string.Format("{0},{1},{2},{3},{4},{5},{6},{7}\n", unknownData.FileName, logExpectedResult, result.GetPredictedString(), predictionModel.K, predictionModel.Steps, predictionModel.WindowSize, score, experiment);
+                        fileHelper.WriteToTextFile(logs, fileResultLocation);
+                    }
+                }
             }
 
-            stopwatch.Stop();
-            Console.WriteLine("Completed plotting trajectories...");
-            Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
-
-            IPredict predictionModel = new DirectPrediction(_model, dbTrajectories);
-            predictionModel.WindowSize = 5;
-            predictionModel.K = 3;
-            predictionModel.Steps = 5;
             
-            string testingPath = @"C:\Users\User\Desktop\experiment3\unknown_trajectory";
 
-            foreach(var file in Directory.EnumerateFiles(testingPath))
-            {
-                var unknownTrajectory = new TrajectoryMapper(_model);
-                IReader unknownData = new CSVReader(file);
-                unknownTrajectory.GetData(unknownData);
-                unknownTrajectory.PlotTrajectory();
+          
+            Console.WriteLine("Experiment complete...");
+            Console.ReadLine();
+        }
 
-                string expectedResult = unknownTrajectory.ToString();
-
-                Console.WriteLine($"Expected Result: { expectedResult }");
-
-                var result = predictionModel.Predict(unknownTrajectory);
-
-                Console.WriteLine($"Actual Result: { result.GetPredictedString() }");
-
-                ISimilarityMeasure scorer = new LevenshteinDistanceMeasure();
-
-                var expectedPred = result.Trajectories.Skip(predictionModel.WindowSize).ToList();
-                var actualPred = result.PredictedTrajectories.Skip(predictionModel.WindowSize).ToList();
-
-                var score = scorer.MeasureSimilarity(expectedPred, actualPred);
-
-                Console.WriteLine($"Similarity Measure Score: { score }");
-            }
-
-           
-
+        /// <summary>
+        /// Experiment on synthetic data (prediction)
+        /// </summary>
+        /// <param name="args"></param>
+        public static void Program8(string[] args)
+        {
+            string filePath = @"C:\Users\User\Desktop\experiment3\synthetic_trajectories\synthetic-trajectories.csv";
+            IReader reader = new CSVReader(filePath);
+            reader.Read();
 
             Console.ReadLine();
         }
@@ -668,9 +712,9 @@ namespace Sandbox
             return som;
         }
 
-        public static List<Trajectory> ReadMusicTrajectory(string filePath, SOM model)
+        public static List<TrajectoryPoint> ReadMusicTrajectory(string filePath, SOM model)
         {
-            List<Trajectory> trajectories = new List<Trajectory>();
+            List<TrajectoryPoint> trajectories = new List<TrajectoryPoint>();
             using (var csv = new CsvReader(new StreamReader(filePath), true))
             {
                 int fieldCount = csv.FieldCount;
@@ -682,7 +726,7 @@ namespace Sandbox
 
                     Node node = model.Map[y, x];
 
-                    Trajectory trajectory = new Trajectory()
+                    TrajectoryPoint trajectory = new TrajectoryPoint()
                     {
                         Node = node
                     };

@@ -9,6 +9,6 @@ namespace ML.TrajectoryAnalysis
     public interface ISimilarityMeasure
     {
         bool IsLowest { get; }
-        double MeasureSimilarity(List<Trajectory> a, List<Trajectory> b);
+        double MeasureSimilarity(List<TrajectoryPoint> a, List<TrajectoryPoint> b);
     }
 }

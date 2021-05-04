@@ -46,6 +46,7 @@ namespace SOMLibrary.Implementation
             var dataset = new Dataset();
             using (var csv = new CsvReader(new StreamReader(_filePath), true))
             {
+                dataset.File = FileName;
                 dataset.Features = GetHeaders(csv.GetFieldHeaders());
                 dataset.Instances = GetInstances(csv);
                 dataset.WeightVectorCount = csv.FieldCount - _ignoreColumns.Length;

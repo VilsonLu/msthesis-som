@@ -61,8 +61,9 @@ namespace ML.TrajectoryAnalysis.Implementation.Prediction
             var lastIndex = currentTrajectory.PredictedTrajectories.Count - 1;
 
             // Step 2: Get the most similar trajectory based on the partial trajectory
-
-            var similarTrajectories = GetSimilarTrajectory(TrajectoryDb, currentTrajectory.PredictedTrajectories, K);
+            var filteredDBTrajectories = TrajectoryDb.Where(x => x.FileName != currentTrajectory.FileName).ToList();
+            var check = TrajectoryDb.Where(x => x.FileName == currentTrajectory.FileName).ToList();
+            var similarTrajectories = GetSimilarTrajectory(filteredDBTrajectories, currentTrajectory.PredictedTrajectories, K);
 
             // Step 3: Based on the similar trajectory, get the majority of the state (that will be label of the predicted node)
             // Step 4: Repeat step 3 until number of steps (prediction) has been achieved.
@@ -102,7 +103,7 @@ namespace ML.TrajectoryAnalysis.Implementation.Prediction
         /// <param name="trajectory"></param>
         /// <param name="n"></param>
         /// <returns></returns>
-        private List<Trajectory> GetLastTrajectory(TrajectoryMapper trajectory, int n)
+        private List<TrajectoryPoint> GetLastTrajectory(TrajectoryMapper trajectory, int n)
         {
             var predictTrajectory = trajectory.Trajectories;
             int range = predictTrajectory.Count - n;
@@ -117,10 +118,17 @@ namespace ML.TrajectoryAnalysis.Implementation.Prediction
         /// <param name="trajectory"></param>
         /// <param name="n"></param>
         /// <returns></returns>
-        private List<Trajectory> GetFirstTrajectory(TrajectoryMapper trajectory, int n)
+        private List<TrajectoryPoint> GetFirstTrajectory(TrajectoryMapper trajectory, int n)
         {
             var predictTrajectory = trajectory.Trajectories;
-            var partialTrajectory = predictTrajectory.GetRange(0, n);
+
+            int length = n;
+            if(trajectory.Trajectories.Count < n)
+            {
+                length = trajectory.Trajectories.Count;
+            }
+
+            var partialTrajectory = predictTrajectory.GetRange(0, length);
 
             return partialTrajectory;
         }
@@ -133,7 +141,7 @@ namespace ML.TrajectoryAnalysis.Implementation.Prediction
         /// <param name="currentTrajectory"></param>
         /// <param name="n"></param>
         /// <returns></returns>
-        private List<TrajectoryMapper> GetSimilarTrajectory(List<TrajectoryMapper> dbTrajectory, List<Trajectory> currentTrajectory, int n)
+        private List<TrajectoryMapper> GetSimilarTrajectory(List<TrajectoryMapper> dbTrajectory, List<TrajectoryPoint> currentTrajectory, int n)
         {
             var trajectories = new List<Tuple<TrajectoryMapper, double>>();
 
@@ -156,7 +164,7 @@ namespace ML.TrajectoryAnalysis.Implementation.Prediction
             return similarTrajectories;
         }
 
-        private Trajectory GetNodeAtIndex(TrajectoryMapper trajectory, int index)
+        private TrajectoryPoint GetNodeAtIndex(TrajectoryMapper trajectory, int index)
         {
             var count = trajectory.Trajectories.Count - 1;
 
