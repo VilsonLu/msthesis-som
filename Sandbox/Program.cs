@@ -538,7 +538,7 @@ namespace Sandbox
                 foreach (var item in k)
                 {
                     Console.WriteLine($"Similarity Measure = { item }");
-                    IPredict predictionModel = new DirectPrediction(_model, dbTrajectories);
+                    IPredict predictionModel = new DirectPrediction(dbTrajectories);
                     predictionModel.WindowSize = item;
                     predictionModel.K = 3;
                     predictionModel.Steps = 3;

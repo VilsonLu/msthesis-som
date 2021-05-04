@@ -33,6 +33,12 @@ namespace ML.TrajectoryAnalysis
             }
         }
 
+        public TrajectoryMapper()
+        {
+            Trajectories = new List<TrajectoryPoint>();
+        }
+
+
         public TrajectoryMapper(SOM som)
         {
             _som = som;
@@ -53,6 +59,14 @@ namespace ML.TrajectoryAnalysis
         public void AddPredictedTrajectory(Node node)
         {
             PredictedTrajectories.Add(new TrajectoryPoint()
+            {
+                Node = node
+            });
+        }
+
+        public void AddTrajectory(Node node)
+        {
+            Trajectories.Add(new TrajectoryPoint()
             {
                 Node = node
             });

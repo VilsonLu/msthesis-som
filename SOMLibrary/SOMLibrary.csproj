@@ -74,7 +74,6 @@
     <Compile Include="Implementation\DistanceMeasure\CosineSimilarityMeasure.cs" />
     <Compile Include="Implementation\DistanceMeasure\EuclideanDistance.cs" />
     <Compile Include="Implementation\DistanceMeasure\EuclideanDistanceFast.cs" />
-    <Compile Include="Implementation\SyntheticDataReader.cs" />
     <Compile Include="Interface\IKernel.cs" />
     <Compile Include="Implementation\LearningRate\FastLearningRateDecay.cs" />
     <Compile Include="Implementation\LearningRate\FixedLearningRate.cs" />

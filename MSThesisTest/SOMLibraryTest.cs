@@ -12,6 +12,9 @@ using ML.Common.Implementation;
 using SOMLibrary.Implementation.LearningRate;
 using SOMLibrary.Implementation.DistanceMeasure;
 using ML.Common;
+using ML.TrajectoryAnalysis.Implementation.Generator;
+using ML.TrajectoryAnalysis.Implementation.Prediction;
+using System.Linq;
 
 namespace MSThesisTest
 {
@@ -516,6 +519,27 @@ namespace MSThesisTest
             // Assert
             string expectedResult = "ABC";
             result.Should().BeEquivalentTo(expectedResult);
+        }
+
+
+        [TestMethod]
+        public void SyntheticDataGenerator_GenerateData()
+        {
+            string filePath = @"C:\Users\User\Desktop\experiment3\synthetic_trajectories\synthetic-trajectories.csv";
+            IGenerate generator = new SynthethicDataGenerator();
+            List<TrajectoryMapper> dataset = generator.GenerateDataset(filePath);
+
+            IPredict prediction = new DirectPrediction(dataset);
+
+            var unknown = "AABBBAAA".ToCharArray().ToList();
+ 
+            var unknownTrajectory = new TrajectoryMapper();
+            unknown.ForEach(x => unknownTrajectory.AddTrajectory(new Node(x.ToString())));
+
+            var result = prediction.Predict(unknownTrajectory);
+
+            var actualResult = result.GetPredictedString();
+            var expectedResult = result.ToString();
         }
     }
 

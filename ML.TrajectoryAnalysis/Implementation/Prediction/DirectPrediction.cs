@@ -32,9 +32,6 @@ namespace ML.TrajectoryAnalysis.Implementation.Prediction
         /// </summary>
         public ISimilarityMeasure SimilarityMeasure { get; set; }
 
-        public SOM Model { get; set; }
-
-
         /// <summary>
         /// Default Settings
         /// </summary>
@@ -46,22 +43,24 @@ namespace ML.TrajectoryAnalysis.Implementation.Prediction
             K = 3;
         }
 
-        public DirectPrediction(SOM model, List<TrajectoryMapper> dbTrajectory) : this()
+        public DirectPrediction(List<TrajectoryMapper> dbTrajectory) : this()
         {
-            Model = model;
             TrajectoryDb = dbTrajectory;
         }
 
         public TrajectoryMapper Predict(TrajectoryMapper currentTrajectory)
         {
-
-
             // Step 1: Get the last n node of the trajectory that you want to predict (n = window size)
             currentTrajectory.PredictedTrajectories = GetFirstTrajectory(currentTrajectory, WindowSize);
             var lastIndex = currentTrajectory.PredictedTrajectories.Count - 1;
 
             // Step 2: Get the most similar trajectory based on the partial trajectory
-            var filteredDBTrajectories = TrajectoryDb.Where(x => x.FileName != currentTrajectory.FileName).ToList();
+            var filteredDBTrajectories = TrajectoryDb;
+            if (!string.IsNullOrEmpty(currentTrajectory.FileName))
+            {
+                filteredDBTrajectories = TrajectoryDb.Where(x => x.FileName != currentTrajectory.FileName).ToList();
+            }
+
             var check = TrajectoryDb.Where(x => x.FileName == currentTrajectory.FileName).ToList();
             var similarTrajectories = GetSimilarTrajectory(filteredDBTrajectories, currentTrajectory.PredictedTrajectories, K);
 
