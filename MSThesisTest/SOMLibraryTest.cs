@@ -540,6 +540,8 @@ namespace MSThesisTest
 
             var actualResult = result.GetPredictedString();
             var expectedResult = result.ToString();
+
+            var data = generator.GenerateData("AAABBBAAAA", 0, 4);
         }
     }
 
