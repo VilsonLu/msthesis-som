@@ -52,7 +52,7 @@ namespace ML.TrajectoryAnalysis.Implementation.Prediction
         {
             // Step 1: Get the last n node of the trajectory that you want to predict (n = window size)
             currentTrajectory.PredictedTrajectories = GetFirstTrajectory(currentTrajectory, WindowSize);
-            var lastIndex = currentTrajectory.PredictedTrajectories.Count - 1;
+            var lastIndex = currentTrajectory.PredictedTrajectories.Count;
 
             // Step 2: Get the most similar trajectory based on the partial trajectory
             var filteredDBTrajectories = TrajectoryDb;
@@ -64,6 +64,8 @@ namespace ML.TrajectoryAnalysis.Implementation.Prediction
             var check = TrajectoryDb.Where(x => x.FileName == currentTrajectory.FileName).ToList();
             var similarTrajectories = GetSimilarTrajectory(filteredDBTrajectories, currentTrajectory.PredictedTrajectories, K);
 
+            similarTrajectories.ForEach(x => Console.WriteLine($"Similar Trajectories: {x.ToString()}"));
+
             // Step 3: Based on the similar trajectory, get the majority of the state (that will be label of the predicted node)
             // Step 4: Repeat step 3 until number of steps (prediction) has been achieved.
 
@@ -73,7 +75,7 @@ namespace ML.TrajectoryAnalysis.Implementation.Prediction
                 List<string> labels = new List<string>();
                 foreach(var trajectory in similarTrajectories)
                 {
-                    var node = GetNodeAtIndex(trajectory, lastIndex);
+                    var node = GetNodeAtIndex(trajectory, lastIndex + i);
                     if(node != null)
                     {
                         labels.Add(node.Node.ClusterLabel);
@@ -83,13 +85,11 @@ namespace ML.TrajectoryAnalysis.Implementation.Prediction
                 // get the majority of the labels for that step
                 if(labels.Count > 0)
                 {
-                    var winner = labels.GroupBy(x => x).OrderByDescending(x => x.Count()).First().Key;
+                    var winner = labels.GroupBy(x => x).OrderByDescending(g => g.Count()).Select(x => x.Key).First();
                     Node predictedNode = new Node(winner);
                     currentTrajectory.AddPredictedTrajectory(predictedNode);
                 }
-               
-                lastIndex++;
-    
+ 
             }
 
             return currentTrajectory;
@@ -150,14 +150,16 @@ namespace ML.TrajectoryAnalysis.Implementation.Prediction
                 trajectories.Add(new Tuple<TrajectoryMapper, double>(item, score));
             }
 
+            var distinctTrajectories = trajectories.Distinct().ToList();
+
             List<TrajectoryMapper> similarTrajectories;
             if (SimilarityMeasure.IsLowest)
             {
-                similarTrajectories = trajectories.OrderBy(x => x.Item2).Take(n).Select(x => x.Item1).ToList();
+                similarTrajectories = distinctTrajectories.OrderBy(x => x.Item2).Take(n).Select(x => x.Item1).ToList();
             }
             else
             {
-                similarTrajectories = trajectories.OrderByDescending(x => x.Item2).Take(n).Select(x => x.Item1).ToList();
+                similarTrajectories = distinctTrajectories.OrderByDescending(x => x.Item2).Take(n).Select(x => x.Item1).ToList();
             }
 
             return similarTrajectories;
