@@ -3,6 +3,7 @@ using ML.Common;
 using ML.Common.Implementation;
 using ML.TrajectoryAnalysis;
 using ML.TrajectoryAnalysis.Implementation;
+using ML.TrajectoryAnalysis.Implementation.Generator;
 using ML.TrajectoryAnalysis.Implementation.Prediction;
 using Newtonsoft.Json;
 using SOMLibrary;
@@ -28,7 +29,7 @@ namespace Sandbox
         /// <summary>
         /// Configuration for the location to save the text files
         /// </summary>
-        private static string OUTPUT_LOCATION = @"D:\School\Masters\Thesis\Datasets\Kalaw-Dataset\som_experiment\";
+        private static string OUTPUT_LOCATION = @"C:\Users\User\Desktop\experiment3\";
 
         /// <summary>
         /// Configuration for the frequency to calculate the disorder measure
@@ -42,12 +43,14 @@ namespace Sandbox
 
         public static void Main(string[] args)
         {
-            Program8(args);
+            //Program8(args);
             //Program7(args);
             //Program2(args);
             //Program5(args);
             //Program1(args);
             //CreateSyntheticDataset();
+
+            Program2(args);
         }
 
 
@@ -60,7 +63,7 @@ namespace Sandbox
             IFileHelper fileHelper = new FileHelper();
             fileHelper.DeleteFile(string.Format("{0}disorder-measure.txt", OUTPUT_LOCATION));
 
-            string filePath = @"C:\Users\Vilson\Desktop\Datasets\Kalaw-Dataset\som_experiment\config.json";
+            string filePath = @"D:\src\test\config_iris.json";
             if (args.Length > 0)
             {
                 filePath = args[0];
@@ -133,7 +136,7 @@ namespace Sandbox
         /// <param name="args"></param>
         public static void Program2(string[] args)
         {
-            string filePath = @"D:\School\Masters\Thesis\Datasets\Kalaw-Dataset\som_experiment\config_animal.json";
+            string filePath = @"C:\Users\User\Desktop\experiment3\aplusix_experiments\som_training\config_aplusix.json";
 
             FREQUENCY = 100;
             IS_PRINT_MODEL = false;
@@ -482,7 +485,7 @@ namespace Sandbox
 
 
         /// <summary>
-        /// Experiment for Trajectory Prediction
+        /// Experiment for Trajectory Prediction (intrapersonal)
         /// </summary>
         /// <param name="args"></param>
         public static void Program7(string[] args)
@@ -498,10 +501,9 @@ namespace Sandbox
             _model.Training += _model_Training;
             Console.WriteLine("Model loaded.");
 
-
             string[] users = { "9", "10", "11", "14", "18", "22", "23", "25", "28" };
 
-            foreach(var user in users)
+            foreach (var user in users)
             {
                 string trainingPath = string.Format(@"C:\Users\User\Desktop\experiment3\m_pleasant_user{0}", user);
                 List<TrajectoryMapper> dbTrajectories = new List<TrajectoryMapper>();
@@ -528,20 +530,20 @@ namespace Sandbox
                 Console.WriteLine("Completed plotting trajectories...");
                 Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
 
-                int[] k = { 1, 3, 5, 7, 9, 11 };
-                string experiment = "Window Size";
+                int[] k = { 71 };
+                string experiment = "Neighbor";
 
-                string fileResultLocation = @"C:\Users\User\Desktop\experiment3\results\prediction-results-intrapersonal.csv";
+                string fileResultLocation = @"C:\Users\User\Desktop\experiment3\other\prediction-results-intrapersonal-3.csv";
 
                 IFileHelper fileHelper = new FileHelper();
 
                 foreach (var item in k)
                 {
-                    Console.WriteLine($"Similarity Measure = { item }");
+                    Console.WriteLine($"{ experiment } = { item }");
                     IPredict predictionModel = new DirectPrediction(dbTrajectories);
-                    predictionModel.WindowSize = item;
-                    predictionModel.K = 3;
-                    predictionModel.Steps = 3;
+                    predictionModel.WindowSize = 5;
+                    predictionModel.K = item;
+                    predictionModel.Steps = 5;
 
                     int numberofNodes = predictionModel.WindowSize + predictionModel.Steps;
 
@@ -556,19 +558,22 @@ namespace Sandbox
                     foreach (var file in Directory.EnumerateFiles(testingPath))
                     {
                         var unknownTrajectory = new TrajectoryMapper(_model);
-                        IReader unknownData = new CSVReader(file);
+                        IReader unknownData = new CSVReader(file, labels, feature);
                         unknownTrajectory.GetData(unknownData);
                         unknownTrajectory.PlotTrajectory();
+
+                        if(unknownTrajectory.Trajectories.Count < 10)
+                        {
+                            continue;
+                        }
 
                         string expectedResult = unknownTrajectory.ToString();
                         string logExpectedResult = string.Concat(expectedResult.Take(numberofNodes));
 
-                        //Console.WriteLine($"Expected Result: { expectedResult }");
-
+                        // Predict the incoming label
                         var result = predictionModel.Predict(unknownTrajectory);
 
-                        //Console.WriteLine($"Actual Result: { result.GetPredictedString() }");
-
+                        // Measure the difference between the predicted and the actual string
                         ISimilarityMeasure scorer = new LevenshteinDistanceMeasure();
 
                         var expectedPred = result.Trajectories.Take(numberofNodes).ToList();
@@ -576,17 +581,114 @@ namespace Sandbox
 
                         var score = scorer.MeasureSimilarity(expectedPred, actualPred);
 
-                        //Console.WriteLine($"Similarity Measure Score: { score }");
-
                         string logs = string.Format("{0},{1},{2},{3},{4},{5},{6},{7}\n", unknownData.FileName, logExpectedResult, result.GetPredictedString(), predictionModel.K, predictionModel.Steps, predictionModel.WindowSize, score, experiment);
                         fileHelper.WriteToTextFile(logs, fileResultLocation);
                     }
                 }
             }
 
-            
+            Console.WriteLine("Experiment complete...");
+            Console.ReadLine();
+        }
 
-          
+        /// <summary>
+        /// Experiment for Trajectory Prediction (interpersonal)
+        /// </summary>
+        /// <param name="args"></param>
+        public static void Program8(string[] args)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+
+            string trainedModelFile = @"C:\Users\User\Desktop\experiment3\som\Map_experiment_3.json";
+
+            Console.WriteLine("Loading model...");
+            var jsonContent = System.IO.File.ReadAllText(trainedModelFile);
+            SSOM _model = JsonConvert.DeserializeObject<SSOM>(jsonContent);
+            _model.AssignClusterLabel();
+            _model.Training += _model_Training;
+            Console.WriteLine("Model loaded.");
+
+
+            string trainingPath = @"C:\Users\User\Desktop\experiment3\male_pleasant_trajectories";
+            List<TrajectoryMapper> dbTrajectories = new List<TrajectoryMapper>();
+
+            Console.WriteLine("Start plotting trajectories...");
+            stopwatch.Restart();
+
+            string[] labels = { "USER", "SEG", "CLASS_PLEASANTNESS" };
+            string feature = "CLASS_PLEASANTNESS";
+
+            foreach (var file in Directory.EnumerateFiles(trainingPath))
+            {
+                TrajectoryMapper trajectoryMapper = new TrajectoryMapper(_model);
+                IReader trajectoryReader = new CSVReader(file, labels, feature);
+
+                trajectoryMapper.GetData(trajectoryReader);
+                trajectoryMapper.PlotTrajectory();
+
+                dbTrajectories.Add(trajectoryMapper);
+            }
+
+            stopwatch.Stop();
+            Console.WriteLine("Completed plotting trajectories...");
+            Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
+
+            int[] k = { 1, 3, 5, 7, 9, 11, 13, 15, 17, 21, 31, 51, 71, 111, 121, 131, 141, 151, 201, 301, 351, 401, 451, 551, 601 };
+            string experiment = "Neighbor";
+
+            string fileResultLocation = @"C:\Users\User\Desktop\experiment3\other\prediction-results-interpersonal-4.csv";
+
+            IFileHelper fileHelper = new FileHelper();
+
+            foreach (var item in k)
+            {
+                Console.WriteLine($"{ experiment } = { item }");
+                IPredict predictionModel = new DirectPrediction(dbTrajectories);
+                predictionModel.WindowSize = 5;
+                predictionModel.K = item;
+                predictionModel.Steps = 5;
+
+                int numberofNodes = predictionModel.WindowSize + predictionModel.Steps;
+
+                string testingPath = trainingPath;
+
+                if (!fileHelper.IsFileExists(fileResultLocation))
+                {
+                    string header = "Trajectory,Expected Prediction,Actual Prediction,K,Steps,Window Size,Error,Experiment\n";
+                    fileHelper.WriteToTextFile(header, fileResultLocation);
+                }
+
+                foreach (var file in Directory.EnumerateFiles(testingPath))
+                {
+                    var unknownTrajectory = new TrajectoryMapper(_model);
+                    IReader unknownData = new CSVReader(file, labels, feature);
+                    unknownTrajectory.GetData(unknownData);
+                    unknownTrajectory.PlotTrajectory();
+
+                    if (unknownTrajectory.Trajectories.Count < numberofNodes)
+                    {
+                        continue;
+                    }
+
+                    string expectedResult = unknownTrajectory.ToString();
+                    string logExpectedResult = string.Concat(expectedResult.Take(numberofNodes));
+
+                    // Predict the incoming label
+                    var result = predictionModel.Predict(unknownTrajectory);
+
+                    // Measure the difference between the predicted and the actual string
+                    ISimilarityMeasure scorer = new LevenshteinDistanceMeasure();
+
+                    var expectedPred = result.Trajectories.Take(numberofNodes).ToList();
+                    var actualPred = result.PredictedTrajectories.Take(numberofNodes).ToList();
+
+                    var score = scorer.MeasureSimilarity(expectedPred, actualPred);
+
+                    string logs = string.Format("{0},{1},{2},{3},{4},{5},{6},{7}\n", unknownData.FileName, expectedResult, result.GetPredictedString(), predictionModel.K, predictionModel.Steps, predictionModel.WindowSize, score, experiment);
+                    fileHelper.WriteToTextFile(logs, fileResultLocation);
+                }
+            }
+
             Console.WriteLine("Experiment complete...");
             Console.ReadLine();
         }
@@ -595,12 +697,61 @@ namespace Sandbox
         /// Experiment on synthetic data (prediction)
         /// </summary>
         /// <param name="args"></param>
-        public static void Program8(string[] args)
+        public static void Program9(string[] args)
         {
-            string filePath = @"C:\Users\User\Desktop\experiment3\synthetic_trajectories\synthetic-trajectories.csv";
-            IReader reader = new CSVReader(filePath);
-            reader.Read();
+            string[] samples = { "AAAAABBBBB", "AAABBBBBBAAAAAA", "AAAABBBBCCCC", "AAAABCBABBCCABAA", "ABABACCAABBAAABB" };
+            string fileResultLocation = @"C:\Users\User\Desktop\experiment3\results\prediction-results-synthetic-fixed.csv";
+            string experiment = "Window Size";
+            IFileHelper fileHelper = new FileHelper();
+            foreach (var unknownSample in samples)
+            {
+                Console.WriteLine($"Unknown Trajectory: {unknownSample}");
+                IGenerate generator = new SynthethicDataGenerator();
 
+                var unknown = unknownSample.ToCharArray().ToList();
+
+                var unknownTrajectory = new TrajectoryMapper();
+                unknown.ForEach(x => unknownTrajectory.AddTrajectory(new Node(x.ToString())));
+
+                var dataset = new List<TrajectoryMapper>();
+                int[] thresholds = { 2, 6, 10, 20 };
+
+                thresholds.ToList().ForEach(x => dataset.AddRange(generator.GenerateData(unknownSample, 0, x)));
+
+                IPredict prediction = new DirectPrediction(dataset);
+                prediction.WindowSize = 9;
+                prediction.K = 17;
+                prediction.Steps = 5;
+
+                var result = prediction.Predict(unknownTrajectory);
+
+                var actualResult = result.GetPredictedString();
+                var expectedResult = result.ToString();
+
+                ISimilarityMeasure scorer = new LevenshteinDistanceMeasure();
+
+                Console.WriteLine($"Predicted Results: {actualResult}");
+                Console.WriteLine($"Expected Results: {expectedResult}");
+
+                int numberofNodes = prediction.WindowSize + prediction.Steps;
+                var expectedPred = result.Trajectories.Take(numberofNodes).ToList();
+                var actualPred = result.PredictedTrajectories.Take(numberofNodes).ToList();
+
+                var score = scorer.MeasureSimilarity(expectedPred, actualPred);
+                Console.WriteLine($"Edit Distance Score: {score}");
+
+                if (!fileHelper.IsFileExists(fileResultLocation))
+                {
+                    string header = "Trajectory,Actual Prediction,K,Steps,Window Size,Score\n";
+                    fileHelper.WriteToTextFile(header, fileResultLocation);
+                }
+
+                string logs = string.Format("{0},{1},{2},{3},{4},{5},{6}\n", unknownSample, expectedResult, prediction.K, prediction.Steps, prediction.WindowSize, score, experiment);
+                fileHelper.WriteToTextFile(logs, fileResultLocation);
+
+
+            }
+            
             Console.ReadLine();
         }
 

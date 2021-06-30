@@ -94,7 +94,7 @@ namespace SOMLibrary.Implementation.Metric
                 return false;
             }
 
-            if(i >= width || j >= width || i >= height || j >= height)
+            if(i >= width || j >= height)
             {
                 return false;
             }

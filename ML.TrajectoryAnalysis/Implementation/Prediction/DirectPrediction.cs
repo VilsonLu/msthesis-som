@@ -64,7 +64,7 @@ namespace ML.TrajectoryAnalysis.Implementation.Prediction
             var check = TrajectoryDb.Where(x => x.FileName == currentTrajectory.FileName).ToList();
             var similarTrajectories = GetSimilarTrajectory(filteredDBTrajectories, currentTrajectory.PredictedTrajectories, K);
 
-            similarTrajectories.ForEach(x => Console.WriteLine($"Similar Trajectories: {x.ToString()}"));
+            //similarTrajectories.ForEach(x => Console.WriteLine($"Similar Trajectories: {x.ToString()}"));
 
             // Step 3: Based on the similar trajectory, get the majority of the state (that will be label of the predicted node)
             // Step 4: Repeat step 3 until number of steps (prediction) has been achieved.

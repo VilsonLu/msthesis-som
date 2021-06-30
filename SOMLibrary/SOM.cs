@@ -357,7 +357,7 @@ namespace SOMLibrary
                     RadiusDisplay = neighborhoodRadius;
                     if (distanceToWinningNode <= neighborhoodRadius)
                     {
-                        Map[row, col].Weights = AdjustWeights(currentNode, rowInstance.Values, learningRate);
+                        AdjustWeights(currentNode, rowInstance.Values, learningRate);
                     }
                 }
             }
@@ -378,6 +378,8 @@ namespace SOMLibrary
             {
                 double newWeight = currentWeight[i] + (learningRate * (instance[i] - currentWeight[i]));
                 currentWeight[i] = newWeight;
+
+                currentNode.Weights[i] = currentWeight[i] + (learningRate * (instance[i] - currentWeight[i]));
             }
 
             return currentWeight;
@@ -400,6 +402,7 @@ namespace SOMLibrary
         /// <returns></returns>
         protected double GetNeighborhoodRadius(int iteration)
         {
+
             return _neighborhoodRadius.CalculateRadius(iteration, TotalGlobalIteration);
         }
 
