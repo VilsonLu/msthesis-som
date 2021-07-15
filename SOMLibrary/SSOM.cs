@@ -104,8 +104,8 @@ namespace SOMLibrary
             var region = Regions.FirstOrDefault(x => x.Label == label);
             if (region != null)
             {
-                startRow = region.TopLeft.X;
-                startCol = region.TopLeft.Y;
+                startRow = region.TopLeft.Y;
+                startCol = region.TopLeft.X;
                 currentWidth = region.Width + startRow;
                 currentHeight = region.Height + startCol;
             }
@@ -115,9 +115,9 @@ namespace SOMLibrary
             {
                 double bestDistance = double.MaxValue;
                 bestNode = null;
-                for (int row = startRow; row <= currentWidth; row++)
+                for (int row = startRow; row < currentWidth; row++)
                 {
-                    for (int col = startCol; col <= currentHeight; col++)
+                    for (int col = startCol; col < currentHeight; col++)
                     {
                         Node currentNode = Map[row, col];
                         double currentDistance = currentNode.GetDistance(instance);

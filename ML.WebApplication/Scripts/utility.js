@@ -65,8 +65,8 @@ function flatten(arr) {
     const row = arr.length;
     const col = arr[0].length;
 
-    for (i = 0; i < col; i++) {
-        for (j = 0; j < row; j++) {
+    for (i = 0; i < row; i++) {
+        for (j = 0; j < col; j++) {
             flattenNodes.push(arr[i][j]);
         }
     }

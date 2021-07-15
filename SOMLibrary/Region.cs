@@ -18,12 +18,12 @@ namespace SOMLibrary
    
         public int Height
         {
-            get { return Math.Abs(TopLeft.Y - BottomLeft.Y); }
+            get { return Math.Abs(BottomLeft.X - TopLeft.X); }
         }
 
         public int Width
         {
-            get { return Math.Abs(TopRight.X - TopLeft.X); }
+            get { return Math.Abs(TopRight.Y - TopLeft.Y); }
         }
 
         public Region(Coordinate topLeft, Coordinate topRight, Coordinate bottomLeft, Coordinate bottomRight, string label)
@@ -55,32 +55,10 @@ namespace SOMLibrary
         /// <returns></returns>
         public bool IsWithinRegion(Coordinate coordinate)
         {
-            double length = Math.Abs(this.TopLeft.Y - this.BottomLeft.Y);
-            double width = Math.Abs(this.TopRight.X - this.TopLeft.X);
+            if (coordinate.X >= this.TopLeft.X && coordinate.X <= this.BottomRight.X && coordinate.Y >= this.TopLeft.Y && coordinate.Y <= this.BottomRight.Y)
+                return true;
 
-            double areaRectangle = length * width;
-
-            // Area of Triangle AQB
-            double areaAQB = Math.Abs((this.BottomLeft.X * (this.TopLeft.Y - coordinate.Y) +
-                              this.TopLeft.X * (coordinate.Y - this.BottomLeft.Y) +
-                              coordinate.X * (this.BottomLeft.Y - this.TopLeft.Y)) / 2.0);
-
-            // Area of Triangle BQC
-            double areaBQC = Math.Abs((this.TopRight.X * (this.TopLeft.Y - coordinate.Y) +
-                             this.TopLeft.X * (coordinate.Y - this.TopRight.Y) +
-                             coordinate.X * (this.TopRight.Y - this.TopLeft.Y)) / 2.0);
-
-            // Area of Triangle CQD
-            double areaCQD = Math.Abs((this.TopRight.X * (this.BottomRight.Y - coordinate.Y) +
-                             this.BottomRight.X * (coordinate.Y - this.TopRight.Y) +
-                             coordinate.X * (this.TopRight.Y - this.BottomRight.Y)) / 2.0);
-
-            // Area of Triangle AQD
-            double areaAQD = Math.Abs((this.BottomRight.X * (coordinate.Y - this.BottomLeft.Y) +
-                             this.BottomLeft.X * (this.BottomRight.Y - coordinate.Y) +
-                             coordinate.X * (this.BottomRight.Y - this.BottomLeft.Y)) / 2.0);
-
-            return areaRectangle == (areaAQB + areaBQC + areaCQD + areaAQD);
+            return false;
         }
     }
 }

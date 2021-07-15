@@ -49,8 +49,8 @@ namespace Sandbox
             //Program5(args);
             //Program1(args);
             //CreateSyntheticDataset();
-
-            Program2(args);
+            SSOM_Experiment(args);
+            //Program2(args);
         }
 
 
@@ -136,7 +136,7 @@ namespace Sandbox
         /// <param name="args"></param>
         public static void Program2(string[] args)
         {
-            string filePath = @"C:\Users\User\Desktop\experiment3\aplusix_experiments\som_training\config_aplusix.json";
+            string filePath = @"C:\Users\User\Desktop\experiment3\aplusix_experiments\som_training\config_aplusix_ssom.json";
 
             FREQUENCY = 100;
             IS_PRINT_MODEL = false;
@@ -201,6 +201,141 @@ namespace Sandbox
 
             model.GetData(_reader);
           
+            // Set the feature label
+            model.FeatureLabel = config.FeatureLabel;
+
+            // Initialize the training
+            Stopwatch stopwatch = new Stopwatch();
+
+            Console.WriteLine("Start training model...");
+            stopwatch.Restart();
+            model.Train();
+            stopwatch.Stop();
+            Console.WriteLine("Completed training model...");
+            Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
+
+            Console.WriteLine("Start labelling node...");
+            stopwatch.Restart();
+            model.LabelNodes();
+            stopwatch.Stop();
+            Console.WriteLine("Completed labelling node...");
+            Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
+
+            //if (config.Clusters > 0)
+            //{
+            //    Console.WriteLine("Start clustering nodes...");
+
+            //    stopwatch.Restart();
+            //    IClusterMeasure clusterMetric = new DaviesBouldinIndex();
+            //    var flattenedMap = ArrayHelper<Node>.FlattenMap(model.Map);
+            //    var clusteredNodes = clusterer.Cluster(flattenedMap, config.Clusters);
+
+            //    double dbi = clusterMetric.MeasureScore(clusteredNodes.ToList(), clusterer.Centroids.ToList());
+
+            //    Console.WriteLine("Davies Bouldin Index: {0}", dbi);
+
+            //    foreach (var node in clusteredNodes)
+            //    {
+            //        model.Map[node.Coordinate.X, node.Coordinate.Y].ClusterGroup = node.ClusterGroup;
+            //    }
+
+            //    stopwatch.Stop();
+            //    Console.WriteLine("Completed clustering nodes...");
+            //    Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
+
+            //    model.AssignClusterLabel();
+            //}
+
+            // Export the model
+            Console.WriteLine("Exporting model...");
+            var guid = Guid.NewGuid();
+            model.MapId = guid;
+            model.Dataset = null;
+
+            var serializeObject = JsonConvert.SerializeObject(model, Formatting.Indented);
+
+            string exportFileName = string.Format("{0}Map_{1}.json", config.Export, guid);
+
+            System.IO.File.WriteAllText(exportFileName, serializeObject);
+
+            Console.WriteLine("Training completed...");
+
+            Console.ReadLine();
+
+        }
+
+        /// <summary>
+        /// SSOM Experiments
+        /// </summary>
+        /// <param name="args"></param>
+        public static void SSOM_Experiment(string[] args)
+        {
+            string filePath = @"C:\Users\User\Desktop\experiment3\aplusix_experiments\som_training\config_aplusix_ssom.json";
+
+            FREQUENCY = 100;
+            IS_PRINT_MODEL = false;
+
+            if (args.Length > 0)
+            {
+                filePath = args[0];
+            }
+
+            var disorderScores = new List<Tuple<int, double>>();
+            var content = System.IO.File.ReadAllText(filePath);
+            var config = ReadToObject(content);
+
+            OUTPUT_LOCATION = config.Export;
+            IFileHelper fileHelper = new FileHelper();
+            string exportFile = string.Format("{0}disorder-measure.csv", OUTPUT_LOCATION);
+            fileHelper.DeleteFile(exportFile);
+
+            fileHelper.WriteToTextFile("Iteration,Disorder Measure,Learning Rate,Radius\n", exportFile);
+
+            // Build the Model
+            var learningRate = new LinearLearningRate(config.ConstantLearningRate, config.FinalLearningRate);
+            var neighborhoodRadius = new LinearDecayNeighborhoodRadius(config.Neighborhood, config.FinalNeighborhoodRadius);
+            var kernel = new GaussianKernel();
+
+            SSOMBuilder builder = new SSOMBuilder()
+                                    .SetWidth(config.Width)
+                                    .SetHeight(config.Height)
+                                    .SetRegions(config.Regions)
+                                    .SetInitialLearningRate(config.ConstantLearningRate)
+                                    .SetFinalLearningRate(config.FinalLearningRate)
+                                    .SetInitialRadius(config.Neighborhood)
+                                    .SetFinalRadius(config.FinalNeighborhoodRadius)
+                                    .SetEpoch(config.Epoch)
+                                    .SetGlobalEpoch(config.GlobalEpoch)
+                                    .SetClusters(config.Clusters)
+                                    .SetKNeighbor(config.K)
+                                    .SetLearningRateCalculator(learningRate)
+                                    .SetNeighborhoodFunctionCalculator(kernel)
+                                    .SetNeighborhoodRadiusCalculator(neighborhoodRadius);
+
+            SSOM model = builder.Build();
+
+            Console.WriteLine("Learning Rate Type: {0}", learningRate.GetType().Name);
+            Console.WriteLine("Neighborhood Radius Type: {0}", neighborhoodRadius.GetType().Name);
+            Console.WriteLine("Neighborhood Function Type: {0}", kernel.GetType().Name);
+
+            // Subscribe to OnTrainingEvent
+            model.Training += _model_Training;
+
+            // Instantiate the reader 
+            string[] ignoreColumns = config.Labels.Split(',');
+            if (string.IsNullOrWhiteSpace(config.Labels))
+            {
+                ignoreColumns = new string[0];
+            }
+
+            string label = config.FeatureLabel;
+            IReader _reader = new CSVReader(config.Dataset, ignoreColumns, label);
+
+            // Instantiate the clusterer
+            IClusterer clusterer = new KMeansClustering();
+
+            model.GetData(_reader);
+
             // Set the feature label
             model.FeatureLabel = config.FeatureLabel;
 
@@ -530,8 +665,8 @@ namespace Sandbox
                 Console.WriteLine("Completed plotting trajectories...");
                 Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
 
-                int[] k = { 71 };
-                string experiment = "Neighbor";
+                int[] k = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+                string experiment = "Window";
 
                 string fileResultLocation = @"C:\Users\User\Desktop\experiment3\other\prediction-results-intrapersonal-3.csv";
 
@@ -541,8 +676,8 @@ namespace Sandbox
                 {
                     Console.WriteLine($"{ experiment } = { item }");
                     IPredict predictionModel = new DirectPrediction(dbTrajectories);
-                    predictionModel.WindowSize = 5;
-                    predictionModel.K = item;
+                    predictionModel.WindowSize = item;
+                    predictionModel.K = 17;
                     predictionModel.Steps = 5;
 
                     int numberofNodes = predictionModel.WindowSize + predictionModel.Steps;
@@ -633,10 +768,10 @@ namespace Sandbox
             Console.WriteLine("Completed plotting trajectories...");
             Console.WriteLine("Time elapsed: {0:hh\\:mm\\:ss}", stopwatch.Elapsed);
 
-            int[] k = { 1, 3, 5, 7, 9, 11, 13, 15, 17, 21, 31, 51, 71, 111, 121, 131, 141, 151, 201, 301, 351, 401, 451, 551, 601 };
-            string experiment = "Neighbor";
+            int[] k = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            string experiment = "Window";
 
-            string fileResultLocation = @"C:\Users\User\Desktop\experiment3\other\prediction-results-interpersonal-4.csv";
+            string fileResultLocation = @"C:\Users\User\Desktop\experiment3\other\prediction-results-interpersonal-3.csv";
 
             IFileHelper fileHelper = new FileHelper();
 
@@ -644,8 +779,8 @@ namespace Sandbox
             {
                 Console.WriteLine($"{ experiment } = { item }");
                 IPredict predictionModel = new DirectPrediction(dbTrajectories);
-                predictionModel.WindowSize = 5;
-                predictionModel.K = item;
+                predictionModel.WindowSize = item;
+                predictionModel.K = 17;
                 predictionModel.Steps = 5;
 
                 int numberofNodes = predictionModel.WindowSize + predictionModel.Steps;

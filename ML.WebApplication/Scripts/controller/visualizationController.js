@@ -33,7 +33,7 @@
 
             var w = $scope.Data.Width * sen;
             var h = $scope.Data.Height * sen;
-            svg = d3.select("#chart").append("svg").attr("width", h).attr("height", w),
+            svg = d3.select("#chart").append("svg").attr("height", h).attr("width", w),
                 width = w,
                 height = h
                 ;
@@ -43,14 +43,14 @@
             var nodes = flatten($scope.Data.Map);
             var labels = getLabels(nodes);
 
-            assignColorToLabel(labels);
+            assignColorToLabel(labels.sort());
 
             rgb_nodes
                 .selectAll("rect")
                 .data(nodes)
                 .enter().append("rect")
-                .attr("x", function (node) { return node.Coordinate.Y * sen; })
-                .attr("y", function (node) { return node.Coordinate.X * sen; })
+                .attr("x", function (node) { return node.Coordinate.X * sen; })
+                .attr("y", function (node) { return node.Coordinate.Y * sen; })
                 .attr("width", sen)
                 .attr("height", sen)
                 .style("fill",
@@ -79,8 +79,8 @@
                 .append("text");
 
             var textLabels = text
-                .attr("x", function (node) { return coordinateMapperX(node.Coordinate.Y); })
-                .attr("y", function (node) { return coordinateMapperY(node.Coordinate.X); })
+                .attr("x", function (node) { return coordinateMapperX(node.Coordinate.X); })
+                .attr("y", function (node) { return coordinateMapperY(node.Coordinate.Y); })
                 .text(function (node) { return node.Label; })
                 .attr("font-family", "sans-serif")
                 .attr("font-size", "12px")
